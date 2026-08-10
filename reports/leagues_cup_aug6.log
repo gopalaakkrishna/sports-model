@@ -1,0 +1,65 @@
+﻿MLS      : 3,062 matches, 30 teams, home adv +0.283
+Liga MX  : 2,051 matches, 19 teams, home adv +0.287
+
+Cross-league matches in the training data: 0
+The offset between the two leagues is NOT identifiable from this data.
+Predictions below are shown across a range of assumed offsets.
+
+  New York City (host) vs Santos Laguna   [Sports Illustrated Stadium]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          75%    16%     9%    2.53-0.76
+    -0.15 (MLS stronger)          71%    18%    11%    2.35-0.82
+    +0.00 (leagues equal)         67%    20%    14%    2.18-0.88
+    +0.15 (Liga MX stronger)      62%    22%    17%    2.02-0.95
+    +0.30 (Liga MX stronger)      57%    23%    20%    1.87-1.02
+    -> most likely outcome STABLE across the offset range: H H H H H
+
+  Philadelphia Union (host) vs Cruz Azul   [Subaru Park, Chester]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          48%    25%    27%    1.65-1.18
+    -0.15 (MLS stronger)          43%    26%    31%    1.53-1.27
+    +0.00 (leagues equal)         38%    26%    36%    1.42-1.37
+    +0.15 (Liga MX stronger)      33%    26%    40%    1.31-1.47
+    +0.30 (Liga MX stronger)      29%    26%    45%    1.22-1.59
+    -> most likely outcome FLIPS across the offset range: H H H A A
+
+  Chicago Fire (host) vs Necaxa   [SeatGeek Stadium]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          64%    19%    16%    2.37-1.14
+    -0.15 (MLS stronger)          59%    21%    20%    2.20-1.23
+    +0.00 (leagues equal)         54%    22%    24%    2.04-1.32
+    +0.15 (Liga MX stronger)      48%    23%    29%    1.90-1.43
+    +0.30 (Liga MX stronger)      43%    24%    33%    1.76-1.54
+    -> most likely outcome STABLE across the offset range: H H H H H
+
+  Austin FC (host) vs Club Tijuana   [Q2 Stadium]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          47%    26%    27%    1.58-1.14
+    -0.15 (MLS stronger)          42%    27%    31%    1.47-1.23
+    +0.00 (leagues equal)         37%    27%    36%    1.36-1.33
+    +0.15 (Liga MX stronger)      33%    27%    40%    1.26-1.43
+    +0.30 (Liga MX stronger)      28%    26%    45%    1.17-1.54
+    -> most likely outcome FLIPS across the offset range: H H H A A
+
+  Portland Timbers (host) vs Puebla   [Providence Park]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          74%    16%    10%    2.53-0.85
+    -0.15 (MLS stronger)          69%    18%    13%    2.35-0.91
+    +0.00 (leagues equal)         64%    20%    16%    2.18-0.99
+    +0.15 (Liga MX stronger)      59%    22%    19%    2.02-1.06
+    +0.30 (Liga MX stronger)      54%    23%    23%    1.88-1.15
+    -> most likely outcome STABLE across the offset range: H H H H H
+
+  Club America (host) vs San Diego FC   [Estadio Azteca]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          44%    26%    29%    1.54-1.21
+    -0.15 (MLS stronger)          49%    25%    25%    1.66-1.13
+    +0.00 (leagues equal)         54%    24%    21%    1.79-1.04
+    +0.15 (Liga MX stronger)      59%    23%    18%    1.93-0.97
+    +0.30 (Liga MX stronger)      64%    21%    15%    2.08-0.90
+    -> most likely outcome STABLE across the offset range: H H H H H
+
+Reading this: where the call flips across plausible offsets, the model
+genuinely cannot separate the teams and should not be used to pick a side.
+Fixing it properly needs Leagues Cup / Champions Cup results in the
+training data to connect the two rating graphs.

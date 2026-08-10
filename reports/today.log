@@ -1,0 +1,16 @@
+﻿Now: 2026-08-06 04:23 PM EDT   (showing the next 26h)
+
+  (6 fixture(s) already under way — excluded, their prices are in-play)
+
+  (3 fixture(s) hidden: MEDIUM/LOW confidence or no market. Use --all to see them.)
+
+start (ET)        sport   match                                   model pick      model    mkt  confidence
+--------------------------------------------------------------------------------------------------------
+Thu 08-06 07:15PM  mlb     Miami Marlins @ Atlanta Braves          Atlanta Brave     55%    57%  HIGH
+Thu 08-06 07:40PM  mlb     Minnesota Twins @ Kansas City Royals    Kansas City R     56%    54%  HIGH
+Fri 08-07 04:00PM  soccer  Sandefjord v KFUM Oslo                  HOME              49%    48%  HIGH
+Fri 08-07 05:30PM  soccer  Bochum v Hertha                         HOME              44%    42%  HIGH
+
+  HIGH 4   MEDIUM 0   LOW 0
+  HIGH   = model within 3 pts of market (most reliable)
+  LOW    = model far from market (measured to be model error)

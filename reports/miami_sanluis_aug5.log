@@ -1,0 +1,19 @@
+﻿MLS      : 3,062 matches, 30 teams, home adv +0.283
+Liga MX  : 2,051 matches, 19 teams, home adv +0.287
+
+Cross-league matches in the training data: 0
+The offset between the two leagues is NOT identifiable from this data.
+Predictions below are shown across a range of assumed offsets.
+
+  Inter Miami (host) vs Atl. San Luis   [Nu Stadium, Miami]
+    offset                          H      D      A           xG
+    +0.00 (leagues equal)         69%    16%    15%    2.85-1.33
+    +0.19 (Liga MX stronger)      61%    18%    20%    2.59-1.46
+    +0.38 (Liga MX stronger)      54%    20%    26%    2.36-1.61
+    +0.56 (Liga MX stronger)      47%    21%    32%    2.15-1.76
+    -> most likely outcome STABLE across the offset range: H H H H
+
+Reading this: where the call flips across plausible offsets, the model
+genuinely cannot separate the teams and should not be used to pick a side.
+Fixing it properly needs Leagues Cup / Champions Cup results in the
+training data to connect the two rating graphs.

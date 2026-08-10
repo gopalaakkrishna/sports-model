@@ -1,0 +1,33 @@
+﻿
+running variant off ...
+  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP1 2026-08-01 Livingston v Queens Park
+    SP2 2026-08-01 East Kilbride v Queen of Sth
+  19,578 scored matches
+
+running variant shot_weight=0.15 ...
+  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP1 2026-08-01 Livingston v Queens Park
+    SP2 2026-08-01 East Kilbride v Queen of Sth
+  19,578 scored matches
+
+running variant shot_weight=0.3 ...
+  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP1 2026-08-01 Livingston v Queens Park
+    SP2 2026-08-01 East Kilbride v Queen of Sth
+  19,578 scored matches
+
+common matches across variants: 19,578
+
+  variant           log loss   vs market   vs baseline
+  off                1.02891    +0.01708              
+  shot_weight=0.15   1.02826    +0.01643      -0.00066
+  shot_weight=0.3    1.02806    +0.01623      -0.00086
+  market             1.01183
+
+  shot_weight=0.15 vs baseline: mean -0.00066, 95% CI [-0.00097, -0.00036]  -> HELPS
+
+  shot_weight=0.3 vs baseline: mean -0.00086, 95% CI [-0.00147, -0.00025]  -> HELPS

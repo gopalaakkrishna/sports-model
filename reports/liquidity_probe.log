@@ -1,0 +1,61 @@
+﻿=== POLYMARKET: soccer markets, price vs liquidity ===
+
+match-winner/draw markets found: 35
+  priced 0.47-0.53 (suspicious default): 16
+  priced elsewhere:                      19
+
+  near-50/50 markets: n=16  median liquidity $4  median volume $72
+    Will Odisha FC win on 2026-03-13?                      p=0.515 liq=$7 vol=$5 bid=0.06 ask=0.97 spread=0.91
+    Will Odisha FC vs. Odisha FC end in a draw?            p=0.5 liq=$2 vol=$5 bid=0.01 ask=0.99 spread=0.98
+    Will Chennaiyin FC win on 2026-03-22?                  p=0.4995 liq=$3 vol=$11 bid=0.002 ask=0.997 spread=0.995
+    Will Chennaiyin FC vs. Punjab FC end in a draw?        p=0.5005 liq=$3 vol=$72 bid=0.003 ask=0.998 spread=0.995
+    Will Punjab FC win on 2026-03-22?                      p=0.495 liq=$3 vol=$0 bid=0.01 ask=0.98 spread=0.97
+    Will Iwaki FC win on 2026-03-08?                       p=0.505 liq=$8 vol=$66 bid=0.011 ask=0.999 spread=0.988
+
+  genuinely priced markets: n=19  median liquidity $683  median volume $735
+    Will New England Revolution win on 2026-03-07?         p=0.385 liq=$16,096 vol=$41,770 bid=0.38 ask=0.39 spread=0.01
+    Will New England Revolution vs. Houston Dynamo end i   p=0.275 liq=$20,202 vol=$36,673 bid=0.27 ask=0.28 spread=0.01
+    Will Houston Dynamo win on 2026-03-07?                 p=0.335 liq=$18,877 vol=$27,710 bid=0.33 ask=0.34 spread=0.01
+    Will Seattle Sounders FC vs. Real Salt Lake end in a   p=0.25 liq=$1,080 vol=$735 bid=0.2 ask=0.3 spread=0.1
+    Will Real Salt Lake win on 2026-04-12?                 p=0.276 liq=$1,421 vol=$1,138 bid=0.162 ask=0.39 spread=0.228
+    Will New York City FC win on 2026-05-06?               p=0.265 liq=$623 vol=$418 bid=0.23 ask=0.3 spread=0.07
+
+
+=== KALSHI: soccer game-winner series with open markets ===
+game-winner-style soccer series: 15
+  KXLEAGUESCUPGAME           Leagues Cup Game                 open=5   vol=0
+      Portland vs Tijuana de Caliente Winner?                    bid=None ask=None vol=None oi=None
+      Portland vs Tijuana de Caliente Winner?                    bid=None ask=None vol=None oi=None
+      Portland vs Tijuana de Caliente Winner?                    bid=None ask=None vol=None oi=None
+  KXUAEPLGAME                UAE Pro League                   open=0   vol=0
+  KXEPLGAME                  English Premier League Game      open=0   vol=0
+  KXSERIEAGAME               Serie A Game                     open=0   vol=0
+  KXMLSASTGAME               MLS All Star Game                open=0   vol=0
+  KXLIGAMXGAME               Liga MX Game                     open=5   vol=0
+      Pachuca vs Puebla Winner?                                  bid=None ask=None vol=None oi=None
+      Pachuca vs Puebla Winner?                                  bid=None ask=None vol=None oi=None
+      Pachuca vs Puebla Winner?                                  bid=None ask=None vol=None oi=None
+  KXUCLWGAME                 Champions League Women's Game    open=5   vol=0
+      Servette Chenois vs Aktobe Winner?                         bid=None ask=None vol=None oi=None
+      Servette Chenois vs Aktobe Winner?                         bid=None ask=None vol=None oi=None
+      Servette Chenois vs Aktobe Winner?                         bid=None ask=None vol=None oi=None
+  KXBUNDESLIGA2GAME          Bundesliga 2 Game                open=5   vol=0
+      Cottbus vs Hannover Winner?                                bid=None ask=None vol=None oi=None
+      Cottbus vs Hannover Winner?                                bid=None ask=None vol=None oi=None
+      Cottbus vs Hannover Winner?                                bid=None ask=None vol=None oi=None
+  KXUCLGAME                  UEFA Champions League Game       open=5   vol=0
+      Sabah Masazir vs Aarhus Winner?                            bid=None ask=None vol=None oi=None
+      Sabah Masazir vs Aarhus Winner?                            bid=None ask=None vol=None oi=None
+      Sabah Masazir vs Aarhus Winner?                            bid=None ask=None vol=None oi=None
+  KXBBSERIEAGAME             Italy Serie A Basketball Game    open=0   vol=0
+  KXLALIGAGAME               La Liga Game                     open=5   vol=0
+      Atletico vs Malaga Winner?                                 bid=None ask=None vol=None oi=None
+      Atletico vs Malaga Winner?                                 bid=None ask=None vol=None oi=None
+      Atletico vs Malaga Winner?                                 bid=None ask=None vol=None oi=None
+  KXMLSGAME                  Major League Soccer Game         open=5   vol=0
+      Toronto vs Charlotte Winner?                               bid=None ask=None vol=None oi=None
+      Toronto vs Charlotte Winner?                               bid=None ask=None vol=None oi=None
+      Toronto vs Charlotte Winner?                               bid=None ask=None vol=None oi=None
+  KXBUNDESLIGAGAME           Bundesliga Game                  open=0   vol=0
+  KXLIGUE1GAME               Ligue 1 Game                     open=0   vol=0
+  KXLALIGA2GAME              LaLiga 2 Game                    open=0   vol=0

@@ -1,0 +1,26 @@
+﻿male: 185 matches, 370 innings
+  home innings identified: 175 / 370
+
+  scored 150 matches (2021-08-21 .. 2026-08-05)
+  log loss model     0.69478
+  log loss base rate 0.69235
+  accuracy           51.333%
+  model prob spread  sd 0.0479 (range 39.8%-64.3%)
+
+  BY SEASON
+    2022  n= 34  logloss 0.6896  acc 50.0%
+    2023  n= 29  logloss 0.7012  acc 51.7%
+    2024  n= 31  logloss 0.7029  acc 48.4%
+    2025  n= 33  logloss 0.6958  acc 48.5%
+    2026  n= 22  logloss 0.6766  acc 63.6%
+
+  CALIBRATION
+                n  predicted  actual
+bucket                              
+(0.35, 0.45]   23      0.430   0.435
+(0.45, 0.55]  104      0.502   0.490
+(0.55, 0.65]   23      0.575   0.478
+
+  150 matches is a very small sample. A 3-point difference in
+  log loss here is well inside the noise, and there is no market to
+  compare against — Kalshi quotes no cricket at all.

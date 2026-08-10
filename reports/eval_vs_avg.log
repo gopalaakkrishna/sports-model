@@ -1,0 +1,45 @@
+﻿Holdout window 2022-08-01 .. 2026-08-03, tuned params (xi=0.0025, reg=1.0)
+
+  vs PINNACLE closing (coverage ends 2026-01-15)
+    matches           24,189  (2022-08-01 .. 2026-01-15)
+    overround         4.12%
+    model log loss    1.01399
+    market log loss   0.99560
+    gap               +0.01840  (market better)
+    blend weight      0.00
+
+  vs MARKET AVERAGE closing (full coverage)
+    matches           28,587  (2022-08-01 .. 2026-08-03)
+    overround         6.52%
+    model log loss    1.01498
+    market log loss   0.99727
+    gap               +0.01770  (market better)
+    blend weight      0.00
+
+  --- restricted to matches where BOTH are available ---
+
+  vs Pinnacle (matched sample)
+    matches           24,189  (2022-08-01 .. 2026-01-15)
+    overround         4.12%
+    model log loss    1.01399
+    market log loss   0.99560
+    gap               +0.01840  (market better)
+    blend weight      0.00
+
+  vs market average (matched sample)
+    matches           24,189  (2022-08-01 .. 2026-01-15)
+    overround         6.24%
+    model log loss    1.01399
+    market log loss   0.99614
+    gap               +0.01785  (market better)
+    blend weight      0.00
+
+  --- period with no Pinnacle data at all ---
+
+  vs market average, after 2026-01-15
+    matches           3,421  (2026-01-16 .. 2026-08-03)
+    overround         7.99%
+    model log loss    1.01819
+    market log loss   0.99976
+    gap               +0.01844  (market better)
+    blend weight      0.00

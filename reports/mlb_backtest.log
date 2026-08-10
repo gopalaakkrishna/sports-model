@@ -1,0 +1,61 @@
+﻿MLB backtest 2019-04-01 .. 2026-08-04 (xi=0.0025, reg_team=2.0, reg_sp=8.0)
+  2019-09-16: 25 fits, 2,239 preds (9s)
+  2021-04-19: 50 fits, 3,552 preds (17s)
+  2021-10-11: 75 fits, 5,617 preds (27s)
+  2022-08-29: 100 fits, 7,588 preds (35s)
+  2023-07-10: 125 fits, 9,419 preds (45s)
+  2024-05-13: 150 fits, 11,156 preds (55s)
+  2025-03-17: 175 fits, 12,903 preds (64s)
+  2025-09-08: 200 fits, 15,108 preds (75s)
+  2026-07-20: 225 fits, 16,905 preds (85s)
+
+saved 17,025 predictions -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\mlb_backtest.parquet
+
+  RESULTS
+  ----------------------------------------------
+  games scored            17,025
+  actual home win rate    53.140%
+  mean predicted          51.576%
+  log loss  model         0.69999
+  log loss  base rate     0.69117
+  brier     model         0.25159
+  accuracy                56.347%
+
+  HOME-ADVANTAGE CHECK
+    predicted minus actual home win rate: -1.564%
+    !!! systematic bias. A run-based model understates home
+        advantage because the home team skips the bottom of the
+        9th when already ahead.
+
+  CALIBRATION
+    bucket              n   predicted    actual     diff
+    0.00-0.35       2,712      27.3%     42.8%   +15.5%
+    0.35-0.42       2,130      38.8%     46.6%    +7.8%
+    0.42-0.48       2,164      45.1%     50.1%    +5.0%
+    0.48-0.52       1,533      50.0%     50.9%    +0.9%
+    0.52-0.58       2,369      55.0%     54.8%    -0.1%
+    0.58-0.65       2,550      61.4%     58.4%    -3.0%
+    0.65-1.00       3,567      72.9%     62.8%   -10.1%
+
+  RUN TOTALS
+    mean predicted total 8.83
+    mean actual total    9.04
+    correlation          0.123
+
+  PARK EFFECT CHECK (largest total-runs errors by venue, n>=100)
+    Rate Field                             131  pred 7.97 act 8.60  err +0.63
+    Daikin Park                            140  pred 8.06 act 8.64  err +0.57
+    Sutter Health Park                     132  pred 10.10 act 10.62  err +0.52
+    Citi Field                             547  pred 8.24 act 8.67  err +0.44
+    Coors Field                            560  pred 11.26 act 11.58  err +0.33
+    Citizens Bank Park                     572  pred 8.94 act 9.26  err +0.31
+    ! park effects are material and unmodelled.
+
+  CALIBRATION (fit on first 70%, validated on the rest)
+    shrinkage a=0.414  intercept b=+0.098
+    variant                   log loss
+    raw model                  0.69979
+    base rate                  0.69123
+    calibrated                 0.68228
+    calibrated beats base rate by +0.00895
+    saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\mlb_calibration.json

@@ -1,0 +1,200 @@
+﻿  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP2 2026-08-01 Montrose v Hamilton
+    SP1 2026-08-01 Livingston v Queens Park
+
+KXLALIGAGAME: 7 open fixtures, fitted on Spain ['SP1', 'SP2'] (5,053 matches, 55 teams), pricing in SP1
+  unresolved: 'Atletico' v 'Malaga'
+  unresolved: 'Deportivo De La Coruna' v 'Elche'
+  unresolved: 'Celta Vigo' v 'Osasuna'
+
+KXBUNDESLIGA2GAME: 9 open fixtures, fitted on Germany ['D1', 'D2'] (3,672 matches, 45 teams), pricing in D2
+  unresolved: 'Cottbus' v 'Hannover'
+  unresolved: 'Nuremberg' v 'Dresden'
+  unresolved: 'Darmstadt' v 'Kiel'
+
+KXMLSGAME: 22 open fixtures, fitted on USA ['USA:MLS'] (3,062 matches, 30 teams), pricing in USA:MLS
+  unresolved: 'New York RB' v 'Nashville'
+  unresolved: 'San Jose' v 'Saint Louis'
+  unresolved: 'Houston' v 'Los Angeles G'
+  unresolved: 'Atlanta' v 'New York RB'
+
+KXLIGAMXGAME: 9 open fixtures, fitted on Mexico ['MEX:Liga MX'] (2,051 matches, 19 teams), pricing in MEX:Liga MX
+  unresolved: 'Tijuana de Caliente' v 'Cruz Azul'
+
+====================================================================================================
+ALL COMPARISONS (108 legs, 36 fixtures)
+====================================================================================================
+match                             leg     model   bid   ask   spr    depth      EV  trade
+Alaves v Getafe                   AWAY    27.5%  0.24  0.25  0.01    2,711   +1.2%  yes
+Alaves v Getafe                   DRAW    33.0%  0.33  0.36  0.03    2,879   -4.7%  yes
+Alaves v Getafe                   HOME    39.5%  0.38  0.41  0.03    4,519   -3.2%  yes
+Atlante v Toluca                  AWAY    36.1%  0.62  0.64  0.02    1,764  -29.6%  no
+Atlante v Toluca                  DRAW    24.3%  0.22  0.24  0.02    2,561   -0.9%  no
+Atlante v Toluca                  HOME    39.6%  0.19  0.22  0.03    5,144  +16.4%  no
+Atlas v Tigres UANL               AWAY    45.0%  0.45  0.46  0.01    2,229   -2.8%  yes
+Atlas v Tigres UANL               DRAW    27.5%  0.27  0.31  0.04    2,768   -5.0%  yes
+Atlas v Tigres UANL               HOME    27.5%  0.28  0.33  0.05    2,079   -7.0%  yes
+Austin FC v FC Dallas             AWAY    38.8%  0.40  0.43  0.03    1,720   -6.0%  yes
+Austin FC v FC Dallas             DRAW    26.3%  0.25  0.27  0.02    2,455   -2.1%  yes
+Austin FC v FC Dallas             HOME    35.0%  0.31  0.35  0.04    1,432   -1.6%  yes
+Bochum v Hertha                   AWAY    29.4%  0.30  0.32  0.02    5,321   -4.1%  yes
+Bochum v Hertha                   DRAW    26.4%  0.25  0.27  0.02    7,436   -2.0%  yes
+Bochum v Hertha                   HOME    44.1%  0.42  0.44  0.02    8,300   -1.6%  yes
+CF Montreal v DC United           AWAY    27.7%  0.30  0.33  0.03      798   -6.9%  yes
+CF Montreal v DC United           DRAW    24.9%  0.25  0.28  0.03    2,035   -4.5%  yes
+CF Montreal v DC United           HOME    47.4%  0.41  0.45  0.04    2,194   +0.7%  yes
+Charlotte v Columbus Crew         AWAY    31.4%  0.30  0.32  0.02    1,051   -2.1%  yes
+Charlotte v Columbus Crew         DRAW    26.0%  0.25  0.27  0.02    2,399   -2.4%  yes
+Charlotte v Columbus Crew         HOME    42.6%  0.44  0.46  0.02    1,396   -5.1%  yes
+Chicago Fire v Portland Timbers   AWAY    28.6%  0.20  0.21  0.01    1,490   +6.5%  yes
+Chicago Fire v Portland Timbers   DRAW    22.5%  0.18  0.19  0.01    1,093   +2.4%  yes
+Chicago Fire v Portland Timbers   HOME    48.9%  0.59  0.60  0.01      734  -12.8%  yes
+Club America v Atl. San Luis      AWAY    12.9%  0.16  0.25  0.09    2,523  -13.4%  no
+Club America v Atl. San Luis      DRAW    20.0%  0.20  0.25  0.05    2,490   -6.3%  yes
+Club America v Atl. San Luis      HOME    67.0%  0.61  0.64  0.03    2,402   +1.4%  yes
+Colorado Rapids v Sporting Kansas AWAY    19.8%  0.12  0.16  0.04    3,021   +2.9%  yes
+Colorado Rapids v Sporting Kansas DRAW    21.1%  0.18  0.20  0.02    2,323   +0.0%  yes
+Colorado Rapids v Sporting Kansas HOME    59.0%  0.68  0.70  0.02    1,421  -12.4%  yes
+Columbus Crew v CF Montreal       AWAY    15.9%  0.18  0.19  0.01      775   -4.2%  yes
+Columbus Crew v CF Montreal       DRAW    20.5%  0.19  0.24  0.05    1,613   -4.8%  yes
+Columbus Crew v CF Montreal       HOME    63.7%  0.59  0.64  0.05    1,427   -1.9%  yes
+DC United v New England Revolutio AWAY    36.5%  0.26  0.32  0.06    1,252   +3.0%  yes
+DC United v New England Revolutio DRAW    25.8%  0.25  0.30  0.05    1,523   -5.7%  yes
+DC United v New England Revolutio HOME    37.7%  0.42  0.51  0.09      683  -15.0%  no
+Espanol v Levante                 AWAY    28.1%  0.23  0.27  0.04    8,012   -0.3%  yes
+Espanol v Levante                 DRAW    26.1%  0.26  0.32  0.06    2,823   -7.4%  yes
+Espanol v Levante                 HOME    45.8%  0.45  0.48  0.03    1,866   -4.0%  yes
+FC Cincinnati v New York City     AWAY    30.9%  0.29  0.36  0.07    1,623   -6.7%  no
+FC Cincinnati v New York City     DRAW    24.4%  0.25  0.26  0.01      593   -3.0%  yes
+FC Cincinnati v New York City     HOME    44.7%  0.43  0.48  0.05    1,158   -5.0%  yes
+Heidenheim v Osnabruck            AWAY    11.4%  0.15  0.17  0.02    6,140   -6.6%  no
+Heidenheim v Osnabruck            DRAW    18.7%  0.23  0.25  0.02    5,293   -7.6%  no
+Heidenheim v Osnabruck            HOME    69.8%  0.56  0.57  0.01    3,879  +11.1%  no
+Karlsruhe v Bielefeld             AWAY    31.2%  0.38  0.39  0.01    5,930   -9.5%  yes
+Karlsruhe v Bielefeld             DRAW    23.8%  0.23  0.25  0.02    6,760   -2.5%  yes
+Karlsruhe v Bielefeld             HOME    45.0%  0.35  0.37  0.02    8,405   +6.4%  yes
+Los Angeles FC v San Diego FC     AWAY    22.4%  0.15  0.18  0.03    1,478   +3.3%  yes
+Los Angeles FC v San Diego FC     DRAW    22.8%  0.19  0.22  0.03    2,101   -0.4%  yes
+Los Angeles FC v San Diego FC     HOME    54.9%  0.65  0.68  0.03    1,630  -14.6%  yes
+Magdeburg v Braunschweig          AWAY    19.9%  0.20  0.22  0.02    7,671   -3.3%  yes
+Magdeburg v Braunschweig          DRAW    23.2%  0.21  0.24  0.03    7,775   -2.1%  yes
+Magdeburg v Braunschweig          HOME    56.9%  0.53  0.54  0.01    5,267   +1.2%  yes
+Monterrey v Juarez                AWAY    14.6%  0.18  0.22  0.04    2,614   -8.6%  yes
+Monterrey v Juarez                DRAW    19.4%  0.21  0.22  0.01    1,566   -3.8%  yes
+Monterrey v Juarez                HOME    66.1%  0.63  0.66  0.03    2,106   -1.5%  yes
+Nashville SC v Inter Miami        AWAY    32.1%  0.34  0.36  0.02    7,592   -5.6%  yes
+Nashville SC v Inter Miami        DRAW    23.2%  0.25  0.26  0.01    2,833   -4.2%  yes
+Nashville SC v Inter Miami        HOME    44.8%  0.42  0.45  0.03    1,677   -2.0%  yes
+Necaxa v Club Leon                AWAY    25.3%  0.28  0.34  0.06    1,434  -10.3%  yes
+Necaxa v Club Leon                DRAW    24.5%  0.25  0.30  0.05    2,712   -7.0%  yes
+Necaxa v Club Leon                HOME    50.2%  0.44  0.46  0.02      765   +2.4%  yes
+New York City v Philadelphia Unio AWAY    28.1%  0.21  0.24  0.03    1,622   +2.9%  yes
+New York City v Philadelphia Unio DRAW    26.2%  0.25  0.26  0.01    1,763   -1.1%  yes
+New York City v Philadelphia Unio HOME    45.6%  0.52  0.55  0.03    1,078  -11.1%  yes
+Orlando City v Chicago Fire       AWAY    29.8%  0.44  0.49  0.05    1,038  -20.9%  yes
+Orlando City v Chicago Fire       DRAW    21.9%  0.25  0.26  0.01    1,146   -5.5%  yes
+Orlando City v Chicago Fire       HOME    48.3%  0.29  0.34  0.05    1,521  +12.7%  yes
+Orlando City v FC Cincinnati      AWAY    32.3%  0.37  0.38  0.01    3,607   -7.3%  yes
+Orlando City v FC Cincinnati      DRAW    21.5%  0.25  0.26  0.01    3,356   -5.8%  yes
+Orlando City v FC Cincinnati      HOME    46.1%  0.41  0.43  0.02    2,034   +1.4%  yes
+Pachuca v Puebla                  AWAY    12.7%  0.13  0.16  0.03    2,200   -4.2%  yes
+Pachuca v Puebla                  DRAW    21.0%  0.19  0.22  0.03    1,756   -2.2%  yes
+Pachuca v Puebla                  HOME    66.3%  0.69  0.71  0.02    1,241   -6.2%  yes
+Philadelphia Union v Inter Miami  AWAY    35.5%  0.39  0.43  0.04    2,365   -9.2%  yes
+Philadelphia Union v Inter Miami  DRAW    22.2%  0.25  0.26  0.01      597   -5.2%  yes
+Philadelphia Union v Inter Miami  HOME    42.3%  0.35  0.41  0.06    1,275   -0.4%  yes
+Real Salt Lake v Minnesota United AWAY    29.3%  0.21  0.23  0.02    1,415   +5.0%  yes
+Real Salt Lake v Minnesota United DRAW    26.6%  0.25  0.26  0.01    1,892   -0.8%  yes
+Real Salt Lake v Minnesota United HOME    44.2%  0.54  0.56  0.02    1,376  -13.6%  yes
+Santander v Villarreal            AWAY    49.4%  0.44  0.46  0.02      910   +1.7%  yes
+Santander v Villarreal            DRAW    20.7%  0.24  0.29  0.05      931   -9.7%  yes
+Santander v Villarreal            HOME    29.8%  0.25  0.30  0.05    1,827   -1.6%  yes
+Santos Laguna v Guadalajara Chiva AWAY    50.4%  0.59  0.63  0.04    1,932  -14.2%  yes
+Santos Laguna v Guadalajara Chiva DRAW    25.5%  0.20  0.23  0.03      661   +1.2%  yes
+Santos Laguna v Guadalajara Chiva HOME    24.1%  0.18  0.24  0.06    2,662   -1.1%  yes
+Seattle Sounders v Vancouver Whit AWAY    35.6%  0.44  0.47  0.03      921  -13.1%  yes
+Seattle Sounders v Vancouver Whit DRAW    27.1%  0.25  0.26  0.01    1,440   -0.3%  yes
+Seattle Sounders v Vancouver Whit HOME    37.3%  0.27  0.34  0.07    3,486   +1.7%  no
+Sevilla v Vallecano               AWAY    28.8%  0.27  0.30  0.03    4,122   -2.6%  yes
+Sevilla v Vallecano               DRAW    28.7%  0.29  0.30  0.01    3,556   -2.7%  yes
+Sevilla v Vallecano               HOME    42.4%  0.41  0.43  0.02    3,665   -2.3%  yes
+St Pauli v Greuther Furth         AWAY    20.3%  0.22  0.25  0.03    3,922   -6.0%  yes
+St Pauli v Greuther Furth         DRAW    25.6%  0.22  0.25  0.03    4,916   -0.7%  yes
+St Pauli v Greuther Furth         HOME    54.1%  0.51  0.53  0.02    4,365   -0.6%  yes
+Toronto FC v Charlotte            AWAY    38.0%  0.33  0.39  0.06    2,433   -2.6%  yes
+Toronto FC v Charlotte            DRAW    28.2%  0.25  0.30  0.05    2,534   -3.2%  yes
+Toronto FC v Charlotte            HOME    33.7%  0.38  0.43  0.05      925  -11.0%  yes
+Toronto FC v New England Revoluti AWAY    33.7%  0.36  0.38  0.02    2,331   -5.9%  yes
+Toronto FC v New England Revoluti DRAW    27.5%  0.24  0.25  0.01    1,182   +1.2%  yes
+Toronto FC v New England Revoluti HOME    38.8%  0.39  0.40  0.01    1,244   -2.9%  yes
+UNAM Pumas v Queretaro            AWAY    16.4%  0.18  0.22  0.04    1,558   -6.8%  yes
+UNAM Pumas v Queretaro            DRAW    23.4%  0.21  0.22  0.01      311   +0.2%  no
+UNAM Pumas v Queretaro            HOME    60.2%  0.58  0.61  0.03    1,399   -2.4%  yes
+Wolfsburg v Kaiserslautern        AWAY    20.0%  0.16  0.19  0.03    8,250   -0.1%  yes
+Wolfsburg v Kaiserslautern        DRAW    22.0%  0.20  0.22  0.02    6,455   -1.2%  yes
+Wolfsburg v Kaiserslautern        HOME    58.0%  0.58  0.61  0.03   10,198   -4.7%  yes
+
+  Kalshi three-way ask sums (1.00 = no spread at all):
+    Bochum v Hertha                        1.030
+    Heidenheim v Osnabruck                 0.990
+    Magdeburg v Braunschweig               1.000
+    Karlsruhe v Bielefeld                  1.010
+    Wolfsburg v Kaiserslautern             1.020
+    St Pauli v Greuther Furth              1.030
+    Alaves v Getafe                        1.020
+    Sevilla v Vallecano                    1.030
+    Espanol v Levante                      1.070
+    Santander v Villarreal                 1.050
+    Atlante v Toluca                       1.100
+    Atlas v Tigres UANL                    1.100
+    Monterrey v Juarez                     1.100
+    Club America v Atl. San Luis           1.140
+    UNAM Pumas v Queretaro                 1.050
+    Santos Laguna v Guadalajara Chivas     1.100
+    Necaxa v Club Leon                     1.100
+    Pachuca v Puebla                       1.090
+    Charlotte v Columbus Crew              1.050
+    Colorado Rapids v Sporting Kansas Ci   1.060
+    Los Angeles FC v San Diego FC          1.080
+    CF Montreal v DC United                1.060
+    Nashville SC v Inter Miami             1.070
+    Orlando City v FC Cincinnati           1.070
+    Real Salt Lake v Minnesota United      1.050
+    Toronto FC v New England Revolution    1.030
+    Austin FC v FC Dallas                  1.050
+    Chicago Fire v Portland Timbers        1.000
+    New York City v Philadelphia Union     1.050
+    Seattle Sounders v Vancouver Whiteca   1.070
+    FC Cincinnati v New York City          1.100
+    Columbus Crew v CF Montreal            1.070
+    DC United v New England Revolution     1.130
+    Orlando City v Chicago Fire            1.090
+    Philadelphia Union v Inter Miami       1.100
+    Toronto FC v Charlotte                 1.120
+
+  SUPPRESSED — thin data (eff_n < 15 weighted matches behind a team's rating):
+    Atlante v Toluca                  HOME   model  39.6% ask 0.22  apparent EV +16.4%  eff_n 2.9
+    Heidenheim v Osnabruck            HOME   model  69.8% ask 0.57  apparent EV +11.1%  eff_n 7.1
+    A promoted club with a handful of games can land a mid-table
+    rating on luck of the draw. These are model error, not edge.
+
+====================================================================================================
+POSITIVE EV AND TRADEABLE (EV >= 2%)
+====================================================================================================
+  Orlando City v Chicago Fire       HOME   model  48.3% ask 0.34  EV +12.7%  depth $1,521  eff_n 49
+  Chicago Fire v Portland Timbers   AWAY   model  28.6% ask 0.21  EV +6.5%  depth $1,490  eff_n 49
+  Karlsruhe v Bielefeld             HOME   model  45.0% ask 0.37  EV +6.4%  depth $8,405  eff_n 29
+  Real Salt Lake v Minnesota United AWAY   model  29.3% ask 0.23  EV +5.0%  depth $1,415  eff_n 49
+  Los Angeles FC v San Diego FC     AWAY   model  22.4% ask 0.18  EV +3.3%  depth $1,478  eff_n 34
+  DC United v New England Revolutio AWAY   model  36.5% ask 0.32  EV +3.0%  depth $1,252  eff_n 48
+  Colorado Rapids v Sporting Kansas AWAY   model  19.8% ask 0.16  EV +2.9%  depth $3,021  eff_n 49
+  New York City v Philadelphia Unio AWAY   model  28.1% ask 0.24  EV +2.9%  depth $1,622  eff_n 51
+  Necaxa v Club Leon                HOME   model  50.2% ask 0.46  EV +2.4%  depth $765  eff_n 50
+  Chicago Fire v Portland Timbers   DRAW   model  22.5% ask 0.19  EV +2.4%  depth $1,093  eff_n 49
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\kalshi_edge_2026-08-05.csv
+
+  Backtest context: this model loses to sharp closing lines by 0.017
+  log loss and betting its disagreements lost 4.6-7.4%. Any EV above
+  is a hypothesis to be logged in the ledger and scored, not a signal.

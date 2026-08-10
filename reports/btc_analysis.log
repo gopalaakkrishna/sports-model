@@ -1,0 +1,47 @@
+﻿fills: 500   2026-07-31 08:14:25.761731+00:00 .. 2026-08-05 22:55:55.249708+00:00
+trading days: 5   average 100 fills/day
+
+==============================================================
+SIZE AND FEES
+==============================================================
+  total contracts traded   28,783.4
+  mean contracts per fill  57.57
+  total notional traded    $15,074.20
+  TOTAL FEES PAID          $234.95
+  taker fills 385 (77%), fees $234.95
+  maker fills 115 (23%), fees $0.00
+
+==============================================================
+REALISED P&L
+==============================================================
+  markets traded            121
+  fully closed (flat)       0
+  left with a position      121  (settled at expiry; not computable from fills alone)
+
+  On the 0 fully-closed markets:
+    gross cash flow   $+0.00
+    fees              $0.00
+    NET REALISED P&L  $+0.00
+
+==============================================================
+BY SERIES
+==============================================================
+          fills  contracts  notional    fees     cash      net
+series                                                        
+KXBTC15M    350   20353.38  10986.91  186.77 -5278.85 -5465.62
+KXBTCD      150    8430.05   4087.29   48.18 -2910.29 -2958.47
+
+==============================================================
+BY DAY
+==============================================================
+            fills  contracts   fees     cash      net
+date                                                 
+2026-07-31     66    3140.98  22.52 -1131.29 -1153.81
+2026-08-02      2     112.46   0.70   -42.17   -42.87
+2026-08-03    163   10406.97  95.36 -2999.93 -3095.29
+2026-08-04    124    2843.59  24.03  -875.07  -899.10
+2026-08-05    145   12279.43  92.34 -3140.67 -3233.01
+
+  NOTE: cash flow on markets left open cannot be resolved without
+  each market's settlement, so treat the flat-book figure as the
+  reliable one and the rest as incomplete.

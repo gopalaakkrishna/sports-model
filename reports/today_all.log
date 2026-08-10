@@ -1,0 +1,17 @@
+﻿Now: 2026-08-06 04:32 PM EDT   (showing the next 30h)
+
+  (6 fixture(s) already under way — excluded, their prices are in-play)
+
+start (ET)        BET ON                    in fixture                          model    mkt  conf
+==========================================================================================================
+Thu 08-06 06:05PM  PHILADELPHIA PHILLIES     Washington Nationals @ Philadelph     66%    75%  LOW
+Thu 08-06 07:10PM  BOSTON RED SOX            Chicago White Sox @ Boston Red So     60%      -  n/a
+Thu 08-06 07:15PM  ATLANTA BRAVES            Miami Marlins @ Atlanta Braves        55%    58%  HIGH
+Thu 08-06 07:40PM  KANSAS CITY ROYALS        Minnesota Twins @ Kansas City Roy     56%    54%  HIGH
+Thu 08-06 09:40PM  SAN DIEGO PADRES          San Diego Padres @ Arizona Diamon     56%    50%  MEDIUM
+Fri 08-07 04:00PM  SANDEFJORD                Sandefjord v KFUM Oslo                49%    48%  HIGH
+Fri 08-07 05:30PM  BOCHUM                    Bochum v Hertha                       44%    42%  HIGH
+
+  HIGH 4   MEDIUM 1   LOW 1
+  HIGH   = model within 3 pts of market (most reliable)
+  LOW    = model far from market (measured to be model error)

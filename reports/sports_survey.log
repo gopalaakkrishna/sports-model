@@ -1,0 +1,39 @@
+﻿3142 sports series on Kalshi
+245 look like game-level markets
+
+game-level series by sport:
+  other          154
+  soccer          23
+  golf            20
+  basketball      15
+  football        10
+  baseball         7
+  esports          6
+  tennis           5
+  hockey           3
+  cricket          2
+
+probing for live liquidity (this takes a minute)...
+
+13 series with live two-sided quotes
+
+  sport           series  quoted mkts   mean depth
+  other                9           94      10,932$
+  esports              2           31       3,944$
+  football             1           29      59,519$
+  basketball           1           13      39,125$
+
+  most liquid individual series:
+    KXAFLGAME                 AFL Game                        quoted=7    depth=$67,864
+    KXNFLGAME                 Professional Football Game      quoted=29   depth=$59,519
+    KXWNBAGAME                Women's Pro Basketball Game     quoted=13   depth=$39,125
+    KXALLSVENSKANGAME         Allsvenskan Game                quoted=22   depth=$7,984
+    KXCS2GAME                 Counter-Strike 2 Game           quoted=1    depth=$6,731
+    KXVALORANTGAME            Valorant game winner            quoted=26   depth=$5,112
+    KXCOPADOBRASILGAME        Copa do Brasil Game             quoted=6    depth=$4,467
+    KXSCOTTISHPREMGAME        Scottish Premiership Game       quoted=17   depth=$4,420
+    KXJLEAGUEGAME             Japan J League Game             quoted=29   depth=$3,640
+    KXDOTA2GAME               Dota 2 Game                     quoted=5    depth=$2,777
+    KXCZEFLGAME               Czech First League Game         quoted=6    depth=$1,379
+    KXURYPDGAME               Uruguay Primera Division Game   quoted=5    depth=$1,242
+    KXARGNACBGAME             Argentine Nacional B Game       quoted=1    depth=$656

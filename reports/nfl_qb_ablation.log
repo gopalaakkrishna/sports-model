@@ -1,0 +1,23 @@
+﻿NFL QB ablation, 2015-09-01 .. 2026-08-01
+  QB names present on 7,276 games
+
+  off            3,025 predictions
+  reg_qb=4       3,025 predictions
+  reg_qb=12      3,025 predictions
+  reg_qb=30      3,025 predictions
+
+  common games: 3,025
+
+  variant         ML logloss    vs off   spread %  margin MAE
+  off                0.64063              50.15%       10.23
+  reg_qb=4           0.63232  -0.00830    49.64%       10.15
+  reg_qb=12          0.63430  -0.00632    50.32%       10.16
+  reg_qb=30          0.63689  -0.00373    49.92%       10.19
+
+  reg_qb=4 vs off: mean -0.00830, 95% CI [-0.01260, -0.00400]  -> HELPS
+
+  reg_qb=12 vs off: mean -0.00632, 95% CI [-0.00877, -0.00390]  -> HELPS
+
+  reg_qb=30 vs off: mean -0.00373, 95% CI [-0.00497, -0.00254]  -> HELPS
+
+  under reg_qb=4, QB differential spans -9.39 to +9.04 points

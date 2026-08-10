@@ -1,0 +1,47 @@
+﻿model run 2026-08-05   history to 2026-08-04
+calibration: temperature 1.025, weight on model 0.000
+24 scheduled fixtures
+
+DATE         MATCH                           MODEL H/D/A      MARKET H/D/A              xG  SCORE   O2.5
+---------------------------------------------------------------------------------------------------------
+2026-07-31 * Dundee Utd v Rangers            21%/23%/56%      17%/21%/62%        1.13-1.95    1-1    60%
+2026-08-01 * Falkirk v St. Mirren            52%/27%/22%      47%/27%/27%        1.63-0.99    1-1    49%
+2026-08-01 * Ayr v Arbroath                  46%/27%/26%      37%/30%/33%        1.53-1.11    1-1    49%
+2026-08-01 * Inverness v Dunfermline         44%/31%/25%      36%/29%/35%        1.26-0.88    1-1    36%
+2026-08-01 * Livingston v Queen's Park       54%/26%/20%      63%/23%/14%        1.64-0.92    1-1    47%
+2026-08-01 * Morton v Partick Thistle        28%/29%/43%      18%/23%/58%        1.09-1.39    1-1    45%
+2026-08-01 * Raith v Stenhousemuir           46%/30%/24%      58%/25%/17%        1.37-0.93    1-1    40%
+2026-08-01 * Alloa v East Fife               55%/25%/20%      47%/27%/26%        1.76-1.00    1-1    52%
+2026-08-01 * Cove Rangers v Airdrieonians    37%/29%/34%      34%/27%/39%        1.32-1.26    1-1    47%
+2026-08-01 * East Kilbride v Queen of South  45%/24%/30%      62%/22%/16%        1.80-1.45    1-1    63%
+2026-08-01 * Montrose v Hamilton             30%/26%/44%      28%/26%/46%        1.33-1.64    1-1    57%
+2026-08-01 * Peterhead v Ross County         26%/27%/46%      23%/24%/53%        1.11-1.53    1-1    49%
+2026-08-01 * Annan v Spartans                31%/27%/42%      30%/27%/43%        1.32-1.56    1-1    55%
+2026-08-01 * Clyde v Stranraer               47%/28%/25%      40%/27%/33%        1.47-1.02    1-1    45%
+2026-08-01 * Edinburgh City v Elgin City     36%/26%/38%      50%/25%/25%        1.48-1.54    1-1    58%
+2026-08-01 * Forfar Athletic v Kelty Hearts  41%/31%/28%      29%/25%/46%        1.25-1.00    1-1    39%
+2026-08-01 * Stirling v Dumbarton            41%/26%/34%      40%/27%/34%        1.61-1.45    1-1    59%
+2026-08-01 * Aberdeen v Hearts               25%/29%/45%      31%/27%/43%        0.98-1.39    1-1    42%
+2026-08-02 * St Johnstone v Kilmarnock       47%/27%/26%      43%/27%/30%        1.54-1.09    1-1    49%
+2026-08-02 * Hibernian v Motherwell          47%/27%/25%      41%/27%/31%        1.55-1.09    1-1    49%
+2026-08-03 * Celtic v Dundee FC              85%/10%/5%       78%/14%/8%         3.27-0.77    3-0    77%
+2026-08-05   Boca Juniors v Estudiantes L.P. 49%/30%/21%      44%/32%/24%        1.36-0.80    1-0    37%
+2026-08-06   Tigre v Belgrano                39%/34%/27%      36%/33%/30%        1.08-0.86    0-0    31%
+2026-08-06   Union de Santa Fe v Lanus       40%/32%/29%      41%/31%/28%        1.19-0.98    1-1    37%
+
+  * = already played. Each of these was predicted with the model
+    fitted as of its own kickoff date, so no result leaked in.
+
+Largest disagreements with the market (edge >= 2%):
+  MATCH                                   PICK     EDGE      EV   ODDS   KELLY
+  Boca Juniors v Estudiantes L.P.         H      +4.9%   +6.3%   2.16  1.35%
+  Tigre v Belgrano                        H      +2.6%   +3.5%   2.65  0.53%
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\predictions_2026-08-05.csv
+
+  NOTE: the backtest put 0% weight on this model against the
+  closing line, over 68,304 matches. The EDGE and EV columns above are
+  the model disagreeing with the market, and the backtest says that
+  disagreement is the model's error: betting it lost 4.6% flat-stake,
+  and 7.4% when restricted to the largest edges. Read them as
+  'where my model is probably wrong', not as picks.

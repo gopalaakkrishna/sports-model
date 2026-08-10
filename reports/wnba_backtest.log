@@ -1,0 +1,17 @@
+﻿wnba backtest 2017-05-01 .. 2026-08-01 (xi=0.0025, reg=8.0)
+  190 fits, 2,304 predictions
+
+======================================================================
+WNBA — 2,304 games (2017-05-13 .. 2026-08-02)
+======================================================================
+  MONEYLINE
+    home win rate      55.425%   model mean 56.148%
+    log loss model     0.62862
+    log loss base rate 0.68725
+    accuracy           65.234%
+
+  MARGIN ACCURACY
+    MAE  model 10.19
+    correlation model vs actual margin 0.385
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\wnba_backtest.parquet

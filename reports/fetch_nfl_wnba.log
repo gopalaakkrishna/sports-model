@@ -1,0 +1,27 @@
+﻿NFL: 7,548 games -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\raw\nfl_games.parquet
+  played 7,276   1999-09-12 .. 2027-01-10
+  with closing spread 7,327, total 7,327, moneyline 5,346
+  home margin mean +2.34, sd 14.59
+  home win rate 56.308%
+  mean total 44.3
+  integrity checks passed
+
+  2015: 225 games (225 played)
+  2016: 220 games (220 played)
+  2017: 219 games (219 played)
+  2018: 221 games (221 played)
+  2019: 220 games (220 played)
+  2020: 147 games (147 played)
+  2021: 209 games (209 played)
+  2022: 239 games (239 played)
+  2023: 260 games (260 played)
+  2024: 262 games (262 played)
+  2025: 310 games (310 played)
+  2026: 330 games (225 played)
+
+WNBA: 2,862 games -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\raw\wnba_games.parquet
+  played 2,757   2015-06-05 .. 2026-09-24
+  teams 17
+  home margin mean +2.16, sd 13.81
+  home win rate 55.894%
+  mean total 163.2

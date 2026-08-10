@@ -1,0 +1,19 @@
+﻿2015:  2507 games (2465 final)
+2016:  2493 games (2458 final)
+2017:  2508 games (2466 final)
+2018:  2520 games (2461 final)
+2019:  2510 games (2460 final)
+2020:  1027 games (951 final)
+2021:  2550 games (2467 final)
+2022:  2522 games (2462 final)
+2023:  2517 games (2474 final)
+2024:  2512 games (2471 final)
+2025:  2511 games (2476 final)
+2026:  2458 games (1707 final)
+
+Saved 28,072 games -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\raw\mlb_games.parquet
+  final (have score): 26,776
+  with both probable pitchers: 27,219
+  date range: 2015-04-05 .. 2026-09-27
+  teams: 32
+  integrity checks passed

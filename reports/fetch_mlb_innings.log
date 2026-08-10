@@ -1,0 +1,12 @@
+﻿2021: 2,324 finals with inning detail
+2022: 2,421 finals with inning detail
+2023: 2,433 finals with inning detail
+2024: 2,426 finals with inning detail
+2025: 2,429 finals with inning detail
+2026: 1,719 finals with inning detail
+
+Saved 13,752 games -> mlb_linescores.parquet
+Saved 250,866 half-inning states -> mlb_inplay_states.parquet
+  2021-04-01 .. 2026-08-05
+  home win rate 53.076%
+  mean innings 9.12

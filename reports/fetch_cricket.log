@@ -1,0 +1,24 @@
+﻿python.exe : C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\fetch_cricket.py:75: DtypeWarning: Columns (0: 
+non_boundary) have mixed types. Specify dtype option on import or set low_memory=False.
+At line:1 char:365
++ ... model\src"; & "C:\Users\Gohan\.venvs\sports-model\Scripts\python.exe" ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\Gohan\...w_memory=False.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  b = pd.read_csv(io.BytesIO(z.read(fn)))
+  hundred_male: 72,708 deliveries, 190 matches with innings totals
+hundred_male: 189 matches, 2021-07-22 .. 2026-08-05
+  teams: ['Birmingham Phoenix', 'London Spirit', 'MI London', 'Manchester Originals', 'Manchester Super Giants', 'Northern Superchargers', 'Oval Invincibles', 'Southern Brave', 'Sunrisers Leeds', 'Trent Rockets', 'Welsh Fire']
+  with a winner: 180 / 189 (9 no-result / tie)
+  seasons: ['2021', '2022', '2023', '2024', '2025', '2026']
+
+C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\fetch_cricket.py:75: DtypeWarning: Columns (0: non_boundary, 
+1: fielder_3) have mixed types. Specify dtype option on import or set low_memory=False.
+  b = pd.read_csv(io.BytesIO(z.read(fn)))
+  hundred_female: 69,040 deliveries, 177 matches with innings totals
+hundred_female: 176 matches, 2021-07-21 .. 2026-08-05
+  teams: ['Birmingham Phoenix', 'London Spirit', 'MI London', 'Manchester Originals', 'Manchester Super Giants', 'Northern Superchargers', 'Oval Invincibles', 'Southern Brave', 'Sunrisers Leeds', 'Trent Rockets', 'Welsh Fire']
+  with a winner: 171 / 176 (5 no-result / tie)
+  seasons: ['2021', '2022', '2023', '2024', '2025', '2026']
+

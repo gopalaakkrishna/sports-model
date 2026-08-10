@@ -1,0 +1,61 @@
+﻿fetching settled Kalshi MLB markets...
+  fetched 200 settled markets
+  fetched 400 settled markets
+  fetched 600 settled markets
+  fetched 800 settled markets
+  fetched 1000 settled markets
+  fetched 1200 settled markets
+  fetched 1400 settled markets
+  fetched 1600 settled markets
+  fetched 1800 settled markets
+  fetched 1852 settled markets
+
+1852 markets across 926 games
+  25/926 games  kept=24  ok=50 429=0 fail=0
+  50/926 games  kept=49  ok=100 429=0 fail=0
+  75/926 games  kept=74  ok=150 429=0 fail=0
+  100/926 games  kept=99  ok=200 429=0 fail=0
+  125/926 games  kept=124  ok=250 429=0 fail=0
+  150/926 games  kept=149  ok=300 429=0 fail=0
+  175/926 games  kept=174  ok=350 429=0 fail=0
+  200/926 games  kept=199  ok=400 429=0 fail=0
+  225/926 games  kept=224  ok=450 429=0 fail=0
+  250/926 games  kept=249  ok=500 429=0 fail=0
+  275/926 games  kept=274  ok=550 429=3 fail=0
+  300/926 games  kept=299  ok=600 429=4 fail=0
+  325/926 games  kept=324  ok=650 429=4 fail=0
+  350/926 games  kept=349  ok=700 429=4 fail=0
+  375/926 games  kept=374  ok=750 429=4 fail=0
+  400/926 games  kept=399  ok=800 429=4 fail=0
+  425/926 games  kept=424  ok=850 429=4 fail=0
+  450/926 games  kept=449  ok=900 429=4 fail=0
+  475/926 games  kept=474  ok=950 429=4 fail=0
+  500/926 games  kept=499  ok=1000 429=4 fail=0
+  525/926 games  kept=523  ok=1050 429=4 fail=0
+  550/926 games  kept=548  ok=1100 429=4 fail=0
+  575/926 games  kept=572  ok=1150 429=4 fail=0
+  600/926 games  kept=597  ok=1200 429=4 fail=0
+  625/926 games  kept=621  ok=1250 429=4 fail=0
+  650/926 games  kept=646  ok=1300 429=4 fail=0
+  675/926 games  kept=670  ok=1350 429=4 fail=0
+  700/926 games  kept=694  ok=1400 429=4 fail=0
+  725/926 games  kept=719  ok=1450 429=4 fail=0
+  750/926 games  kept=744  ok=1500 429=4 fail=0
+  775/926 games  kept=768  ok=1550 429=4 fail=0
+  800/926 games  kept=793  ok=1600 429=4 fail=0
+  825/926 games  kept=818  ok=1650 429=4 fail=0
+  850/926 games  kept=843  ok=1700 429=4 fail=0
+  875/926 games  kept=868  ok=1750 429=4 fail=0
+  900/926 games  kept=893  ok=1800 429=4 fail=0
+  925/926 games  kept=918  ok=1850 429=4 fail=0
+
+
+request stats: ok=1850 rate_limited_retries=4 gave_up=0 no_priced_candle=0
+  unmapped Kalshi team names: {'AL': 1, 'NL': 1}
+
+Saved 919 games -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\raw\kalshi_mlb_closes.parquet
+  dates 2026-05-23 .. 2026-08-05
+  mean book sum (1.00 = no spread): 1.0117
+  home win rate: 51.795%
+  mean pre-game close on home: 0.534
+  median closing-hour volume: 7,679

@@ -1,0 +1,85 @@
+﻿calibration: a=0.414 b=+0.098
+fitted 12,216 games to 2026-08-05, 32 teams, 849 pitchers, home adv +0.0181
+
+  unmapped Kalshi teams: 'Cleveland' / 'Chicago WS'
+  unmapped Kalshi teams: 'Chicago WS' / 'Boston'
+  unmapped Kalshi teams: 'Chicago WS' / 'Boston'
+Kalshi MLB markets: 37 fixtures
+
+date       match                                       side    model    raw   bid   ask      EV   runs
+2026-08-05 Toronto Blue Jays @ Houston Astros          HOME    53.2%  51.8%     -     -       -   7.28
+2026-08-05 Toronto Blue Jays @ Houston Astros          AWAY    46.8%  48.2%     -     -       -   7.28
+2026-08-05 Los Angeles Dodgers @ Chicago Cubs          HOME    54.0%  53.7%     -     -       -   8.57
+2026-08-05 Los Angeles Dodgers @ Chicago Cubs          AWAY    46.0%  46.3%     -     -       -   8.57
+2026-08-05 San Francisco Giants @ Texas Rangers        HOME    54.9%  56.0%     -     -       -   8.01
+2026-08-05 San Francisco Giants @ Texas Rangers        AWAY    45.1%  44.0%     -     -       -   8.01
+2026-08-05 Tampa Bay Rays @ Colorado Rockies           HOME    46.0%  34.9%     -     -       -   8.53
+2026-08-05 Tampa Bay Rays @ Colorado Rockies           AWAY    54.0%  65.1%     -     -       -   8.53
+2026-08-05 Los Angeles Angels @ Baltimore Orioles      HOME    54.5%  55.1%  0.56  0.57   -4.2%   9.03
+2026-08-05 Los Angeles Angels @ Baltimore Orioles      AWAY    45.5%  44.9%  0.43  0.44   -0.3%   9.03
+2026-08-05 New York Mets @ Cleveland Guardians         HOME    47.6%  38.6%  0.51  0.52   -6.1%   7.38
+2026-08-05 New York Mets @ Cleveland Guardians         AWAY    52.4%  61.4%  0.48  0.49   +1.6%   7.38
+2026-08-05 Athletics @ Cincinnati Reds                 HOME    55.9%  58.3%  0.60  0.61   -6.8%   9.54
+2026-08-05 Athletics @ Cincinnati Reds                 AWAY    44.1%  41.7%  0.39  0.40   +2.4%   9.54
+2026-08-05 Washington Nationals @ Philadelphia Phillie HOME    50.1%  44.3%  0.65  0.66  -17.5%  11.85
+2026-08-05 Washington Nationals @ Philadelphia Phillie AWAY    49.9%  55.7%  0.35  0.36  +12.3%  11.85
+2026-08-05 St. Louis Cardinals @ New York Yankees      HOME    52.3%  49.8%  0.59  0.60   -9.3%  10.08
+2026-08-05 St. Louis Cardinals @ New York Yankees      AWAY    47.7%  50.2%  0.41  0.42   +3.9%  10.08
+2026-08-05 Chicago White Sox @ Boston Red Sox          HOME    58.0%  63.4%     -     -       -   7.86
+2026-08-05 Chicago White Sox @ Boston Red Sox          AWAY    42.0%  36.6%     -     -       -   7.86
+2026-08-05 Miami Marlins @ Atlanta Braves              HOME    57.1%  61.2%  0.55  0.56   -0.6%   9.06
+2026-08-05 Miami Marlins @ Atlanta Braves              AWAY    42.9%  38.8%  0.45  0.46   -4.9%   9.06
+2026-08-05 Minnesota Twins @ Kansas City Royals        HOME    47.8%  39.0%  0.53  0.54   -7.9%  10.28
+2026-08-05 Minnesota Twins @ Kansas City Royals        AWAY    52.2%  61.0%  0.47  0.48   +2.5%  10.28
+2026-08-05 Pittsburgh Pirates @ Milwaukee Brewers      HOME    61.1%  70.1%  0.55  0.56   +3.3%   7.88
+2026-08-05 Pittsburgh Pirates @ Milwaukee Brewers      AWAY    38.9%  29.9%  0.45  0.46   -8.8%   7.88
+2026-08-05 San Diego Padres @ Arizona Diamondbacks     HOME    52.9%  51.2%  0.45  0.46   +5.2%   8.26
+2026-08-05 San Diego Padres @ Arizona Diamondbacks     AWAY    47.1%  48.8%  0.54  0.55   -9.7%   8.26
+2026-08-05 Detroit Tigers @ Seattle Mariners           HOME    52.0%  48.8%  0.58  0.59   -8.7%   7.37
+2026-08-05 Detroit Tigers @ Seattle Mariners           AWAY    48.0%  51.2%  0.40  0.41   +5.4%   7.37
+2026-08-06 Los Angeles Angels @ Baltimore Orioles      HOME    62.3%  72.6%  0.60  0.61   -0.4%   8.97
+2026-08-06 Los Angeles Angels @ Baltimore Orioles      AWAY    37.7%  27.4%  0.39  0.40   -3.9%   8.97
+2026-08-06 Athletics @ Cincinnati Reds                 HOME    55.3%  57.0%  0.59  0.60   -6.3%   8.14
+2026-08-06 Athletics @ Cincinnati Reds                 AWAY    44.7%  43.0%  0.39  0.40   +3.0%   8.14
+2026-08-06 New York Mets @ Cleveland Guardians         HOME    54.0%  53.9%  0.49  0.50   +2.3%   6.60
+2026-08-06 New York Mets @ Cleveland Guardians         AWAY    46.0%  46.1%  0.50  0.51   -6.8%   6.60
+2026-08-06 Pittsburgh Pirates @ Milwaukee Brewers      HOME    56.4%  59.6%  0.56  0.57   -2.3%   8.44
+2026-08-06 Pittsburgh Pirates @ Milwaukee Brewers      AWAY    43.6%  40.4%  0.43  0.45   -3.2%   8.44
+2026-08-06 Toronto Blue Jays @ Chicago Cubs            HOME    47.7%  38.7%  0.48  0.49   -3.1%   8.33
+2026-08-06 Toronto Blue Jays @ Chicago Cubs            AWAY    52.3%  61.3%  0.51  0.52   -1.4%   8.33
+2026-08-06 Detroit Tigers @ Seattle Mariners           HOME    54.0%  53.8%  0.54  0.55   -2.7%   7.80
+2026-08-06 Detroit Tigers @ Seattle Mariners           AWAY    46.0%  46.2%  0.45  0.46   -1.8%   7.80
+2026-08-06 Washington Nationals @ Philadelphia Phillie HOME    66.4%  80.3%  0.74  0.75   -9.9%  10.42
+2026-08-06 Washington Nationals @ Philadelphia Phillie AWAY    33.6%  19.7%  0.26  0.27   +5.3%  10.42
+2026-08-06 Chicago White Sox @ Boston Red Sox          HOME    60.0%  67.7%     -     -       -   8.35
+2026-08-06 Chicago White Sox @ Boston Red Sox          AWAY    40.0%  32.3%     -     -       -   8.35
+2026-08-06 Miami Marlins @ Atlanta Braves              HOME    55.2%  56.6%  0.59  0.60   -6.5%   9.33
+2026-08-06 Miami Marlins @ Atlanta Braves              AWAY    44.8%  43.4%  0.40  0.41   +2.2%   9.33
+2026-08-06 Minnesota Twins @ Kansas City Royals        HOME    56.0%  58.6%  0.51  0.52   +2.3%   9.38
+2026-08-06 Minnesota Twins @ Kansas City Royals        AWAY    44.0%  41.4%  0.48  0.49   -6.7%   9.38
+2026-08-06 San Diego Padres @ Arizona Diamondbacks     HOME    43.7%  30.0%  0.50  0.51   -9.0%  12.33
+2026-08-06 San Diego Padres @ Arizona Diamondbacks     AWAY    56.3%  70.0%  0.50  0.51   +3.5%  12.33
+
+============================================================================================
+POSITIVE EV AND TRADEABLE (EV >= 2%)
+============================================================================================
+  Washington Nationals @ Philadelphia Phillie  Washington Nationals   model 49.9% ask 0.36  EV +12.3%  depth $1,460,653
+  Detroit Tigers @ Seattle Mariners            Detroit Tigers         model 48.0% ask 0.41  EV +5.4%  depth $1,010,194
+  Washington Nationals @ Philadelphia Phillie  Washington Nationals   model 33.6% ask 0.27  EV +5.3%  depth $559,346
+  San Diego Padres @ Arizona Diamondbacks      Arizona Diamondbacks   model 52.9% ask 0.46  EV +5.2%  depth $1,157,979
+  St. Louis Cardinals @ New York Yankees       St. Louis Cardinals    model 47.7% ask 0.42  EV +3.9%  depth $987,016
+  San Diego Padres @ Arizona Diamondbacks      San Diego Padres       model 56.3% ask 0.51  EV +3.5%  depth $292,289
+  Pittsburgh Pirates @ Milwaukee Brewers       Milwaukee Brewers      model 61.1% ask 0.56  EV +3.3%  depth $784,330
+  Athletics @ Cincinnati Reds                  Athletics              model 44.7% ask 0.40  EV +3.0%  depth $458,720
+  Minnesota Twins @ Kansas City Royals         Minnesota Twins        model 52.2% ask 0.48  EV +2.5%  depth $1,003,706
+  Athletics @ Cincinnati Reds                  Athletics              model 44.1% ask 0.40  EV +2.4%  depth $1,665,342
+  New York Mets @ Cleveland Guardians          Cleveland Guardians    model 54.0% ask 0.50  EV +2.3%  depth $429,502
+  Minnesota Twins @ Kansas City Royals         Kansas City Royals     model 56.0% ask 0.52  EV +2.3%  depth $290,986
+  Miami Marlins @ Atlanta Braves               Miami Marlins          model 44.8% ask 0.41  EV +2.2%  depth $352,817
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\mlb_predictions_2026-08-05.csv
+
+  Backtest: calibrated model beats the base rate by 0.0089 log loss.
+  It has NOT been measured against a market benchmark historically —
+  no MLB closing-odds history is loaded yet. Until that exists, these
+  EVs are untested hypotheses. Log them, score them, then decide.

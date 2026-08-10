@@ -1,0 +1,41 @@
+﻿nfl backtest 2015-09-01 .. 2026-08-01 (xi=0.0025, reg=8.0)
+  236 fits, 3,025 predictions
+
+======================================================================
+NFL — 3,025 games (2015-09-10 .. 2026-02-08)
+======================================================================
+  MONEYLINE
+    home win rate      54.777%   model mean 55.497%
+    log loss model     0.64063
+    log loss base rate 0.68858
+    accuracy           64.033%
+    -- vs closing moneyline (3,024 games) --
+    model  0.64074
+    market 0.61250
+    gap    +0.02824  (MARKET BETTER)
+
+  SPREAD (2,951 non-push)
+    model log loss 0.71458   (0.69315 = coin flip)
+    pick accuracy  50.152%   (52.4% needed to beat -110 juice)
+    when model is confident (>55/45): 50.215% on 1,864
+
+  TOTAL (2,997 non-push)
+    model log loss 0.71235
+    pick accuracy  50.450%
+    mean predicted total 45.7 vs line 45.3 vs actual 45.7
+
+  MARGIN ACCURACY
+    MAE  model 10.23
+python.exe : C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\margin_backtest.py:38: RuntimeWarning: divide by 
+zero encountered in divide
+At line:1 char:365
++ ... model\src"; & "C:\Users\Gohan\.venvs\sports-model\Scripts\python.exe" ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\Gohan\...tered in divide:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  return np.where(m < 0, -m / (-m + 100.0), 100.0 / (m + 100.0))
+    MAE  market spread 9.81
+    correlation model vs actual margin 0.366
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\nfl_backtest.parquet

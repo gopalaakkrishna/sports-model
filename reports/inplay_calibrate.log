@@ -1,0 +1,30 @@
+﻿extra-inning games: 1,205, home win rate 0.4954
+  (the model previously assumed 0.53)
+
+league mean runs/9: 4.50, 30 teams rated
+
+fit  2021-04-01 .. 2025-03-30  n=56,000
+val  2025-03-30 .. 2026-08-05  n=24,000
+
+  Platt: a=0.7666  b=+0.0653
+  variant                      log loss
+  base rate                     0.69085
+  raw in-play                   0.47281
+  calibrated                    0.46790
+  accuracy 75.267%
+
+  CALIBRATION AFTER SCALING (validation)
+               n  predicted  actual     err
+bucket                                     
+(0.0, 0.1]  2942     0.0285  0.0408  0.0123
+(0.1, 0.2]  1196     0.1493  0.1296 -0.0197
+(0.2, 0.3]  1371     0.2523  0.1991 -0.0531
+(0.3, 0.4]  1661     0.3501  0.3101 -0.0400
+(0.4, 0.5]  2739     0.4576  0.4633  0.0057
+(0.5, 0.6]  4816     0.5459  0.5662  0.0203
+(0.6, 0.7]  2471     0.6436  0.6560  0.0124
+(0.7, 0.8]  1604     0.7507  0.7525  0.0018
+(0.8, 0.9]  1457     0.8502  0.8819  0.0318
+(0.9, 1.0]  3743     0.9753  0.9744 -0.0010
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\inplay_calibration.json

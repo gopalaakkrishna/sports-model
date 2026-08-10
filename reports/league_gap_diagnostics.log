@@ -1,0 +1,51 @@
+﻿  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP2 2026-08-01 Montrose v Hamilton
+    SP1 2026-08-01 Livingston v Queens Park
+====================================================================
+1. VENUE IMBALANCE AND RECORD
+====================================================================
+
+  all 2025 Leagues Cup  (58 cross-league matches)
+    MLS at home   36 games   19W 9D 8L   scored 1.89 conceded 1.22
+    MLS away      22 games   6W 9D 7L   scored 1.82 conceded 1.64
+    share of games with MLS hosting: 62%
+    overall MLS record: 25W 18D 15L
+    MLS goal difference: home +0.67, away +0.18, venue-balanced mean +0.42
+
+  group phase only  (54 cross-league matches)
+    MLS at home   33 games   17W 8D 8L   scored 1.94 conceded 1.27
+    MLS away      21 games   6W 8D 7L   scored 1.90 conceded 1.71
+    share of games with MLS hosting: 61%
+    overall MLS record: 23W 16D 15L
+    MLS goal difference: home +0.67, away +0.19, venue-balanced mean +0.43
+
+  knockout phase only  (4 cross-league matches)
+    MLS at home    3 games   2W 1D 0L   scored 1.33 conceded 0.67
+    MLS away       1 games   0W 1D 0L   scored 0.00 conceded 0.00
+    share of games with MLS hosting: 75%
+    overall MLS record: 2W 2D 0L
+    MLS goal difference: home +0.67, away +0.00, venue-balanced mean +0.33
+
+====================================================================
+2. HOW MUCH OF THE GAP SURVIVES WITHOUT THE KNOCKOUTS?
+====================================================================
+  gap using ALL Leagues Cup matches : +0.196
+  gap using GROUP PHASE only        : +0.181
+  knockout contribution             : +0.015
+  (knockout rounds contain only the teams that advanced, so a large
+   contribution here is a selection effect rather than league strength)
+
+====================================================================
+3. HOW PRECISE IS THE ESTIMATE?
+====================================================================
+  bootstrap over the 58 cross-league matches (60 resamples)
+    point estimate +0.196
+    95% CI         [+0.083, +0.297]
+
+====================================================================
+4. STALENESS
+====================================================================
+  bridge covers 2025-07-30 .. 2025-08-31
+  today is 2026-08-05 — the estimate is a year old,
+  across a full transfer cycle in both leagues.

@@ -1,0 +1,42 @@
+﻿Backtest 2018-01-01 .. 2026-08-04  (xi=0.0018, reg=2.0)
+  Argentina     317 fits,   3985 preds so far (16s)
+  Austria       271 fits,   5622 preds so far (23s)
+  Brazil        272 fits,   8857 preds so far (34s)
+  China         216 fits,  10846 preds so far (41s)
+  Denmark       283 fits,  12627 preds so far (49s)
+  Finland       234 fits,  14077 preds so far (55s)
+  Ireland       285 fits,  15577 preds so far (62s)
+  Japan         266 fits,  18251 preds so far (73s)
+  Mexico        364 fits,  21091 preds so far (84s)
+  Norway        253 fits,  23132 preds so far (91s)
+  Poland        291 fits,  25624 preds so far (101s)
+  Romania       365 fits,  28197 preds so far (113s)
+  Russia        253 fits,  30217 preds so far (122s)
+  Sweden        239 fits,  32250 preds so far (129s)
+  Switzerland   289 fits,  33936 preds so far (139s)
+  USA           303 fits,  37892 preds so far (148s)
+
+saved 37,892 predictions -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\backtest_newleagues.parquet
+
+  RESULTS (2018-01-01 .. 2026-08-04)
+  ----------------------------------------
+  matches scored              34,965
+  log loss  model             1.02542
+  log loss  market (Pinnacle) 1.00242
+  log loss  base rate         1.07238
+  model - market              +0.02301   (MARKET BETTER)
+  brier     model / market    0.61487 / 0.59944
+  accuracy  model / market    48.817% / 50.353%
+  best blend weight on model  0.00  -> log loss 1.00242
+
+  CALIBRATION (all H/D/A predictions pooled)
+  bucket               n   predicted    actual     diff
+  0.0-0.1         1,304       7.5%      8.7%    +1.2%
+  0.1-0.2        10,786      16.3%     17.5%    +1.2%
+  0.2-0.3        43,072      25.5%     25.9%    +0.4%
+  0.3-0.4        21,575      34.3%     33.7%    -0.5%
+  0.4-0.5        13,823      44.7%     44.0%    -0.6%
+  0.5-0.6         8,644      54.5%     54.5%    -0.0%
+  0.6-0.7         4,095      64.2%     62.6%    -1.5%
+  0.7-0.8         1,291      74.0%     71.0%    -3.0%
+  0.8-0.9           284      83.2%     83.1%    -0.1%

@@ -1,0 +1,26 @@
+﻿DAILY SLATE — 2026-08-06
+==============================================================================
+  soccer   199 screened candidate(s)
+  mlb      22 screened candidate(s)
+  wnba     12 screened candidate(s)
+
+#  tier  sport   selection                                     model    mkt      EV
+------------------------------------------------------------------------------------
+1  A     soccer  Kilmarnock v Celtic — DRAW                    19.5%  17.0%   +1.5%
+2  A     soccer  San Jose Earthquakes v St. Louis City — AWA   26.5%  24.0%   +1.3%
+3  A     soccer  Los Angeles FC v San Diego FC — AWAY          22.4%  20.0%   +1.2%
+4  A     soccer  Alaves v Getafe — AWAY                        27.5%  25.0%   +1.2%
+5  A     soccer  Toronto FC v New England Revolution — DRAW    27.5%  25.0%   +1.2%
+6  A     soccer  Darmstadt v Holstein Kiel — HOME              45.7%  43.0%   +1.0%
+7  A     soccer  Santander v Villarreal — AWAY                 49.4%  47.0%   +0.7%
+8  A     soccer  Atlanta Utd v New York Red Bulls — DRAW       25.9%  24.0%   +0.6%
+9  A     soccer  Los Angeles FC v San Diego FC — DRAW          22.8%  21.0%   +0.6%
+10 A     soccer  Avispa Fukuoka v Vissel Kobe — DRAW           31.9%  30.0%   +0.4%
+
+  tiers present:
+    A: model agrees with market — most reliable zone
+
+  Measured context: this model is 0.017 log loss behind sharp
+  closing lines in soccer and at parity in MLB. Tier C selections
+  lost 4.6-7.4% flat-stake in backtest. These are the best available
+  candidates, which is not the same as a positive expectation.

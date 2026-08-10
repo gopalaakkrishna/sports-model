@@ -1,0 +1,11 @@
+﻿in-play calibration a=0.767 b=+0.065, extras edge 0.495
+
+[14:46:36] 5 live game(s)
+  match                                   state             model    mkt    diff
+  Los Angeles Angels @ Baltimore Orioles  top 7, 2out 4-1     12%    15%   -2.5%
+  Athletics @ Cincinnati Reds             bot 7, 1out 3-6     96%    96%   -0.1%
+  New York Mets @ Cleveland Guardians     bot 5, 3out 6-5     37%    37%   +0.4%
+  Pittsburgh Pirates @ Milwaukee Brewers  top 3, 0out 0-1     68%    68%   +0.2%
+  Toronto Blue Jays @ Chicago Cubs        top 2, 3out 1-0     49%    44%   +5.2%
+
+  log now holds 5 state snapshots across 5 games -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\inplay_live_log.csv

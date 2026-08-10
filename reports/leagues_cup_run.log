@@ -1,0 +1,36 @@
+﻿  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP1 2026-08-01 Livingston v Queens Park
+    SP2 2026-08-01 East Kilbride v Queen of Sth
+CONNECTED FIT: ['USA:MLS', 'MEX:Liga MX', 'LC:Leagues Cup']
+  5,175 matches, 49 teams, eff_n 1264
+  home advantage LC:Leagues Cup   +0.1737  (x1.190 on expected goals)
+  home advantage MEX:Liga MX      +0.2779  (x1.320 on expected goals)
+  home advantage USA:MLS          +0.2779  (x1.320 on expected goals)
+
+  MEASURED league gap (MLS minus Liga MX net rating): +0.159
+    positive = MLS stronger. Previously this was ASSUMED to be 0.
+    2025 Leagues Cup head-to-head was 29W 18D 15L to MLS.
+
+  strongest across both leagues:
+    Los Angeles FC          MLS     net +0.534  eff_n 55
+    Vancouver Whitecaps     MLS     net +0.481  eff_n 52
+    Inter Miami             MLS     net +0.414  eff_n 57
+    Club America            LigaMX  net +0.399  eff_n 62
+    Toluca                  LigaMX  net +0.384  eff_n 61
+    San Diego FC            MLS     net +0.312  eff_n 36
+    Nashville SC            MLS     net +0.294  eff_n 51
+    Tigres UANL             LigaMX  net +0.261  eff_n 62
+
+================================================================================================
+TONIGHT — Leagues Cup, connected ratings
+================================================================================================
+match (host first)                               H     D     A           xG  score   eff_n
+Inter Miami v Atl. San Luis                    70%   16%   14%    2.78-1.222-1      53
+Orlando City v Monterrey                       42%   24%   34%    1.71-1.511-1      54
+Nashville SC v Club Leon                       61%   24%   15%    1.79-0.791-0      51
+FC Dallas v Queretaro                          58%   25%   17%    1.72-0.841-0      50
+Toluca v Seattle Sounders                      45%   27%   27%    1.46-1.081-1      55
+Los Angeles FC v Guadalajara Chivas            53%   26%   21%    1.59-0.901-0      55
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\leagues_cup_2026-08-05.csv

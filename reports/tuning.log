@@ -1,0 +1,18 @@
+﻿Tuning on 2016-08-01 .. 2022-06-30
+(seasons after 2022-06-30 are held out for final evaluation)
+
+  xi=0.0008 (hl  866d) reg=1.0  logloss 1.01975  vs market +0.01920  [217s]
+  xi=0.0008 (hl  866d) reg=2.0  logloss 1.01942  vs market +0.01886  [205s]
+  xi=0.0008 (hl  866d) reg=5.0  logloss 1.01941  vs market +0.01885  [169s]
+  xi=0.0015 (hl  462d) reg=1.0  logloss 1.01733  vs market +0.01677  [189s]
+  xi=0.0015 (hl  462d) reg=2.0  logloss 1.01720  vs market +0.01664  [162s]
+  xi=0.0015 (hl  462d) reg=5.0  logloss 1.01790  vs market +0.01734  [122s]
+  xi=0.0025 (hl  277d) reg=1.0  logloss 1.01682  vs market +0.01626  [155s]
+  xi=0.0025 (hl  277d) reg=2.0  logloss 1.01699  vs market +0.01644  [136s]
+  xi=0.0025 (hl  277d) reg=5.0  logloss 1.01847  vs market +0.01791  [130s]
+  xi=0.0040 (hl  173d) reg=1.0  logloss 1.01917  vs market +0.01862  [165s]
+  xi=0.0040 (hl  173d) reg=2.0  logloss 1.01954  vs market +0.01898  [141s]
+  xi=0.0040 (hl  173d) reg=5.0  logloss 1.02098  vs market +0.02042  [109s]
+
+Best: xi=0.0025 (half-life 277 days), reg=1.0, log loss 1.01682
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\tuning_results.csv

@@ -1,0 +1,20 @@
+﻿  data hygiene: dropped 10 cross-country rows, e.g.
+    SP2 2026-08-01 Peterhead v Ross County
+    SP2 2026-08-01 Montrose v Hamilton
+    SP1 2026-08-01 Livingston v Queens Park
+MLS      : 3,062 matches, 30 teams, home adv +0.283
+Liga MX  : 2,051 matches, 19 teams, home adv +0.287
+
+Cross-league matches in the training data: 0
+The offset between the two leagues is NOT identifiable from this data.
+Predictions below are shown across a range of assumed offsets.
+
+  Orlando City (host) vs Monterrey   [Inter and Co Stadium, Orlando]
+    offset                          H      D      A           xG
+    +0.00 (leagues equal)         39%    24%    37%    1.72-1.67
+    -> most likely outcome STABLE across the offset range: H
+
+Reading this: where the call flips across plausible offsets, the model
+genuinely cannot separate the teams and should not be used to pick a side.
+Fixing it properly needs Leagues Cup / Champions Cup results in the
+training data to connect the two rating graphs.

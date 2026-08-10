@@ -1,0 +1,32 @@
+# Never commit credentials — Kalshi keys can trade, not just read.
+*.pem
+*.key
+.env
+secrets/
+kalshi_*.pem
+
+# Data and caches are large and regenerable
+data/raw/csv/
+data/raw/new_csv/
+data/raw/*.parquet
+data/processed/*.parquet
+
+# Keep the ledger — it is the prediction record, not a cache
+!data/processed/ledger.jsonl
+
+# Keep cricket/T20I raw data. Unlike the other data/raw sources, nothing in
+# this repo can regenerate these — there is no fetch_cricket.py equivalent
+# wired into refresh_all.py (Cricsheet has no clean incremental endpoint).
+# Everything else in data/raw is cheaply refetchable from a live API, so it
+# rides GitHub Actions cache instead of git history; these files cannot be,
+# so they must be committed or a cache eviction quietly breaks cricket.
+!data/raw/cricket_hundred_*.parquet
+!data/raw/t20i_male_*.parquet
+
+# Auto-update's own lock/log files — local run state, not part of the record.
+reports/auto_update.lock
+reports/auto_update.log
+
+.venv/
+__pycache__/
+*.pyc

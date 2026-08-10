@@ -1,0 +1,25 @@
+﻿PLAYER-LEVEL MODEL — 156 matches (2021-08-12 .. 2026-08-05)
+  log loss model     0.68734
+  log loss base rate 0.69183
+  accuracy           55.128%
+  prob spread sd     0.1069 (range 23.2%-74.9%)
+
+  team-level model was 0.69478 vs base 0.69235 (worse than guessing)
+  player model vs base rate: +0.00450 (BETTER)
+  95% CI on the gain [-0.03984, +0.03188]  -> not significant
+
+  BY SEASON
+    2022  n= 34  logloss 0.6418  acc 58.8%
+    2023  n= 29  logloss 0.7121  acc 62.1%
+    2024  n= 31  logloss 0.6556  acc 64.5%
+    2025  n= 33  logloss 0.7018  acc 45.5%
+    2026  n= 22  logloss 0.7091  acc 50.0%
+
+  CALIBRATION
+               n  predicted  actual
+bucket                             
+(0.0, 0.35]   11      0.294   0.545
+(0.35, 0.45]  38      0.409   0.342
+(0.45, 0.55]  53      0.502   0.453
+(0.55, 0.65]  38      0.589   0.579
+(0.65, 1.0]   16      0.689   0.562

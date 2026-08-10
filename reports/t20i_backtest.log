@@ -1,0 +1,28 @@
+﻿T20I male: 3,131 matches, 704,448 deliveries
+
+ELO (team)  scored 2,302 matches
+  log loss model     0.63858
+  log loss base rate 0.69301
+  accuracy           63.119%
+  gain over base     +0.05443
+  strongest now: India 1758, Uganda 1758, England 1742, Australia 1686, Spain 1669, Pakistan 1667, Nepal 1643, Jersey 1636
+
+PLAYER model (refit every 45 days)
+python.exe : Traceback (most recent call last):
+At line:1 char:365
++ ... model\src"; & "C:\Users\Gohan\.venvs\sports-model\Scripts\python.exe" ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\t20i_backtest.py", line 160, in <module>
+    main(sys.argv[1] if len(sys.argv) > 1 else "male")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\t20i_backtest.py", line 105, in main
+    pr = CP.predict(fit, xa, xb, sigma=30.0)
+  File "C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\cricket_players.py", line 152, in predict
+    a = team_strength(f, xi_a)
+  File "C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\src\cricket_players.py", line 139, in team_strength
+    bat_score = float(np.dot(bat_sorted, wts)) * 100.0
+                      ~~~~~~^^^^^^^^^^^^^^^^^
+ValueError: shapes (12,) and (11,) not aligned: 12 (dim 0) != 11 (dim 0)

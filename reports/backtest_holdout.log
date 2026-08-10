@@ -1,0 +1,38 @@
+﻿Backtest 2022-08-01 .. 2026-08-03  (xi=0.0025, reg=1.0)
+  England       170 fits,   8105 preds so far (37s)
+  Scotland      167 fits,  11175 preds so far (49s)
+  Germany       138 fits,  13602 preds so far (58s)
+  Italy         151 fits,  16633 preds so far (71s)
+  Spain         169 fits,  19994 preds so far (87s)
+  France        143 fits,  22649 preds so far (98s)
+  Netherlands   136 fits,  23870 preds so far (103s)
+  Belgium       147 fits,  25090 preds so far (108s)
+  Portugal      144 fits,  26310 preds so far (113s)
+  Turkey        147 fits,  27671 preds so far (119s)
+  Greece        135 fits,  28617 preds so far (124s)
+
+saved 28,617 predictions -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\processed\backtest_holdout.parquet
+
+  RESULTS (2022-08-01 .. 2026-08-03)
+  ----------------------------------------
+  matches scored              24,189
+  log loss  model             1.01399
+  log loss  market (Pinnacle) 0.99560
+  log loss  base rate         1.07453
+  model - market              +0.01840   (MARKET BETTER)
+  brier     model / market    0.60689 / 0.59483
+  accuracy  model / market    49.436% / 50.907%
+  best blend weight on model  0.00  -> log loss 0.99560
+
+  CALIBRATION (all H/D/A predictions pooled)
+  bucket               n   predicted    actual     diff
+  0.0-0.1         1,472       7.0%      7.6%    +0.6%
+  0.1-0.2         6,966      16.1%     15.7%    -0.3%
+  0.2-0.3        29,459      25.7%     25.9%    +0.2%
+  0.3-0.4        15,572      34.4%     34.1%    -0.3%
+  0.4-0.5         9,881      44.7%     44.2%    -0.4%
+  0.5-0.6         5,173      54.4%     54.3%    -0.1%
+  0.6-0.7         2,420      64.4%     65.9%    +1.5%
+  0.7-0.8         1,140      74.5%     75.1%    +0.6%
+  0.8-0.9           441      83.9%     82.3%    -1.6%
+  0.9-1.0            43      92.1%     90.7%    -1.4%

@@ -1,0 +1,17 @@
+﻿907 games, 2026-05-24 .. 2026-08-05
+
+  TEMPORAL SPLIT
+    fit   2026-05-24 .. 2026-06-28  n=453  best w=0.15
+    test  2026-06-28 .. 2026-08-05  n=454  (its own best w would be 0.48)
+    market alone on test      0.67924
+    blend at w=0.15 on test  0.67839
+    out-of-sample improvement +0.00085  (better)
+    mean per-game gain +0.00085, 95% CI [-0.00082, +0.00248]
+    -> indistinguishable from noise
+
+  WEIGHT STABILITY
+    2026-05  n=  96  best w=0.00  model-market +0.02254
+    2026-06  n= 393  best w=0.40  model-market +0.00110
+    2026-07  n= 363  best w=0.68  model-market -0.00238
+
+  A weight that swings wildly month to month is being fitted to noise.

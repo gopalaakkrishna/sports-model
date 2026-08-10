@@ -1,0 +1,46 @@
+﻿WNBA fit: 1,104 games, 15 teams, home adv +1.97, sigma 12.90
+
+date        match                                     pick                      model    ask      EV  trade
+2026-08-06  Las Vegas Aces @ Indiana Fever            Indiana Fever             51.2%   0.51   -1.5%  yes
+2026-08-06  Las Vegas Aces @ Indiana Fever            Las Vegas Aces            48.8%   0.49   -2.0%  yes
+2026-08-06  Los Angeles Sparks @ Minnesota Lynx       Minnesota Lynx            81.2%   0.92  -11.3%  yes
+2026-08-06  Los Angeles Sparks @ Minnesota Lynx       Los Angeles Sparks        18.8%   0.09   +9.2%  yes
+2026-08-06  Toronto Tempo @ Portland Fire             Portland Fire             57.9%   0.58   -1.8%  yes
+2026-08-06  Toronto Tempo @ Portland Fire             Toronto Tempo             42.1%   0.43   -2.6%  yes
+2026-08-07  Atlanta Dream @ Washington Mystics        Washington Mystics        40.7%   0.39   +0.0%  yes
+2026-08-07  Atlanta Dream @ Washington Mystics        Atlanta Dream             59.3%   0.62   -4.3%  yes
+2026-08-07  Golden State Valkyries @ Dallas Wings     Dallas Wings              44.9%   0.52   -8.8%  yes
+2026-08-07  Golden State Valkyries @ Dallas Wings     Golden State Valkyries    55.1%   0.50   +3.3%  yes
+2026-08-07  Phoenix Mercury @ Connecticut Sun         Connecticut Sun           44.0%   0.34   +8.4%  yes
+2026-08-07  Phoenix Mercury @ Connecticut Sun         Phoenix Mercury           56.0%   0.68  -13.5%  yes
+2026-08-08  Indiana Fever @ Chicago Sky               Chicago Sky               35.5%   0.31   +3.0%  no
+2026-08-08  Indiana Fever @ Chicago Sky               Indiana Fever             64.5%   0.75  -11.8%  no
+2026-08-08  Las Vegas Aces @ Minnesota Lynx           Minnesota Lynx            61.5%   0.69   -8.9%  no
+2026-08-08  Las Vegas Aces @ Minnesota Lynx           Las Vegas Aces            38.5%   0.36   +0.8%  no
+2026-08-08  Seattle Storm @ Portland Fire             Portland Fire             47.3%   0.58  -12.4%  no
+2026-08-08  Seattle Storm @ Portland Fire             Seattle Storm             52.7%   0.44   +7.0%  no
+2026-08-09  Las Vegas Aces @ New York Liberty         New York Liberty          51.9%   0.45   +5.2%  no
+2026-08-09  Las Vegas Aces @ New York Liberty         Las Vegas Aces            48.1%   0.63  -16.6%  no
+
+  two-way ask sums (1.00 = no spread):
+    Atlanta Dream @ Washington Mystics            1.010
+    Golden State Valkyries @ Dallas Wings         1.020
+    Indiana Fever @ Chicago Sky                   1.060
+    Las Vegas Aces @ Indiana Fever                1.000
+    Las Vegas Aces @ Minnesota Lynx               1.050
+    Las Vegas Aces @ New York Liberty             1.080
+    Los Angeles Sparks @ Minnesota Lynx           1.010
+    Phoenix Mercury @ Connecticut Sun             1.020
+    Seattle Storm @ Portland Fire                 1.020
+    Toronto Tempo @ Portland Fire                 1.010
+
+  POSITIVE EV AND TRADEABLE (EV >= 2%)
+    Los Angeles Sparks @ Minnesota Lynx       Los Angeles Sparks    model 18.8% ask 0.09 EV +9.2% depth $358,537
+    Phoenix Mercury @ Connecticut Sun         Connecticut Sun       model 44.0% ask 0.34 EV +8.4% depth $15,167
+    Golden State Valkyries @ Dallas Wings     Golden State Valkyri  model 55.1% ask 0.50 EV +3.3% depth $15,603
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\wnba_kalshi_2026-08-06.csv
+
+  The WNBA model has no historical market benchmark — Basketball
+  Reference carries no odds. These comparisons are the first, and
+  they accumulate into one as games settle.

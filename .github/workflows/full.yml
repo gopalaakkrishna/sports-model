@@ -1,0 +1,71 @@
+name: Sports board — daily full refresh
+
+# Once a day: refetch every historical archive, refit every model, then run
+# the same light chain (re-price, settle, publish). Match archives do not
+# change intraday, so this is the only place the expensive refetch happens —
+# see auto_update.py's module docstring for the light/full cost split.
+#
+# This is also what SEEDS the data/raw cache that light.yml restores every 15
+# minutes the rest of the day.
+on:
+  schedule:
+    # 11:30 UTC = 7:30am EDT. Matches the cadence the local scheduler used
+    # before this moved to GitHub Actions.
+    - cron: "30 11 * * *"
+  workflow_dispatch: {}
+
+# Same group as light.yml — see that file's comment. Only one of (light, full)
+# ever writes report CSVs at a time; the other queues.
+concurrency:
+  group: sports-model-pipeline
+  cancel-in-progress: false
+
+# Needed to commit the ledger back to THIS repo. See light.yml's comment —
+# the repo-level "Read and write permissions" setting must also be enabled
+# once, by hand.
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out sports-model
+        uses: actions/checkout@v4
+
+      - name: Check out tara-app
+        uses: actions/checkout@v4
+        with:
+          repository: gopalaakkrishna/tara-app
+          token: ${{ secrets.TARA_APP_PUSH_TOKEN }}
+          path: tara-app-checkout
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name "sports-model-bot"
+          git config --global user.email "actions@users.noreply.github.com"
+
+      - name: Run the full chain
+        env:
+          TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+        run: python src/auto_update.py --mode full
+
+      - name: Save today's raw data for the light-mode runs to reuse
+        uses: actions/cache/save@v4
+        with:
+          path: data/raw
+          # A key unique to this run so the save always succeeds (GitHub
+          # Actions caches are immutable per key — the same key cannot be
+          # overwritten). light.yml finds this via its restore-keys prefix
+          # match, which picks the most recently created matching entry.
+          key: raw-data-${{ github.run_id }}

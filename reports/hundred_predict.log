@@ -1,0 +1,24 @@
+﻿player ratings fitted on 33,710 deliveries, league 1.353 runs/ball
+
+start (ET)       match                                             model    mkt   spread   margin
+--------------------------------------------------------------------------------------------------
+Thu 08-06 09:30AM  London Spirit v MI London                           38%    20%     0.01     -7.6
+Fri 08-07 09:30AM  Birmingham Phoenix v Sunrisers Leeds                45%    40%     0.02     -3.4
+Sat 08-08 05:30AM  MI London v Trent Rockets                           54%    51%     0.21     +2.8
+Sat 08-08 09:00AM  Southern Brave v Manchester Super Giants            53%    46%     0.02     +2.1
+Sun 08-09 05:30AM  Sunrisers Leeds v Welsh Fire                        50%    43%     0.43     +0.2
+Sun 08-09 09:00AM  London Spirit v Birmingham Phoenix                  50%    46%     0.45     -0.3
+Mon 08-10 09:30AM  Trent Rockets v Southern Brave                      56%    47%     0.55     +4.0
+Tue 08-11 09:30AM  Manchester Super Giants v Sunrisers Leeds           42%    53%     0.42     -5.0
+Wed 08-12 06:00AM  Welsh Fire v London Spirit                          55%    54%     0.28     +3.5
+Wed 08-12 09:30AM  Birmingham Phoenix v MI London                      39%    41%     0.29     -7.3
+
+  margin is expected runs difference over 100 balls
+  mean Kalshi spread on these: 0.27 — a 33-55c spread is untradeable
+
+  MODEL STATUS: beat the base rate by 0.0045 log loss over 156
+  matches, 95% CI [-0.040, +0.032]. Not significant. These are the
+  model's best guesses, not edges, and the XI is assumed from each
+  side's last match — wrong whenever a team rotates.
+
+saved -> C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\reports\hundred_2026-08-06.csv

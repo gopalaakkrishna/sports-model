@@ -1,0 +1,22 @@
+﻿MLS      : 3,062 matches, 30 teams, home adv +0.283
+Liga MX  : 2,051 matches, 19 teams, home adv +0.287
+
+Cross-league matches in the training data: 0
+The offset between the two leagues is NOT identifiable from this data.
+Predictions below are shown across a range of assumed offsets.
+
+  Los Angeles FC (host) vs Guadalajara Chivas   [BMO Stadium, Los Angeles]
+    offset                          H      D      A           xG
+    -0.30 (MLS stronger)          62%    22%    15%    1.91-0.84
+    -0.20 (MLS stronger)          59%    24%    17%    1.82-0.88
+    -0.10 (MLS stronger)          56%    25%    20%    1.73-0.93
+    +0.00 (leagues equal)         52%    26%    22%    1.64-0.98
+    +0.10 (Liga MX stronger)      49%    26%    24%    1.56-1.03
+    +0.20 (Liga MX stronger)      46%    27%    27%    1.49-1.08
+    +0.30 (Liga MX stronger)      43%    27%    30%    1.42-1.14
+    -> most likely outcome STABLE across the offset range: H H H H H H H
+
+Reading this: where the call flips across plausible offsets, the model
+genuinely cannot separate the teams and should not be used to pick a side.
+Fixing it properly needs Leagues Cup / Champions Cup results in the
+training data to connect the two rating graphs.

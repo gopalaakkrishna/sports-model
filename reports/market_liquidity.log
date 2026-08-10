@@ -1,0 +1,107 @@
+﻿POLYMARKET (soccer)
+  total markets      35
+  pass tradeability  3
+  rejected because:
+       5  spread 0.98
+       3  spread 0.99
+       3  spread 0.40
+       2  spread 0.50
+       1  spread 0.91
+       1  spread 0.97
+       1  spread 0.25
+       1  spread 0.10
+       1  spread 0.23
+       1  spread 1.00
+       1  spread 0.07
+       1  spread 0.42
+       1  spread 0.47
+       1  spread 0.93
+       1  spread 0.89
+       1  spread 0.96
+       1  spread 0.68
+       1  spread 0.75
+       1  spread 0.49
+       1  spread 0.38
+       1  spread 0.53
+       1  spread 0.57
+       1  spread 0.15
+    [polymarket] Will New England Revolution win on 2026-03-07?       bid=0.38 ask=0.39 liq=$15,637 vol=$41,770
+    [polymarket] Will New England Revolution vs. Houston Dynamo end   bid=0.27 ask=0.28 liq=$26,377 vol=$36,673
+    [polymarket] Will Houston Dynamo win on 2026-03-07?               bid=0.33 ask=0.34 liq=$24,544 vol=$27,710
+
+KALSHI (MLB game winners)
+  total markets      82
+  pass tradeability  80
+  rejected because:
+       2  spread 0.09
+    [kalshi] Los Angeles A vs Miami Winner? [Miami]               bid=0.58 ask=0.61 liq=$884 vol=$884
+    [kalshi] Los Angeles A vs Miami Winner? [Los Angeles A]       bid=0.39 ask=0.42 liq=$1,179 vol=$1,179
+    [kalshi] Atlanta vs New York Y Winner? [New York Y]           bid=0.51 ask=0.55 liq=$1,536 vol=$1,536
+    [kalshi] Atlanta vs New York Y Winner? [Atlanta]              bid=0.46 ask=0.49 liq=$1,065 vol=$1,065
+    [kalshi] Detroit vs San Francisco Winner? [San Francisco]     bid=0.48 ask=0.5 liq=$1,332 vol=$1,332
+    [kalshi] Detroit vs San Francisco Winner? [Detroit]           bid=0.51 ask=0.53 liq=$1,679 vol=$1,679
+    [kalshi] Los Angeles D vs Arizona Winner? [Los Angeles D]     bid=0.58 ask=0.61 liq=$2,499 vol=$2,543
+    [kalshi] Los Angeles D vs Arizona Winner? [Arizona]           bid=0.4 ask=0.44 liq=$2,002 vol=$2,002
+    [kalshi] Houston vs San Diego Winner? [San Diego]             bid=0.52 ask=0.56 liq=$3,806 vol=$3,806
+    [kalshi] Houston vs San Diego Winner? [Houston]               bid=0.44 ask=0.48 liq=$3,964 vol=$3,964
+    [kalshi] Tampa Bay vs Seattle Winner? [Tampa Bay]             bid=0.47 ask=0.51 liq=$2,250 vol=$2,250
+    [kalshi] Tampa Bay vs Seattle Winner? [Seattle]               bid=0.48 ask=0.53 liq=$1,525 vol=$1,525
+    [kalshi] Baltimore vs Texas Winner? [Texas]                   bid=0.55 ask=0.58 liq=$2,315 vol=$2,315
+    [kalshi] Baltimore vs Texas Winner? [Baltimore]               bid=0.43 ask=0.44 liq=$1,179 vol=$1,179
+    [kalshi] Colorado vs St. Louis Winner? [St. Louis]            bid=0.56 ask=0.6 liq=$4,879 vol=$4,879
+
+KALSHI (soccer game winners)
+  total markets      244
+  pass tradeability  125
+  rejected because:
+      21  spread 0.76
+      13  spread 0.71
+      10  spread 0.75
+       7  spread 0.67
+       7  spread 0.77
+       5  spread 0.70
+       5  spread 0.69
+       4  spread 0.65
+       3  spread 0.08
+       3  spread 0.07
+       3  spread 0.09
+       3  spread 0.73
+       3  spread 0.68
+       3  spread 0.64
+       3  spread 0.72
+       2  spread 0.06
+       2  spread 0.66
+       2  spread 0.59
+       2  spread 0.51
+       2  spread 0.60
+       2  spread 0.61
+       2  spread 0.58
+       2  spread 0.33
+       1  liquidity $341
+       1  spread 0.74
+       1  spread 0.25
+       1  spread 0.24
+       1  spread 0.55
+       1  spread 0.17
+       1  spread 0.10
+       1  spread 0.48
+       1  spread 0.43
+       1  liquidity $433
+    [kalshi] Deportivo De La Coruna vs Elche Winner? [Tie]        bid=0.27 ask=0.32 liq=$1,098 vol=$1,098
+    [kalshi] Deportivo De La Coruna vs Elche Winner? [Elche]      bid=0.26 ask=0.31 liq=$1,796 vol=$1,796
+    [kalshi] Deportivo De La Coruna vs Elche Winner? [Deportivo   bid=0.4 ask=0.46 liq=$1,343 vol=$1,343
+    [kalshi] Celta Vigo vs Osasuna Winner? [Tie]                  bid=0.27 ask=0.28 liq=$3,425 vol=$3,425
+    [kalshi] Celta Vigo vs Osasuna Winner? [Celta Vigo]           bid=0.45 ask=0.47 liq=$1,959 vol=$1,959
+    [kalshi] Celta Vigo vs Osasuna Winner? [Osasuna]              bid=0.25 ask=0.26 liq=$7,614 vol=$7,614
+    [kalshi] Espanyol vs Levante Winner? [Levante]                bid=0.22 ask=0.27 liq=$8,107 vol=$8,107
+    [kalshi] Espanyol vs Levante Winner? [Espanyol]               bid=0.43 ask=0.48 liq=$2,064 vol=$2,064
+    [kalshi] Santander vs Villarreal Winner? [Villarreal]         bid=0.43 ask=0.46 liq=$860 vol=$860
+    [kalshi] Santander vs Villarreal Winner? [Santander]          bid=0.25 ask=0.3 liq=$2,042 vol=$2,042
+    [kalshi] Sevilla vs Vallecano Winner? [Tie]                   bid=0.29 ask=0.3 liq=$3,480 vol=$3,480
+    [kalshi] Sevilla vs Vallecano Winner? [Sevilla]               bid=0.4 ask=0.43 liq=$3,337 vol=$3,337
+    [kalshi] Sevilla vs Vallecano Winner? [Vallecano]             bid=0.27 ask=0.3 liq=$3,967 vol=$3,967
+    [kalshi] Alaves vs Getafe Winner? [Tie]                       bid=0.33 ask=0.36 liq=$2,955 vol=$2,955
+    [kalshi] Alaves vs Getafe Winner? [Getafe]                    bid=0.24 ask=0.25 liq=$2,643 vol=$2,643
+
+Note: reading prices needs no credentials. Placing trades does —
+and that stays with you; this code never places an order.

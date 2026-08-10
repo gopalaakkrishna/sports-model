@@ -1,0 +1,94 @@
+name: Sports board — live refresh
+
+# Runs every 15 minutes, forever, on GitHub's own clock — not this repo
+# owner's laptop. This is the fix for "the board only updates when my PC is
+# on": moving execution off a personal machine and onto infrastructure that
+# does not sleep, does not miss runs, and is the same for every viewer.
+#
+# What it does NOT do: refetch historical archives or refit models. That is
+# full.yml's job, once a day. This step re-prices against the live market,
+# settles anything that finished, and republishes — see auto_update.py's own
+# module docstring for why that split exists.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+# The concurrency group is shared with full.yml on purpose. Two auto_update
+# runs writing report CSVs at the same moment is exactly what corrupted every
+# MLB and WNBA price on 2026-08-10 — two processes' writes interleaved on
+# disk and silently halved every market price. A local lock FILE cannot
+# prevent that here: each run gets its own isolated, disposable VM with no
+# shared disk to hold a lock on. GitHub's own concurrency queue is the
+# correct primitive for this — it queues the second run instead of letting
+# both execute at once, network race conditions included.
+concurrency:
+  group: sports-model-pipeline
+  cancel-in-progress: false
+
+# Needed to commit the ledger back to THIS repo (settlements, new locks).
+# New repos default to read-only Action tokens; "Settings -> Actions ->
+# General -> Workflow permissions -> Read and write" must also be enabled
+# once, by hand — this line alone cannot raise a repo-level cap that's set
+# more restrictively.
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out sports-model
+        uses: actions/checkout@v4
+
+      - name: Check out tara-app
+        uses: actions/checkout@v4
+        with:
+          repository: gopalaakkrishna/tara-app
+          token: ${{ secrets.TARA_APP_PUSH_TOKEN }}
+          path: tara-app-checkout
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore raw historical data
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/raw
+          # No exact key — light mode never SAVES a cache entry, only full.yml
+          # does (with a fresh key every day). restore-keys prefix-matches
+          # whatever the most recent full.yml run produced.
+          key: raw-data-unused
+          restore-keys: |
+            raw-data-
+
+      - name: Bootstrap if no cache exists yet
+        # First run ever (or a 7-day-unused cache eviction) means the restore
+        # above found nothing. Rather than fail every 15 minutes until the
+        # next scheduled full run, fetch once here so the board comes up
+        # immediately. Ordinary days this step does nothing.
+        run: |
+          if [ ! -f data/raw/mlb_games.parquet ]; then
+            echo "No cached raw data — running one full refresh to bootstrap."
+            python src/refresh_all.py
+          else
+            echo "Using cached raw data from the last full run."
+          fi
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name "sports-model-bot"
+          git config --global user.email "actions@users.noreply.github.com"
+
+      - name: Run the light chain
+        env:
+          TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+        run: python src/auto_update.py --mode light

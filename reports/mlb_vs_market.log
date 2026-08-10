@@ -1,0 +1,25 @@
+﻿matched 907 games (2026-05-24 .. 2026-08-05)
+
+  mean Kalshi book sum 1.0117 (spread 1.17%)
+  home win rate 52.150%, market mean 52.792%, model mean 52.909%
+
+  LOG LOSS
+  variant                         log loss   vs market
+  base rate                        0.69222    +0.01057
+  model (raw)                      0.69690    +0.01525
+  model (calibrated a=0.414)       0.68364    +0.00199
+  Kalshi pre-game close            0.68165    +0.00000
+
+  optimal blend weight on model: 0.33 -> 0.68095
+  mean per-game difference +0.00199, 95% CI [-0.00503, +0.00906]
+  -> not distinguishable from the market at this sample size
+
+  DISAGREEMENT BUCKETS
+    |model-market|         n     model    market       gap
+    0.000-0.036          453    0.6826    0.6838   -0.0012
+    0.036-0.068          272    0.6799    0.6705   +0.0094
+    0.068-0.106          136    0.6917    0.6819   +0.0098
+    0.106-0.276           46    0.6923    0.7254   -0.0331
+
+  NOTE: 907 games is a small sample. Detecting a genuine 0.01
+  log-loss edge reliably needs thousands. Read the CI, not the point estimate.
