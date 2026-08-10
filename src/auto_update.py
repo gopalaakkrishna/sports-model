@@ -65,7 +65,16 @@ SELF_STATE_PATHS = [
     "data/processed/mlb_calibration.json",
     "data/processed/inplay_calibration.json",
     "data/processed/best_params.json",
+    # The published board itself. This repo is public, so the app fetches it
+    # straight from raw.githubusercontent.com at runtime rather than having it
+    # baked into a Vercel build — which means an update is visible to every
+    # viewer within one CDN cache window (~5 min) instead of requiring a
+    # redeploy, and no cross-repo token is involved.
+    "public/sports.json",
 ]
+# Canonical published location inside THIS repo, served publicly at
+# https://raw.githubusercontent.com/gopalaakkrishna/sports-model/main/public/sports.json
+SELF_BOARD = ROOT / "public" / "sports.json"
 
 # Windows Task Scheduler's MultipleInstances=IgnoreNew only stops the SAME
 # scheduled task overlapping itself. It does nothing when a manual invocation
@@ -288,6 +297,18 @@ def _run(args) -> int:
     if not run("export_tara.py", timeout=900):
         log("export failed — nothing published")
         return 1
+
+    # Mirror the freshly exported board into this repo's public/ so it is
+    # served from the canonical raw.githubusercontent.com URL the app reads.
+    # When running in CI, TARA_APP_DIR already points here and this is a
+    # no-op self-copy; locally it keeps the public copy in step with the one
+    # written into tara-app.
+    try:
+        if PAYLOAD.exists() and PAYLOAD.resolve() != SELF_BOARD.resolve():
+            SELF_BOARD.parent.mkdir(parents=True, exist_ok=True)
+            SELF_BOARD.write_bytes(PAYLOAD.read_bytes())
+    except OSError as e:
+        log(f"  could not mirror board into public/: {e}")
 
     # Publish the ledger back to THIS repo unconditionally (cheap no-op via
     # git status if nothing changed). This is decoupled from the board-changed

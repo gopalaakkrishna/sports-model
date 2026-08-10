@@ -54,12 +54,16 @@ jobs:
       - name: Check out sports-model
         uses: actions/checkout@v4
 
-      - name: Check out tara-app
-        uses: actions/checkout@v4
-        with:
-          repository: gopalaakkrishna/tara-app
-          token: ${{ secrets.TARA_APP_PUSH_TOKEN }}
-          path: tara-app-checkout
+      # NOTE: tara-app is deliberately NOT checked out. The board is published
+      # into THIS repo at public/sports.json and the app fetches it at runtime
+      # from raw.githubusercontent.com, which serves
+      # `Access-Control-Allow-Origin: *`.
+      #
+      # That removes a cross-repo Personal Access Token (the one thing that
+      # kept failing here, and a credential that expires and silently stops
+      # the pipeline), and it removes a Vercel rebuild per update — the board
+      # is now live data rather than a bundled asset, so every viewer sees the
+      # same numbers within one CDN cache window instead of after a redeploy.
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -102,7 +106,10 @@ jobs:
 
       - name: Run the light chain
         env:
-          TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+          # Point the board's output at THIS repo. auto_update writes
+          # $TARA_APP_DIR/public/sports.json and commits it, so the published
+          # board lands in sports-model/public/sports.json.
+          TARA_APP_DIR: ${{ github.workspace }}
           # The ledger is shared state — several runners settle games. See
           # supabase_sync.py for the union-merge rules that keep them from
           # overwriting each other. If these are unset the sync is skipped and

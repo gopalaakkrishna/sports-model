@@ -34,12 +34,8 @@ jobs:
       - name: Check out sports-model
         uses: actions/checkout@v4
 
-      - name: Check out tara-app
-        uses: actions/checkout@v4
-        with:
-          repository: gopalaakkrishna/tara-app
-          token: ${{ secrets.TARA_APP_PUSH_TOKEN }}
-          path: tara-app-checkout
+      # tara-app is not checked out — see light.yml for why. The board is
+      # published into this repo and fetched by the app at runtime.
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,7 +53,8 @@ jobs:
 
       - name: Run the full chain
         env:
-          TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+          # See light.yml — the board is published into this repo.
+          TARA_APP_DIR: ${{ github.workspace }}
           # See light.yml — shared ledger state, skipped safely if unset.
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
