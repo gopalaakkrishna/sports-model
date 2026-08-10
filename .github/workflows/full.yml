@@ -58,6 +58,10 @@ jobs:
       - name: Run the full chain
         env:
           TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+          # See light.yml — shared ledger state, skipped safely if unset.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SYNC_SOURCE: gha-full
         run: python src/auto_update.py --mode full
 
       - name: Save today's raw data for the light-mode runs to reuse

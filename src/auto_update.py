@@ -270,8 +270,19 @@ def _run(args) -> int:
     for name, script in PREDICT:
         run(script, timeout=1800)
 
+    # Pull the shared ledger BEFORE settling, so this run sees predictions
+    # another runner locked that this checkout does not have yet — otherwise
+    # settle.py cannot resolve them and they sit open forever.
+    log("syncing ledger with Supabase (pre-settle)")
+    run("supabase_sync.py", timeout=180)
+
     log("settling finished games")
     run("settle.py", timeout=900)
+
+    # Push again after settling so the outcomes this run resolved are shared
+    # immediately, rather than waiting for the next run's pre-settle pull.
+    log("syncing ledger with Supabase (post-settle)")
+    run("supabase_sync.py", timeout=180)
 
     log("exporting board")
     if not run("export_tara.py", timeout=900):

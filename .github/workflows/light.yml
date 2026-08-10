@@ -91,4 +91,11 @@ jobs:
       - name: Run the light chain
         env:
           TARA_APP_DIR: ${{ github.workspace }}/tara-app-checkout
+          # The ledger is shared state — several runners settle games. See
+          # supabase_sync.py for the union-merge rules that keep them from
+          # overwriting each other. If these are unset the sync is skipped and
+          # the run still succeeds; the file and git copy stay authoritative.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SYNC_SOURCE: gha-light
         run: python src/auto_update.py --mode light
