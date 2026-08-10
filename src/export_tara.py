@@ -38,6 +38,11 @@ from start_times import StartTimes
 # Series whose fixtures reach the app without a clock in their source file.
 _CLOCK_SERIES = ["KXWNBAGAME", "KXNFLGAME", "KXMLSGAME", "KXLIGAMXGAME"]
 
+# Minimum model probability for a pick to enter the record. See the long note
+# in autolock() — chiefly a fee argument, since Kalshi's fee peaks at a coin
+# flip and a 52% pick is one we have said we cannot call.
+MIN_CONVICTION = 0.55
+
 
 def split_fixture(text: str) -> tuple[str, str]:
     """'Away @ Home' or 'Home v Away' -> the two names, order-insensitive."""
@@ -136,6 +141,31 @@ def autolock(data: list[dict], hours: float) -> list[str]:
     locked = []
     for r in data:
         if r.get("advice") != "ALIGNED":
+            continue
+        # CONVICTION FLOOR — skip the coin-flip dead zone.
+        #
+        # Two independent reasons, and the structural one is the stronger:
+        #
+        # 1. Fees. Kalshi charges 0.07*p*(1-p), which peaks at a coin flip. At
+        #    52c that is 1.75c on a 52c stake — you need a 3.4% edge just to
+        #    break even. At 65c the same fee is 2.5% of stake. A pick we price
+        #    at 52% is one we have explicitly said we cannot separate, so
+        #    paying peak fees for it is structurally losing.
+        #
+        # 2. The record, weakly. Settled picks in the 50-55% band went 1-8,
+        #    against a stated 53%. That is a 1.2% outcome on its own, but 7.3%
+        #    across the six bands examined — suggestive, NOT conclusive, and
+        #    not load-bearing here. Every other band is well calibrated
+        #    (57%->58%, 63%->64%), so this is not a broken model, just a zone
+        #    where it has nothing to say.
+        #
+        # Tara's BTC side gated the identical 50-55c zone in v13.4.144 for the
+        # same fee reason, arrived at separately.
+        #
+        # This changes what gets TRACKED, not what gets shown — the board still
+        # displays these, they simply stop entering the record as if they were
+        # calls worth making.
+        if float(r.get("model") or 0) < MIN_CONVICTION:
             continue
         start = D.to_utc(r.get("start"))
         if start is pd.NaT:
@@ -364,9 +394,21 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             "tracked": True, "ledger_id": o["id"],
             "stale_days": o.get("stale_days")})
     board.sort(key=lambda x: (x["start"] is None, str(x["start"] or "")))
-    out["board"] = board
-    out["board_counts"] = {"total": len(board),
-                           "tracked": sum(1 for b in board if b["tracked"])}
+    # A row is "high conviction" when the model both agrees with the market
+    # (ALIGNED — the band where it has tracked the closing line) AND clears the
+    # coin-flip floor. Those two together are what now enters the record, so
+    # the app can show exactly the set being tracked rather than approximating
+    # it with its own filter and drifting out of step with the pipeline.
+    for b in board:
+        b["high_conviction"] = bool(
+            str(b.get("advice") or "") == "ALIGNED"
+            and float(b.get("model") or 0) >= MIN_CONVICTION)
+    out["min_conviction"] = MIN_CONVICTION
+    out["board_counts"] = {
+        "total": len(board),
+        "tracked": sum(1 for b in board if b["tracked"]),
+        "high_conviction": sum(1 for b in board if b["high_conviction"]),
+    }
 
     # ── the verdict, computed once and shipped ──────────────────────────
     # The board's most important number is not the record, it is whether the
