@@ -13,6 +13,18 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch: {}
+  # Also run when the pipeline code changes. Two reasons: a broken workflow
+  # otherwise only reveals itself on the next scheduled tick (GitHub's cron
+  # is best-effort and has been running closer to hourly than every 15 min),
+  # and a code change is exactly when you most want to know it still works.
+  # The shared concurrency group below means this can never collide with a
+  # scheduled run — it queues.
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - ".github/workflows/**"
+      - "requirements.txt"
 
 # The concurrency group is shared with full.yml on purpose. Two auto_update
 # runs writing report CSVs at the same moment is exactly what corrupted every
