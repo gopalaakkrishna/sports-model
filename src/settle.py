@@ -139,6 +139,27 @@ _KALSHI_SERIES = {"basketball": "KXWNBAGAME", "wnba": "KXWNBAGAME",
                   "cricket": "KXHUNDREDMATCH",
                   "nfl": "KXNFLGAME", "football": "KXNFLGAME"}
 
+# Soccer needs its own list because every league is a separate series, and its
+# own PARSER because its markets are shaped differently: three outcomes rather
+# than two (a draw is a real result), and the leg is identified by
+# `yes_sub_title` rather than by anything in the title — all three legs of a
+# fixture share the title "A vs B Winner?".
+#
+# Why this exists at all: soccer settled off football-data.co.uk, whose
+# year-round league files lag badly. Measured 2026-08-10, Norway's last
+# published result was 8 days old and Japan's was from 2025-12-06 — eight
+# months. Picks in those leagues were never going to settle; three sat on the
+# board reading "awaiting result · 3d" and would have grown indefinitely.
+# Kalshi had every one of them settled within minutes of the whistle, and it
+# is the same venue the price came from, so the result matches the market the
+# pick was scored against.
+_KALSHI_SOCCER_SERIES = [
+    "KXMLSGAME", "KXLIGAMXGAME", "KXLALIGAGAME", "KXBUNDESLIGA2GAME",
+    "KXALLSVENSKANGAME", "KXELITESERIENGAME", "KXSCOTTISHPREMGAME",
+    "KXJLEAGUEGAME", "KXLEAGUESCUPGAME",
+]
+_SOCCER_TITLE = re.compile(r"^(.+?)\s+vs\.?\s+(.+?)(?:\s+Winner)?\s*\??$", re.I)
+
 
 def _kalshi_results(series: str) -> dict:
     """(YYYY-MM-DD, frozenset of both sides) -> winning side, from Kalshi.
@@ -199,7 +220,93 @@ def _kalshi_results(series: str) -> dict:
     return out
 
 
+def _kalshi_soccer_results() -> dict:
+    """(YYYY-MM-DD, frozenset{home, away}) -> 'DRAW' or the winning team name.
+
+    Reads `yes_sub_title` for the leg rather than parsing the title, because
+    all three legs of a fixture carry the identical title ("A vs B Winner?")
+    and only the sub-title distinguishes them. A sub-title of "Tie" is a draw,
+    which soccer has and the other sports here do not.
+    """
+    out: dict = {}
+    for series in _KALSHI_SOCCER_SERIES:
+        cursor = None
+        for _ in range(4):
+            params = {"series_ticker": series, "status": "settled", "limit": 200}
+            if cursor:
+                params["cursor"] = cursor
+            try:
+                r = requests.get(f"{K}/markets", params=params, timeout=45)
+                r.raise_for_status()
+                body = r.json()
+            except (requests.RequestException, ValueError):
+                break
+            ms = body.get("markets", [])
+            for m in ms:
+                if str(m.get("result", "")).lower() != "yes":
+                    continue
+                leg = str(m.get("yes_sub_title", "")).strip()
+                mt = _SOCCER_TITLE.match(str(m.get("title", "")).strip())
+                if not leg or not mt:
+                    continue
+                a, b = mt.group(1).strip(), mt.group(2).strip()
+                dm = re.search(r"-(\d{2})([A-Z]{3})(\d{2})",
+                               str(m.get("ticker", "")))
+                if not dm:
+                    continue
+                yy, mon, dd = dm.groups()
+                try:
+                    d = datetime.strptime(f"{dd}{mon}{yy}", "%d%b%y").date()
+                except ValueError:
+                    continue
+                winner = "DRAW" if leg.lower() in ("tie", "draw") else leg.lower()
+                out[(d.isoformat(), frozenset({a.lower(), b.lower()}))] = winner
+            cursor = body.get("cursor")
+            if not cursor or not ms:
+                break
+    return out
+
+
 _K_CACHE: dict[str, dict] = {}
+
+
+def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
+    home, away, date = parse_event(rec["event"])
+    if not away or not date:
+        return None
+    if "soccer" not in _K_CACHE:
+        _K_CACHE["soccer"] = _kalshi_soccer_results()
+
+    def toks(s):
+        return {w for w in re.sub(r"[^a-z ]", " ", s.lower()).split() if len(w) >= 2}
+
+    ht, at = toks(home), toks(away)
+    if not ht or not at:
+        return None
+    want = {date}
+    try:
+        d0 = datetime.strptime(date, "%Y-%m-%d")
+        want |= {(d0 + timedelta(days=k)).strftime("%Y-%m-%d") for k in (-1, 1)}
+    except ValueError:
+        pass
+
+    for (d, pair), winner in _K_CACHE["soccer"].items():
+        if d not in want:
+            continue
+        names = list(pair)
+        m_home = max(names, key=lambda n: len(toks(n) & ht))
+        m_away = max(names, key=lambda n: len(toks(n) & at))
+        # Both ends must match distinctly, or this is a different fixture that
+        # merely shares a word ("Manchester", "Real", "Atletico").
+        if m_home == m_away or not (toks(m_home) & ht) or not (toks(m_away) & at):
+            continue
+        if winner == "DRAW":
+            return "DRAW", "Kalshi settled: draw"
+        if winner == m_home:
+            return "HOME", f"Kalshi settled: {winner.title()} won"
+        if winner == m_away:
+            return "AWAY", f"Kalshi settled: {winner.title()} won"
+    return None
 
 
 def settle_via_kalshi(rec: dict, sport: str) -> tuple[str, str] | None:
@@ -268,9 +375,16 @@ def main():
         sport = str(rec.get("sport", "")).lower()
         res = None
         if sport == "soccer":
-            if hist is None:
-                hist = D.load_history()
-            res = settle_soccer(rec, hist)
+            # Kalshi first — it settles within minutes, while the
+            # football-data.co.uk archive lags days for the year-round leagues
+            # and, for Japan's J1, was eight months behind as of 2026-08-10.
+            # The archive stays as the fallback: it covers leagues Kalshi does
+            # not list at all, and it is the authority for anything historical.
+            res = settle_soccer_via_kalshi(rec)
+            if res is None:
+                if hist is None:
+                    hist = D.load_history()
+                res = settle_soccer(rec, hist)
         elif sport in ("baseball", "mlb"):
             res = settle_mlb(rec)
         elif sport in _KALSHI_SERIES:
