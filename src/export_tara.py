@@ -42,7 +42,20 @@ _CLOCK_SERIES = ["KXWNBAGAME", "KXNFLGAME", "KXMLSGAME", "KXLIGAMXGAME"]
 # Minimum model probability for a pick to enter the record. See the long note
 # in autolock() — chiefly a fee argument, since Kalshi's fee peaks at a coin
 # flip and a 52% pick is one we have said we cannot call.
-MIN_CONVICTION = 0.55
+#
+# Raised 0.55 -> 0.60 on 2026-08-11. Settled ALIGNED picks by conviction:
+#
+#   >= 50%   24 picks   12-12   50.0%
+#   >= 55%   17 picks   11-6    64.7%
+#   >= 60%   10 picks    8-2    80.0%
+#
+# The 80% is NOT the expectation. For a calibrated 65% model, 8-of-10 happens
+# 26% of the time — unremarkable. The honest forecast for this floor is ~65%,
+# and anyone quoting the 80% is quoting noise.
+#
+# Cost of the raise: roughly 1.7 picks/day becomes 1.0. That is the trade —
+# fewer calls, each one the model actually has something to say about.
+MIN_CONVICTION = 0.60
 
 
 def split_fixture(text: str) -> tuple[str, str]:
@@ -265,6 +278,35 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                          "n_mkt": s.get("n_mkt"),
                          "vs_market": clean(s.get("vs_market")),
                          "pnl": clean(s.get("pnl")), "roi": clean(s.get("roi"))}
+        # Split the record by STRATEGY. One number was hiding two different
+        # experiments: an early value-betting run (deliberately backing
+        # underdogs where the model disagreed with the market — the exact
+        # hypothesis the 68k-match backtest disproved) and the current system
+        # (only picking where the model AGREES with the market). Reporting
+        # them together makes both unreadable.
+        #
+        # Those losing experiment picks stay in the record. Deleting picks
+        # because they lost is precisely the flattering scoreboard this ledger
+        # exists to prevent — they are labelled, not removed.
+        def _strategy(note) -> str:
+            return ("aligned" if "auto-locked" in str(note or "")
+                    else "value_experiment")
+
+        strat = settled["notes"].map(_strategy)
+        out["by_strategy"] = []
+        for name, label in (("aligned", "Aligned (current system)"),
+                            ("value_experiment", "Value-bet experiment (abandoned)")):
+            g = settled[strat == name]
+            if not len(g):
+                continue
+            sc = D.score(g)
+            out["by_strategy"].append(clean_dict({
+                "key": name, "label": label, "n": sc["n"], "wins": sc["wins"],
+                "losses": sc["n"] - sc["wins"], "win_rate": sc["win_rate"],
+                "ll": sc["ll"], "vs_market": sc.get("vs_market"),
+                "current": name == "aligned",
+            }))
+
         out["by_sport"] = [score_row(D.label(k), k, g)
                            for k, g in settled.groupby("sport")]
         out["by_league"] = [score_row(lg, sp, g) for (sp, lg), g
