@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from datetime import datetime, timedelta, timezone
@@ -77,7 +78,19 @@ def fill_start(rows: list[dict], st: StartTimes, key: str) -> int:
     return filled
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT.parent / "tara-app" / "public" / "sports.json"
+# Where the board gets written. Locally that is the sibling tara-app checkout;
+# in CI there is no sibling, so the workflow sets TARA_APP_DIR to the repo
+# itself and the board lands in this repo's public/ (which is what the app now
+# fetches at runtime).
+#
+# auto_update.py already honoured TARA_APP_DIR but this script did not, so in
+# CI it fell back to ../tara-app/public — a path that does not exist there —
+# tripped the "target directory does not exist" guard, and exited 1. That is
+# the single step auto_update treats as fatal, so every cloud run failed at
+# "Run the light chain" with nothing else wrong.
+_APP_DIR = os.environ.get("TARA_APP_DIR")
+DEFAULT_OUT = ((Path(_APP_DIR) if _APP_DIR else ROOT.parent / "tara-app")
+               / "public" / "sports.json")
 
 
 def clean(x):
@@ -497,9 +510,12 @@ def main():
 
     data = build(upcoming, st)
     out = Path(args.out)
-    if not out.parent.exists():
-        print(f"target directory does not exist: {out.parent}")
-        raise SystemExit(1)
+    # Create the directory rather than refusing. The guard used to exit(1) if
+    # the parent was missing, which was meant to catch a typo'd --out but in
+    # practice just made the export the single fatal step in a CI run that was
+    # otherwise fine. A missing output folder is not a reason to throw away a
+    # completed export.
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(data, allow_nan=False, separators=(",", ":")),
                    encoding="utf-8")
     rec = data["record"] or {}
