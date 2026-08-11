@@ -1,0 +1,20 @@
+POOLED — every market together (n is large enough to mean something)
+  price band         n    said   actual    error
+  10%-20%         118   16.3%    18.6%    +2.3%
+  20%-30%         231   25.1%    22.5%    -2.6%
+  30%-40%         297   35.9%    38.0%    +2.2%
+  40%-50%         912   45.4%    45.0%    -0.5%
+  50%-60%         929   54.4%    54.9%    +0.5%
+  60%-70%         270   63.7%    60.7%    -3.0%
+  70%-80%          80   74.2%    80.0%    +5.8%
+  80%-101%          39   84.9%    82.1%    -2.8%
+
+FAVOURITE-LONGSHOT BIAS — the classic soft-market signature
+  market               n  favs said  favs won    error
+  ALLSVENSKAN         23      65.6%     60.9%    -4.7%   significant: no
+  ELITESERIEN         26      64.7%     73.1%    +8.3%   significant: no
+  MLB                510      59.8%     59.4%    -0.4%   significant: no
+  WNBA               173      70.9%     72.8%    +1.9%   significant: no
+
+'significant' = the gap exceeds 2 standard errors. On these sample
+sizes almost nothing will be, and that is the finding, not a failure.

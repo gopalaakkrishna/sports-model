@@ -689,3 +689,64 @@ The plausible paths to a real edge are (a) faster reaction than the market to
 information rather than better modelling of the same information, or (b) markets
 that are genuinely thin — obscure divisions and in-play, where the closing line
 is much weaker than it is in these 22 leagues.
+
+## Is Kalshi a softer market than the bookmakers? (2026-08-11)
+
+Everything above benchmarks against BOOKMAKER odds — Pinnacle, market average.
+We do not trade those. We trade Kalshi, and only MLB closes had ever been
+collected, so the question had never been asked anywhere else. Kalshi's median
+bid-ask spread ranges from 1c (MLB, WNBA) to 29c (Liga MX), a 29x difference,
+which made "the thin books are soft" a reasonable hypothesis.
+
+`fetch_kalshi_closes.py` now collects pre-game prices for every series. NOTE:
+these are prices ~8h before market close, NOT closing lines. Kalshi exposes no
+reliable start time (`occurrence_datetime` is the expected EXPIRATION, and
+anchoring to it produced pure post-game lookahead — every winning leg at 0.99).
+Anchoring to `close_time` minus 8h clears the longest plausible event. That is
+also closer to when this pipeline could actually trade, since it commits picks
+up to 36h ahead.
+
+2,899 legs across 9 series, 2026-05-25 .. 2026-08-11.
+
+### Market informativeness
+
+| market | events | ways | overround | Kalshi LL | base LL | info gain |
+|---|---|---|---|---|---|---|
+| Bundesliga 2 | 9 | 3 | 1.004 | 0.6782 | 0.6365 | −0.0417 |
+| Liga MX | 28 | 3 | 1.020 | 0.6354 | 0.6365 | +0.0011 |
+| MLB | 992 | 2 | 1.012 | 0.6835 | 0.6931 | +0.0096 |
+| Scottish Prem | 12 | 3 | 1.010 | 0.6087 | 0.6365 | +0.0278 |
+| Allsvenskan | 52 | 3 | 1.009 | 0.5877 | 0.6365 | +0.0488 |
+| The Hundred | 23 | 2 | 1.014 | 0.6372 | 0.6931 | +0.0559 |
+| Eliteserien | 51 | 3 | 1.013 | 0.5342 | 0.6365 | +0.1023 |
+| WNBA | 201 | 2 | 1.010 | 0.5769 | 0.6931 | +0.1163 |
+
+Liga MX's near-zero info gain looks like the soft market we were hunting. It is
+not evidence of one. Info gain conflates "the market knows nothing" with "the
+outcomes are genuinely unpredictable" — a perfectly priced league of coin flips
+scores zero too. n=28 settles nothing either way.
+
+### Calibration — the actual test for softness
+
+A soft market is MIS-priced in a direction you can bet against. Pooled across
+every market, no price band is outside 2 standard errors:
+
+| band | n | said | actual | error |
+|---|---|---|---|---|
+| 20-30% | 231 | 25.1% | 22.5% | −2.6% |
+| 40-50% | 912 | 45.4% | 45.0% | −0.5% |
+| 50-60% | 929 | 54.4% | 54.9% | +0.5% |
+| 60-70% | 270 | 63.7% | 60.7% | −3.0% |
+
+Favourite-longshot bias, the classic soft-market signature, is absent
+everywhere it can be measured. MLB favourites (n=510) were priced 59.8% and won
+59.4%.
+
+**Conclusion: Kalshi is well calibrated in every market with a usable sample.
+The soft-market hypothesis is not supported.** The thin books remain untested
+on sample size, and their spreads (29c on Liga MX) would consume any edge that
+did exist — a mispriced market you cannot cross into cheaply is not an
+opportunity.
+
+The data now accumulates automatically, so the thin markets become testable
+with a few more months of fixtures.

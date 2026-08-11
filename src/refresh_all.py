@@ -37,6 +37,7 @@ SOURCES = {
     "mlb": ("fetch_mlb.py", "data/raw/mlb_games.parquet", 1),
     "mlb_innings": ("fetch_mlb_innings.py", "data/raw/mlb_inplay_states.parquet", 2),
     "nfl_wnba": ("fetch_nfl_wnba.py", "data/raw/nfl_games.parquet", 1),
+    "kalshi_closes": ("fetch_kalshi_closes.py", "data/raw/kalshi_closes.parquet", 1),
     "kalshi_mlb_closes": ("fetch_kalshi_mlb.py", "data/raw/kalshi_mlb_closes.parquet", 1),
 }
 

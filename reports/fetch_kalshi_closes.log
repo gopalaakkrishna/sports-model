@@ -1,0 +1,43 @@
+existing rows: 16 across 1 series
+  KXMLBGAME                 1996 markets   998 events   998 new
+    20/998 events  kept=40  ok=40 429=0    40/998 events  kept=80  ok=80 429=0    60/998 events  kept=120  ok=120 429=0    80/998 events  kept=160  ok=160 429=0    100/998 events  kept=200  ok=200 429=0    120/998 events  kept=240  ok=240 429=0    140/998 events  kept=280  ok=280 429=0    160/998 events  kept=320  ok=320 429=0    180/998 events  kept=360  ok=360 429=0    200/998 events  kept=400  ok=400 429=0    220/998 events  kept=440  ok=440 429=0    240/998 events  kept=480  ok=480 429=0    260/998 events  kept=520  ok=520 429=0    280/998 events  kept=560  ok=560 429=0    300/998 events  k    300/600 events  kept=600  ok=600 429=172    320/600 events  kept=640  ok=640 429=172    340/600 events  kept=680  ok=680 429=172    360/600 events  kept=720  ok=720 429=172    380/600 events  kept=760  ok=760 429=172    400/600 events  kept=800  ok=800 429=172    420/600 events  kept=840  ok=840 429=172    440/600 events  kept=880  ok=880 429=172    460/600 events  kept=920  ok=920 429=1729=0    500/998 events  kept=1000  ok=1000 429=0    520/998 events  kept=1040  ok=1040 429=0    540/998 events  kept=1080  ok=1080 429=0    560/998 events  kept=1120  ok=1120 429=1    580/998 events  kept=1160  ok=1160 429=1    600/998 events  kept=1200  ok=1200 429=1    620/998 events  kept=1240  ok=1240 429=1    640/998 events  kept=1280  ok=1280 429=1    660/998 events  kept=1320  ok=1320 429=1    680/998 events  kept=1360  ok=1360 429=1    700/998 events  kept=1400  ok=1400 429=1    720/998 events  kept=1440  ok=1440 429=1    740/998 events  kept=1480  ok=1480 429=1    760/998 events  kept=1520  ok=1520 429=1    780/998 events  kept=1560  ok=1560 429=1    800/998 events  kept=1600  ok=1600 429=1    820/998 events  kept=1640  ok=1640 429=1    840/998 events  kept=1680  ok=1680 429=1    860/998 events  kept=1720  ok=1720 429=1    880/998 events  kept=1760  ok=1760 429=1    900/998 events  kept=1800  ok=1800 429=1    920/998 events  kept=1840  ok=1840 429=1    940/998 events  kept=1880  ok=1880 429=2    960/998 events  kept=1920  ok=1920 429=9    980/998 events  kept=1960  ok=1960 429=17
+  KXWNBAGAME                 402 markets   201 events   193 new
+    20/193 events  kept=2036  ok=2036 429=36    40/193 events  kept=2076  ok=2076 429=49    60/193 events  kept=2116  ok=2116 429=62    80/193 events  kept=2156  ok=2156 429=71    100/193 events  kept=2196  ok=2196 429=79    120/193 events  kept=2236  ok=2236 429=100    140/193 events  kept=2276  ok=2276 429=110    160/193 events  kept=2316  ok=2316 429=120    180/193 events  kept=2356  ok=2356 429=129
+  KXNFLGAME                    2 markets     1 events     1 new
+
+  KXHUNDREDMATCH              46 markets    23 events    23 new
+    20/23 events  kept=2424  ok=2424 429=143
+  KXMLSGAME                no settled markets
+  KXLIGAMXGAME                84 markets    28 events    28 new
+    20/28 events  kept=2490  ok=2490 429=157
+  KXLALIGAGAME             no settled markets
+  KXBUNDESLIGA2GAME           27 markets     9 events     9 new
+
+  KXALLSVENSKANGAME          159 markets    53 events    53 new
+    20/53 events  kept=2600  ok=2601 429=174    40/53 events  kept=2660  ok=2661 429=188
+  KXELITESERIENGAME          159 markets    53 events    53 new
+    20/53 events  kept=2757  ok=2760 429=212    40/53 events  kept=2817  ok=2820 429=219
+  KXSCOTTISHPREMGAME          36 markets    12 events    12 new
+
+  KXJLEAGUEGAME            no settled markets
+  KXEPLGAME                no settled markets
+  KXSERIEAGAME             no settled markets
+  KXLIGUE1GAME             no settled markets
+
+request stats: {'ok': 2895, 'rate_limited': 236, 'no_priced_candle': 3}
+
+series                     legs  events  extreme  dates                     state
+  KXALLSVENSKANGAME         158      53      0%   2026-05-25 .. 2026-08-10  ok
+  KXBUNDESLIGA2GAME          27       9      0%   2026-08-07 .. 2026-08-09  ok
+  KXELITESERIENGAME         157      53      1%   2026-05-25 .. 2026-08-09  ok
+  KXHUNDREDMATCH             46      23      0%   2026-07-26 .. 2026-08-10  ok
+  KXLIGAMXGAME               84      28      0%   2026-05-25 .. 2026-08-03  ok
+  KXMLBGAME                1996     998      0%   2026-05-25 .. 2026-08-11  ok
+  KXNFLGAME                   2       1      0%   2026-08-07 .. 2026-08-07  ok
+  KXSCOTTISHPREMGAME         36      12      0%   2026-07-31 .. 2026-08-09  ok
+  KXWNBAGAME                402     201      0%   2026-05-25 .. 2026-08-11  ok
+
+  mean price on legs that WON: 0.519   (near 1.00 would mean the sample is post-game)
+
+added 2,892 rows -> 2,908 total
+saved C:\Users\Gohan\OneDrive\Documents\Gopal\sports-model\data\raw\kalshi_closes.parquet
