@@ -5,11 +5,24 @@
 secrets/
 kalshi_*.pem
 
-# Data and caches are large and regenerable
+# Raw CSV download caches — 56MB and fully regenerable, never commit.
 data/raw/csv/
 data/raw/new_csv/
-data/raw/*.parquet
 data/processed/*.parquet
+
+# The raw parquets ARE committed, deliberately. Together they are ~9MB and
+# they let a CI run start instantly instead of rebuilding them.
+#
+# Without this seed every cold GitHub Actions run had to execute
+# refresh_all.py (~11.5 min) before it could predict anything, and the only
+# thing that wrote the cache was the DAILY job — so until that first fired,
+# every 15-minute run started cold, bootstrapped, and was killed by the job
+# timeout. Seven consecutive runs cancelled in exactly that step.
+#
+# CI never commits these back: auto_update.publish_self_state writes an
+# explicit path list (ledger, calibration, public/sports.json) and data/raw is
+# not on it. So this is a one-time ~9MB seed, not per-run churn. Freshness
+# still comes from the Actions cache and the daily refresh.
 
 # Keep the ledger — it is the prediction record, not a cache
 !data/processed/ledger.jsonl
