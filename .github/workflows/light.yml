@@ -49,7 +49,11 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 10 minutes was too tight and killed every run. A warm run is ~3 min, but
+    # a COLD one has to bootstrap the raw data first, and refresh_all.py alone
+    # takes ~11.5 min — so the job was cancelled mid-bootstrap, every time,
+    # and could never produce the cache that would have made it fast.
+    timeout-minutes: 25
     steps:
       - name: Check out sports-model
         uses: actions/checkout@v4
@@ -87,17 +91,30 @@ jobs:
             raw-data-
 
       - name: Bootstrap if no cache exists yet
-        # First run ever (or a 7-day-unused cache eviction) means the restore
-        # above found nothing. Rather than fail every 15 minutes until the
-        # next scheduled full run, fetch once here so the board comes up
-        # immediately. Ordinary days this step does nothing.
+        id: bootstrap
+        # First run ever (or a 7-day cache eviction) means the restore above
+        # found nothing. Rather than fail every 15 minutes until the next
+        # scheduled full run, fetch once here. Ordinary runs skip this.
         run: |
           if [ ! -f data/raw/mlb_games.parquet ]; then
             echo "No cached raw data — running one full refresh to bootstrap."
             python src/refresh_all.py
+            echo "did_bootstrap=true" >> "$GITHUB_OUTPUT"
           else
             echo "Using cached raw data from the last full run."
+            echo "did_bootstrap=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Seed the cache if this run had to bootstrap
+        # Without this the cache was only ever written by full.yml (daily), so
+        # until that first fired, EVERY 15-minute run paid the full ~12 min
+        # bootstrap — and with the old 10-minute timeout, died doing it. Saving
+        # here breaks that loop on the first successful cold run.
+        if: steps.bootstrap.outputs.did_bootstrap == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: data/raw
+          key: raw-data-${{ github.run_id }}
 
       - name: Configure git identity
         run: |
