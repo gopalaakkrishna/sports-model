@@ -489,6 +489,49 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
         lo, hi = (float(x) for x in np.percentile(boot, [2.5, 97.5]))
         gap = float(diff.mean())
         worse, better = lo > 0, hi < 0
+        # ── READINESS: is there enough evidence to actually bet? ──────────
+        #
+        # Win rate on its own is gameable and therefore misleading. Picking
+        # bigger favourites raises the win rate, but it raises the PRICE you
+        # pay by the same amount — a 70% win rate on 70c favourites loses
+        # money after fees. So the bar that matters is win rate minus
+        # breakeven, where breakeven is the average price paid plus Kalshi's
+        # 0.07*p*(1-p).
+        #
+        # And a point estimate is not evidence. At n=11 an 82% run carries a
+        # +/-23% interval — indistinguishable from a coin flip. This reports
+        # the 95% lower bound against breakeven, and how many more settled
+        # picks are needed before that bound could clear it.
+        cur = settled[settled["notes"].astype(str).str.contains("auto-locked")]
+        cur = cur[cur["model_prob"] >= MIN_CONVICTION]
+        cur = cur[cur["market_prob"].notna()]
+        if len(cur) >= 3:
+            y = cur["won"].astype(int).to_numpy()
+            px = cur["market_prob"].to_numpy(float)
+            wr = float(y.mean())
+            fee = float(np.mean(0.07 * px * (1 - px)))
+            be = float(px.mean()) + fee
+            n = len(cur)
+            se = float(np.sqrt(max(wr * (1 - wr), 1e-9) / n))
+            lo = wr - 1.96 * se
+            # Picks needed for a lower bound at this win rate to clear
+            # breakeven. Infinite (reported as None) when the point estimate
+            # is already below the bar — no amount of data rescues that.
+            need = None
+            if wr > be:
+                need = int(np.ceil(wr * (1 - wr) * (1.96 / (wr - be)) ** 2))
+            out["readiness"] = clean_dict({
+                "n": n, "wins": int(y.sum()), "losses": int(n - y.sum()),
+                "win_rate": wr, "breakeven": be, "edge": wr - be,
+                "ci_low": lo, "clears": bool(lo > be),
+                "needed": need, "floor": MIN_CONVICTION,
+                "verdict": ("enough evidence — lower bound clears breakeven"
+                            if lo > be else
+                            f"not yet — need about {need} settled picks"
+                            if need else
+                            "win rate is below breakeven; more data will not fix that"),
+            })
+
         out["verdict"] = clean_dict({
             "n": len(have), "gap": gap, "lo": lo, "hi": hi,
             "significant_worse": worse,
