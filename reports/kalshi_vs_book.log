@@ -1,0 +1,22 @@
+matched 182 fixtures present on BOTH Kalshi and the bookmakers (546 outcome legs)
+
+1) DO THE PRICES DIVERGE?
+   mean |Kalshi - book| : 1.5%
+   median               : 1.0%
+   legs >5pts apart     : 3%
+   legs >10pts apart    : 0%
+
+2) WHEN THEY DIVERGE, WHO IS RIGHT?
+   disagreement      legs  Kalshi LL   book LL    winner
+   0%-3%             474     0.5568    0.5552      book
+   3%-6%              63     0.7369    0.7210      book
+
+   overall: Kalshi 0.5830   book 0.5775   gap +0.0056
+   95% CI on that gap: [+0.0015, +0.0100]
+   -> bookmakers significantly sharper
+
+3) IS THE GAP BIGGER THAN THE COST OF CROSSING IT?
+   legs where Kalshi is >5pts off the book line: 19
+   mean edge if the book line is truth: 6.2%
+   ...against a Kalshi spread of 1c (MLB/WNBA) to 29c (Liga MX)
+   plus a 0.07*p*(1-p) fee. Compare per market before trading.
