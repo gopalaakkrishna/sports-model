@@ -172,7 +172,12 @@ def depth(ticker: str, within: float = 0.05) -> float:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--days", type=int, default=2)
+    # 4 days, not 2. At 2 the board showed a full 15-game slate for today and
+    # tomorrow and then nothing — baseball simply vanished from the third day
+    # on, which reads as "no picks" rather than "not looked at yet". The extra
+    # days cost one StatsAPI schedule call each and the probable starters are
+    # already published that far out.
+    ap.add_argument("--days", type=int, default=4)
     ap.add_argument("--xi", type=float, default=0.0025)
     ap.add_argument("--max-spread", type=float, default=0.06)
     ap.add_argument("--min-depth", type=float, default=500.0)
