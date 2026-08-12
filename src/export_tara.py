@@ -458,6 +458,12 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
         b["high_conviction"] = bool(
             str(b.get("advice") or "") == "ALIGNED"
             and float(b.get("model") or 0) >= MIN_CONVICTION)
+    # Ship the board itself. This assignment was dropped when the
+    # high_conviction flag was added, so for several runs the board was built,
+    # counted, and then thrown away — board_counts said 183 while the array
+    # shipped empty and the app had nothing to render. The counts being right
+    # is what made it survive review: the summary looked healthy.
+    out["board"] = board
     out["min_conviction"] = MIN_CONVICTION
     out["board_counts"] = {
         "total": len(board),
@@ -558,6 +564,22 @@ def main():
     # otherwise fine. A missing output folder is not a reason to throw away a
     # completed export.
     out.parent.mkdir(parents=True, exist_ok=True)
+
+    # Refuse to publish a board that says it has rows but ships none. The
+    # `out["board"] = board` assignment was once dropped by accident: counts
+    # kept reporting 183 while the array serialised empty, the export exited 0,
+    # and the app rendered nothing for days. Every summary line looked healthy,
+    # which is exactly why it went unnoticed — so the check is on the payload
+    # itself, not on the variables used to build it.
+    n_board = len(data.get("board") or [])
+    n_claim = (data.get("board_counts") or {}).get("total", 0)
+    if n_claim and not n_board:
+        print(f"REFUSING TO WRITE: board_counts says {n_claim} rows but the "
+              f"board array is empty — the payload would render a blank app.")
+        raise SystemExit(1)
+    if n_board and abs(n_board - n_claim) > 0:
+        print(f"  warning: board has {n_board} rows but counts say {n_claim}")
+
     out.write_text(json.dumps(data, allow_nan=False, separators=(",", ":")),
                    encoding="utf-8")
     rec = data["record"] or {}
