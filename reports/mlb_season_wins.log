@@ -1,0 +1,221 @@
+fitted 12,197 games, 32 teams
+standings for 30 teams, 629 games left to play
+priced 629 of 629 remaining games
+simulated 629 of 629 priced games
+
+team                         now    proj    p5   p95
+  Brewers                 74-46     96.8    91   102
+  Rays                    73-46     95.4    90   101
+  Dodgers                 72-48     95.2    90   100
+  Braves                  72-48     93.1    88    98
+  Cubs                    70-50     91.5    86    97
+  Yankees                 67-52     90.3    85    96
+  Red Sox                 64-55     86.5    81    92
+  D-backs                 64-57     85.3    80    91
+
+market                               model    ask    edge  spread
+  LAA 55+ wins                        100%   0.99     +1%      4c
+  LAA 60+ wins                         95%   0.85    +10%     10c
+  LAA 65+ wins                         52%   0.35    +17%      4c  <--
+  LAA 70+ wins                          6%   0.05     +1%      3c
+  LAA 75+ wins                          0%   0.09     -9%      9c
+  LAA 80+ wins                          0%   0.04     -4%      4c
+  LAA 85+ wins                          0%   0.02     -2%      2c
+  AZ 65+ wins                         100%   1.00     +0%      6c
+  AZ 70+ wins                         100%   1.00     +0%      6c
+  AZ 75+ wins                         100%   0.99     +1%      3c
+  AZ 80+ wins                          97%   0.98     -1%     10c
+  AZ 85+ wins                          60%   0.61     -1%      6c
+  AZ 90+ wins                          10%   0.18     -8%     11c
+  AZ 95+ wins                           0%   0.06     -6%      6c
+  BAL 65+ wins                        100%   1.00     +0%      6c
+  BAL 70+ wins                        100%   0.99     +1%      5c
+  BAL 75+ wins                         86%   0.85     +1%      8c
+  BAL 80+ wins                         31%   0.41    -10%      4c
+  BAL 85+ wins                          2%   0.11     -9%      9c
+  BAL 90+ wins                          0%   0.05     -5%      5c
+  BAL 95+ wins                          0%   0.04     -4%      4c
+  BOS 75+ wins                        100%   1.00     -0%      2c
+  BOS 80+ wins                         98%   0.99     -1%      4c
+  BOS 85+ wins                         73%   0.82     -9%      3c
+  BOS 90+ wins                         18%   0.32    -14%      2c  <--
+  BOS 95+ wins                          1%   0.06     -5%      2c
+  BOS 100+ wins                         0%   0.04     -4%      4c
+  BOS 105+ wins                         0%   0.02     -2%      2c
+  CHC 75+ wins                        100%   1.00     +0%      8c
+  CHC 80+ wins                        100%   0.99     +1%      4c
+  CHC 85+ wins                         99%   0.99     -0%      3c
+  CHC 90+ wins                         74%   0.95    -21%     45c
+  CHC 95+ wins                         18%   0.68    -50%     51c
+  CHC 100+ wins                         1%   0.89    -88%     89c
+  CHC 105+ wins                         0%   0.05     -5%      5c
+  CIN 65+ wins                        100%   0.99     +1%      5c
+  CIN 70+ wins                         99%   0.96     +3%     10c
+  CIN 75+ wins                         73%   0.51    +22%      6c  <--
+  CIN 80+ wins                         19%   0.17     +2%     11c
+  CIN 85+ wins                          1%   0.02     -1%      2c
+  CIN 90+ wins                          0%   0.01     -1%      1c
+  CIN 95+ wins                          0%   0.04     -4%      4c
+  CLE 65+ wins                        100%   1.00     +0%     39c
+  CLE 70+ wins                        100%   1.00     -0%     39c
+  CLE 75+ wins                         93%   0.96     -3%     22c
+  CLE 80+ wins                         46%   0.86    -40%     38c
+  CLE 85+ wins                          5%   0.28    -23%     16c
+  CLE 90+ wins                          0%   0.15    -15%     14c
+  CLE 95+ wins                          0%   0.21    -21%     21c
+  COL 50+ wins                        100%   1.00     +0%      4c
+  COL 55+ wins                        100%   0.98     +2%      3c
+  COL 60+ wins                         96%   0.98     -2%     25c
+  COL 65+ wins                         56%   0.40    +16%     10c
+  DET 75+ wins                         97%   0.94     +3%     30c
+  DET 80+ wins                         66%   0.74     -8%     12c
+  DET 85+ wins                         13%   0.26    -13%     14c
+  DET 90+ wins                          0%   0.11    -11%     11c
+  DET 95+ wins                          0%   0.04     -4%      4c
+  DET 100+ wins                         0%   0.05     -5%      5c
+  DET 105+ wins                         0%   0.03     -3%      3c
+  HOU 65+ wins                        100%   1.00     +0%     39c
+  HOU 70+ wins                        100%   0.99     +1%     23c
+  HOU 75+ wins                         99%   0.99     +0%     98c
+  HOU 80+ wins                         83%   0.83     -0%     11c
+  HOU 85+ wins                         26%   0.33     -7%     10c
+  HOU 90+ wins                          1%   0.24    -23%     24c
+  HOU 95+ wins                          0%   0.03     -3%      3c
+  KC 65+ wins                          87%   0.89     -2%     11c
+  KC 70+ wins                          33%   0.37     -4%      6c
+  KC 75+ wins                           2%   0.05     -3%      3c
+  KC 80+ wins                           0%   0.02     -2%      1c
+  KC 85+ wins                           0%   0.02     -2%      1c
+  KC 90+ wins                           0%   0.02     -2%      2c
+  KC 95+ wins                           0%   0.01     -1%      1c
+  LAD 85+ wins                        100%   1.00     -0%      2c
+  LAD 90+ wins                         96%   1.00     -4%      4c
+  LAD 95+ wins                         59%   0.96    -37%     23c
+  LAD 100+ wins                         9%   0.53    -44%      2c  <--
+  LAD 105+ wins                         0%   0.31    -31%     29c
+  LAD 110+ wins                         0%   0.03     -3%      3c
+  LAD 115+ wins                         0%   0.01     -1%      1c
+  WSH 60+ wins                        100%   1.00     +0%      5c
+  WSH 65+ wins                        100%   1.00     +0%      4c
+  WSH 70+ wins                        100%   0.98     +2%     13c
+  WSH 75+ wins                         93%   0.76    +17%      7c
+  WSH 80+ wins                         46%   0.40     +6%     36c
+  WSH 85+ wins                          4%   0.19    -15%     18c
+  NYM 75+ wins                         38%   0.41     -3%      1c
+  NYM 80+ wins                          3%   0.09     -6%      1c
+  NYM 85+ wins                          0%   0.02     -2%      1c
+  NYM 90+ wins                          0%   0.02     -2%      2c
+  NYM 95+ wins                          0%   0.02     -2%      2c
+  NYM 100+ wins                         0%   0.02     -2%      2c
+  NYM 105+ wins                         0%   0.01     -1%      1c
+  ATH 65+ wins                         72%   0.46    +26%      1c  <--
+  ATH 70+ wins                         17%   0.08     +9%      6c
+  ATH 75+ wins                          1%   0.01     -0%      1c
+  ATH 80+ wins                          0%   0.06     -6%      6c
+  ATH 85+ wins                          0%   0.04     -4%      4c
+  ATH 90+ wins                          0%   0.01     -1%      1c
+  ATH 95+ wins                          0%   0.02     -2%      2c
+  PIT 60+ wins                        100%   1.00     +0%      6c
+  PIT 65+ wins                        100%   1.00     +0%      6c
+  PIT 70+ wins                        100%   1.00     -0%      6c
+  PIT 75+ wins                         93%   0.88     +5%      7c
+  PIT 80+ wins                         47%   0.42     +5%      6c
+  PIT 85+ wins                          5%   0.12     -7%     10c
+  SD 75+ wins                         100%   0.99     +1%      7c
+  SD 80+ wins                          95%   0.88     +7%      7c
+  SD 85+ wins                          53%   0.74    -21%     66c
+  SD 90+ wins                           7%   0.86    -79%     84c
+  SD 95+ wins                           0%   0.03     -3%      3c
+  SD 100+ wins                          0%   0.09     -9%      9c
+  SD 105+ wins                          0%   0.08     -8%      8c
+  SEA 75+ wins                         85%   0.92     -7%     11c
+  SEA 80+ wins                         30%   0.49    -19%      2c  <--
+  SEA 85+ wins                          2%   0.08     -6%      1c
+  SEA 90+ wins                          0%   0.06     -6%      6c
+  SEA 95+ wins                          0%   0.04     -4%      4c
+  SEA 100+ wins                         0%   0.02     -2%      2c
+  SEA 105+ wins                         0%   0.04     -4%      4c
+  SF 65+ wins                          95%   0.89     +6%     29c
+  SF 70+ wins                          54%   0.81    -27%     65c
+  SF 75+ wins                           7%   0.82    -75%     81c
+  SF 80+ wins                           0%   0.03     -3%      2c
+  SF 85+ wins                           0%   0.08     -8%      7c
+  SF 90+ wins                           0%   0.07     -7%      7c
+  SF 95+ wins                           0%   0.01     -1%      1c
+  STL 60+ wins                        100%   1.00     +0%     20c
+  STL 65+ wins                        100%   1.00     +0%      2c
+  STL 70+ wins                        100%   0.99     +1%      5c
+  STL 75+ wins                         98%   0.98     -0%     22c
+  STL 80+ wins                         66%   0.97    -31%     94c
+  STL 85+ wins                         13%   0.10     +3%     10c
+  TB 70+ wins                         100%   1.00     +0%      1c
+  TB 75+ wins                         100%   1.00     +0%      1c
+  TB 80+ wins                         100%   0.99     +1%      1c
+  TB 85+ wins                         100%   0.99     +1%      3c
+  TB 90+ wins                          96%   0.95     +1%      5c
+  TB 95+ wins                          62%   0.63     -1%      7c
+  TEX 65+ wins                        100%   1.00     +0%      4c
+  TEX 70+ wins                        100%   1.00     -0%      6c
+  TEX 75+ wins                         98%   0.98     +0%      8c
+  TEX 80+ wins                         70%   0.80    -10%     11c
+  TEX 85+ wins                         15%   0.33    -18%     11c
+  TEX 90+ wins                          0%   0.04     -4%      2c
+  TEX 95+ wins                          0%   0.04     -4%      3c
+  TOR 75+ wins                         94%   0.82    +12%      1c  <--
+  TOR 80+ wins                         48%   0.41     +7%     11c
+  TOR 85+ wins                          5%   0.12     -7%      9c
+  TOR 90+ wins                          0%   0.03     -3%      2c
+  TOR 95+ wins                          0%   0.03     -3%      3c
+  TOR 100+ wins                         0%   0.01     -1%      1c
+  TOR 105+ wins                         0%   0.01     -1%      1c
+  MIN 60+ wins                        100%   1.00     +0%     10c
+  MIN 65+ wins                        100%   1.00     +0%     10c
+  MIN 70+ wins                        100%   0.99     +1%     10c
+  MIN 75+ wins                         96%   0.91     +5%     13c
+  MIN 80+ wins                         58%   0.53     +5%     42c
+  MIN 85+ wins                          9%   0.15     -6%     14c
+  PHI 75+ wins                        100%   0.99     +1%     18c
+  PHI 80+ wins                         95%   0.99     -4%     94c
+  PHI 85+ wins                         54%   0.97    -43%     66c
+  PHI 90+ wins                          7%   0.47    -40%     41c
+  PHI 95+ wins                          0%   0.19    -19%     18c
+  PHI 100+ wins                         0%   0.05     -5%      4c
+  PHI 105+ wins                         0%   0.29    -29%     29c
+  ATL 75+ wins                        100%   1.00     +0%      1c
+  ATL 80+ wins                        100%   1.00     +0%      4c
+  ATL 85+ wins                        100%   0.99     +1%     19c
+  ATL 90+ wins                         87%   0.96     -9%     10c
+  ATL 95+ wins                         33%   0.57    -24%     13c
+  ATL 100+ wins                         2%   0.23    -21%     12c
+  ATL 105+ wins                         0%   0.06     -6%      3c
+  CWS 60+ wins                        100%   1.00     +0%      1c
+  CWS 65+ wins                        100%   1.00     +0%      2c
+  CWS 70+ wins                        100%   1.00     +0%      9c
+  CWS 75+ wins                         99%   0.99     +0%      8c
+  CWS 80+ wins                         83%   0.97    -14%     34c
+  CWS 85+ wins                         29%   0.69    -40%     49c
+  MIA 65+ wins                        100%   1.00     +0%      6c
+  MIA 70+ wins                        100%   0.99     +1%      4c
+  MIA 75+ wins                         98%   0.96     +2%      7c
+  MIA 80+ wins                         73%   0.51    +22%      6c  <--
+  MIA 85+ wins                         17%   0.17     +0%      6c
+  MIA 90+ wins                          1%   0.07     -6%      7c
+  MIA 95+ wins                          0%   0.04     -4%      4c
+  NYY 75+ wins                        100%   1.00     +0%      3c
+  NYY 80+ wins                        100%   1.00     -0%      4c
+  NYY 85+ wins                         96%   0.99     -3%     11c
+  NYY 90+ wins                         59%   0.73    -14%      7c
+  NYY 95+ wins                         10%   0.23    -13%      7c
+  NYY 100+ wins                         0%   0.02     -2%      2c
+  NYY 105+ wins                         0%   0.01     -1%      1c
+  MIL 75+ wins                        100%   1.00     +0%      1c
+  MIL 80+ wins                        100%   1.00     +0%      1c
+  MIL 85+ wins                        100%   0.99     +1%      3c
+  MIL 90+ wins                         99%   0.96     +3%      3c
+  MIL 95+ wins                         76%   0.81     -5%     10c
+  MIL 100+ wins                        20%   0.32    -12%      8c
+  MIL 105+ wins                         1%   0.09     -8%      5c
+
+Edge shown is model minus ask. It is NOT a recommendation — on the
+game market, disagreement this large measured as model error, not
+opportunity. Log these and score them before believing any of it.
