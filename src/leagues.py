@@ -48,6 +48,19 @@ SERIES = {
     "KXELITESERIENGAME": ("soccer", "Norway Eliteserien"),
     "KXSCOTTISHPREMGAME": ("soccer", "Scotland Premiership"),
     "KXJLEAGUEGAME": ("soccer", "Japan J1 League"),
+    # The European majors. Absent until now because their seasons had not
+    # started, so Kalshi listed no markets and nothing forced the mapping —
+    # they surfaced on the board as raw tickers ("KXEPLGAME") the moment
+    # fixtures appeared. These are the divisions the model has the most data
+    # for and the best-connected rating graphs, so they matter more than the
+    # minor leagues that happened to be in season first.
+    "KXEPLGAME": ("soccer", "England Premier League"),
+    "KXSERIEAGAME": ("soccer", "Italy Serie A"),
+    "KXLIGUE1GAME": ("soccer", "France Ligue 1"),
+    "KXBUNDESLIGAGAME": ("soccer", "Germany Bundesliga"),
+    "KXEREDIVISIEGAME": ("soccer", "Netherlands Eredivisie"),
+    "KXPRIMEIRAGAME": ("soccer", "Portugal Primeira Liga"),
+    "KXUCLGAME": ("soccer", "UEFA Champions League"),
     "KXLEAGUESCUPGAME": ("soccer", "Leagues Cup"),
     "KXMLBGAME": ("baseball", "MLB"),
     "KXWNBAGAME": ("basketball", "WNBA"),
