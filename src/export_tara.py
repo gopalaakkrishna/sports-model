@@ -549,6 +549,45 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                           "The interval sits entirely below zero.")),
         })
 
+    # ── the edge lab: live status of the pair experiment ────────────────
+    # fetch_live_pairs.py snapshots Kalshi and DraftKings simultaneously;
+    # pair_analysis.py settles them nightly. This block is a read-only
+    # summary so the user can watch the verdict form on the site instead of
+    # asking. It never fetches anything — files may simply not exist yet.
+    try:
+        lp = pd.read_csv(ROOT / "data" / "live_pairs.csv")
+        lp["ts_utc"] = pd.to_datetime(lp["ts_utc"], errors="coerce")
+        last = lp.sort_values("ts_utc").groupby("k_ticker", as_index=False).last()
+        gap = (last["k_mid"] - last["book_prob"]).abs()
+        fee = 0.07 * last["k_ask"] * (1 - last["k_ask"])
+        tradeable = int(((last["book_prob"] - last["k_ask"]) > fee + 0.02).sum())
+        settled_n, edge_units = 0, None
+        rp = ROOT / "data" / "live_pairs_results.csv"
+        if rp.exists():
+            rr = pd.read_csv(rp, dtype=str)
+            j = last.merge(rr, on="k_ticker", how="inner")
+            settled_n = len(j)
+            t = j[(j["book_prob"] - j["k_ask"])
+                  > 0.07 * j["k_ask"] * (1 - j["k_ask"]) + 0.02]
+            if len(t):
+                won = (t["result"] == "yes").astype(int)
+                edge_units = float((won - t["k_ask"]
+                                    - 0.07 * t["k_ask"] * (1 - t["k_ask"])).sum())
+        out["edge_lab"] = clean_dict({
+            "legs": int(len(last)), "games": int(lp["espn_id"].nunique()),
+            "snapshots": int(len(lp)), "settled": settled_n, "target": 150,
+            "mean_gap": float(gap.mean()) if len(gap) else None,
+            "tradeable_now": tradeable,
+            "paper_units": edge_units,
+            "last_snapshot": (lp["ts_utc"].max().isoformat(timespec="minutes")
+                              if lp["ts_utc"].notna().any() else None),
+            "note": ("Kalshi vs DraftKings, priced at the same instant. "
+                     "The value lane opens only if the gap survives spread "
+                     "and fees at 150 settled legs."),
+        })
+    except (OSError, ValueError, KeyError):
+        pass
+
     # Upcoming clocks were resolved before locking; the ledger rows still need
     # theirs, and they only exist as "Home v Away (date)" strings.
     n_open = fill_start(out["open"], st, "event")
