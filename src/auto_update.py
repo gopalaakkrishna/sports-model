@@ -70,6 +70,7 @@ SELF_STATE_PATHS = [
     # accumulates across CI runs, so it must ride git like the ledger does.
     "data/live_pairs.csv",
     "data/live_pairs_results.csv",
+    "data/processed/season_wins_log.csv",
     # The published board itself. This repo is public, so the app fetches it
     # straight from raw.githubusercontent.com at runtime rather than having it
     # baked into a Vercel build — which means an update is visible to every
@@ -279,6 +280,11 @@ def _run(args) -> int:
         # verdict. Pure measurement, non-fatal.
         log("scoring kalshi/book price pairs")
         run("pair_analysis.py", timeout=600)
+        # Daily snapshot of MLB season win totals vs Kalshi — the "season
+        # market is softer than the game market" hypothesis. Logged, never
+        # traded; October settles it.
+        log("logging season win totals vs market")
+        run("mlb_season_wins.py", ["--log", "--sims", "10000"], timeout=900)
 
     # Re-price on EVERY run, not just the full one. The first version only
     # re-predicted in full mode, so the board carried prices up to 24h old while

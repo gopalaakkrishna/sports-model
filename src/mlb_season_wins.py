@@ -121,10 +121,18 @@ def kalshi_wins_markets() -> dict:
     return out
 
 
+LOG = ROOT / "data" / "processed" / "season_wins_log.csv"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sims", type=int, default=20000)
     ap.add_argument("--season", type=int, default=None)
+    ap.add_argument("--log", action="store_true",
+                    help="append today's model-vs-market rows to "
+                         "data/processed/season_wins_log.csv so the season "
+                         "market hypothesis can actually be scored in "
+                         "October instead of remaining an anecdote")
     args = ap.parse_args()
 
     today = pd.Timestamp.now().normalize()
@@ -204,7 +212,8 @@ def main() -> int:
         "White Sox": "CWS", "Yankees": "NYY",
     }
     print(f"\n{'market':<34}{'model':>8}{'ask':>7}{'edge':>8}{'spread':>8}")
-    hits = 0
+    hits, log_rows = 0, []
+    stamp = pd.Timestamp.now("UTC").strftime("%Y-%m-%dT%H:%M")
     for tid, i in idx.items():
         ab = ABBR.get(name[tid])
         if not ab or ab not in mk:
@@ -217,8 +226,17 @@ def main() -> int:
             print(f"  {ab + ' ' + str(thresh) + '+ wins':<32}{p:>8.0%}{ask:>7.2f}"
                   f"{edge:>+8.0%}{sp * 100:>7.0f}c{flag}")
             hits += 1
+            log_rows.append({"ts_utc": stamp, "team": ab, "threshold": thresh,
+                             "wins_now": st[tid][1], "losses_now": st[tid][2],
+                             "model_p": round(p, 4), "ask": ask, "bid": bid,
+                             "sims": args.sims, "games_priced": len(probs)})
     if not hits:
         print("  (no team-name matches against open markets)")
+    if args.log and log_rows:
+        df = pd.DataFrame(log_rows)
+        LOG.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(LOG, mode="a", header=not LOG.exists(), index=False)
+        print(f"\nlogged {len(df)} rows to {LOG.name}")
     print("\nEdge shown is model minus ask. It is NOT a recommendation — on the")
     print("game market, disagreement this large measured as model error, not")
     print("opportunity. Log these and score them before believing any of it.")
