@@ -448,6 +448,19 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             "start": o["start"], "side": o.get("market"),
             "tracked": True, "ledger_id": o["id"],
             "stale_days": o.get("stale_days")})
+    # MAJORS ONLY (user decision, 2026-08-14). Narrowing kalshi_edge stopped
+    # NEW minor-league pricing, but stale prediction reports from earlier full
+    # runs kept resurrecting J-League/2. Bundesliga rows onto the board, so the
+    # cut is enforced here — the one place every row passes through. Tracked
+    # rows are exempt: a pick already committed to the record stays visible
+    # until it settles, whatever league it is in.
+    MAJORS = {
+        "MLB", "NFL", "WNBA", "USA MLS", "Mexico Liga MX",
+        "England Premier League", "Spain La Liga", "Italy Serie A",
+        "Germany Bundesliga", "France Ligue 1", "UEFA Champions League",
+        "The Hundred",  # short season, ends Aug 31 — drops off naturally
+    }
+    board = [b for b in board if b.get("tracked") or b.get("league") in MAJORS]
     board.sort(key=lambda x: (x["start"] is None, str(x["start"] or "")))
     # A row is "high conviction" when the model both agrees with the market
     # (ALIGNED — the band where it has tracked the closing line) AND clears the
