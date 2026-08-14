@@ -65,6 +65,11 @@ SELF_STATE_PATHS = [
     "data/processed/mlb_calibration.json",
     "data/processed/inplay_calibration.json",
     "data/processed/best_params.json",
+    # Simultaneous Kalshi/bookmaker price snapshots and their settlement
+    # cache. Append-only measurement data — the whole point is that it
+    # accumulates across CI runs, so it must ride git like the ledger does.
+    "data/live_pairs.csv",
+    "data/live_pairs_results.csv",
     # The published board itself. This repo is public, so the app fetches it
     # straight from raw.githubusercontent.com at runtime rather than having it
     # baked into a Vercel build — which means an update is visible to every
@@ -278,6 +283,12 @@ def _run(args) -> int:
     log("re-pricing against the live market")
     for name, script in PREDICT:
         run(script, timeout=1800)
+
+    # Snapshot Kalshi and DraftKings prices for the same games at the same
+    # moment. Pure measurement — feeds pair_analysis.py, touches nothing
+    # else — so a failure here must never block settling or the board.
+    log("snapshotting kalshi/book price pairs")
+    run("fetch_live_pairs.py", timeout=600)
 
     # Pull the shared ledger BEFORE settling, so this run sees predictions
     # another runner locked that this checkout does not have yet — otherwise
