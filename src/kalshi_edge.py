@@ -54,14 +54,15 @@ SERIES_COUNTRY = {
     "KXLIGUE1GAME": ("France", "F1"),
     "KXMLSGAME": ("USA", "USA:MLS"),
     "KXLIGAMXGAME": ("Mexico", "MEX:Liga MX"),
-    # Added after surveying Kalshi for actual liquidity. These four are quoted
-    # with real orderbook depth and the model already has their history — pure
-    # coverage gain, no new data required. They are also in season during the
-    # European summer, when the big leagues are dark.
-    "KXALLSVENSKANGAME": ("Sweden", "SWE:Allsvenskan"),
-    "KXSCOTTISHPREMGAME": ("Scotland", "SC0"),
-    "KXJLEAGUEGAME": ("Japan", "JPN:J1 League"),
-    "KXELITESERIENGAME": ("Norway", "NOR:Eliteserien"),
+    # Deliberately ABSENT: 2. Bundesliga, Allsvenskan, Eliteserien, Scottish
+    # Premiership, J-League. They were added during the European summer for
+    # coverage while the big leagues were dark, and cut 2026-08-14 when those
+    # leagues came back. Two reasons, in order: the user asked the board to
+    # narrow to major leagues; and the model's ratings are only as good as the
+    # fixture graph behind them — the Nordic and second-tier graphs are thin
+    # and poorly connected, so their predictions carry the most estimation
+    # error exactly where the markets are least liquid. Their already-locked
+    # picks still settle (settle.py keeps the full series list on purpose).
 }
 
 FEE_RATE = 0.07  # Kalshi trading fee coefficient

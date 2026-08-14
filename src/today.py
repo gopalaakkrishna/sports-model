@@ -146,9 +146,12 @@ def main():
 
     # Start times: Kalshi for soccer/WNBA, StatsAPI for MLB.
     starts: dict[str, datetime] = {}
-    for series in ("KXMLSGAME", "KXLALIGAGAME", "KXBUNDESLIGA2GAME",
-                   "KXLIGAMXGAME", "KXALLSVENSKANGAME", "KXSCOTTISHPREMGAME",
-                   "KXJLEAGUEGAME", "KXELITESERIENGAME", "KXWNBAGAME"):
+    # Majors only — mirrors kalshi_edge.SERIES_COUNTRY after the 2026-08-14
+    # narrowing; the minors' start times are no longer needed because nothing
+    # prices them anymore.
+    for series in ("KXMLSGAME", "KXLALIGAGAME", "KXEPLGAME", "KXSERIEAGAME",
+                   "KXBUNDESLIGAGAME", "KXLIGUE1GAME", "KXLIGAMXGAME",
+                   "KXWNBAGAME"):
         for ev, e in kalshi_events(series).items():
             if not e["start"]:
                 continue

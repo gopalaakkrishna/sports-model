@@ -274,6 +274,11 @@ def _run(args) -> int:
     if args.mode == "full":
         log("refreshing sources")
         run("refresh_all.py", timeout=3600)
+        # Daily scoring of the simultaneous price pairs: pulls settlement
+        # results for finished games into the cache and logs the current
+        # verdict. Pure measurement, non-fatal.
+        log("scoring kalshi/book price pairs")
+        run("pair_analysis.py", timeout=600)
 
     # Re-price on EVERY run, not just the full one. The first version only
     # re-predicted in full mode, so the board carried prices up to 24h old while
