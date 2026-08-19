@@ -479,6 +479,128 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
         b["high_conviction"] = bool(
             str(b.get("advice") or "") == "ALIGNED"
             and float(b.get("model") or 0) >= MIN_CONVICTION)
+    # ── every call on a fixture, under that fixture ─────────────────────
+    #
+    # A match is the unit a person thinks in: they watch one game, and they
+    # want to see every bet they hold on it together, with its kick-off time.
+    # Shipping each market type as its own top-level section fragmented that —
+    # the winner call sat on the board while the total sat in a separate lane
+    # further down the page, with nothing tying them to the same game.
+    #
+    # So each board row gains `calls`: one entry per market priced on that
+    # fixture, the winner first. The row keeps its existing top-level fields
+    # (pick/model/mkt/advice/tracked) because the sport filters, counts and
+    # date grouping all read them — this is additive, so nothing that already
+    # works has to change shape.
+    #
+    # `lane` is what stops the two being confused. The winner call is in the
+    # RECORD; totals are PAPER, since the model beats a base rate on them but
+    # not the closing line. Keeping them visually together while labelled
+    # apart is the honest arrangement: same game, different standing.
+    for b in board:
+        primary = {
+            "market": "WINNER",
+            "bet": b.get("pick"),
+            "model": b.get("model"),
+            "mkt": b.get("mkt"),
+            "advice": b.get("advice"),
+            "label": b.get("label"),
+            "tracked": bool(b.get("tracked")),
+            "high_conviction": bool(b.get("high_conviction")),
+            "lane": "record",
+        }
+        b["calls"] = [clean_dict(primary)]
+
+    # Attach the totals calls to the fixture they belong to.
+    n_attached, n_orphan = 0, 0
+    try:
+        import glob as _glob
+        cands = sorted(_glob.glob(str(ROOT / "reports" / "totals_*.csv")))
+        if cands:
+            td = pd.read_csv(cands[-1])
+            if "pick" in td.columns:
+                td = td[td["pick"] == True]
+                # Index by TEAMS, carrying each row's date, rather than by
+                # (teams, date) alone. Kalshi's occurrence_datetime on a
+                # totals market is the expected EXPIRATION, not kick-off — a
+                # 23:00 ET fixture is stamped 04:00Z the next day, so an exact
+                # date key put the call one day away from its own match and
+                # stranded it on a row of its own. Same trap that once made
+                # every winning leg in the price collector look like 0.99.
+                #
+                # Teams still have to match exactly; only the date is allowed
+                # to be a day out, and the nearest fixture wins. Multi-game
+                # series are why the date cannot simply be dropped.
+                by_teams = {}
+                for b in board:
+                    by_teams.setdefault(
+                        _teams(b.get("match") or ""), []).append(
+                            (_et_date(b.get("start")), b))
+
+                def _find(teams, date):
+                    cands = by_teams.get(teams) or []
+                    if not cands:
+                        return None
+                    for d, row in cands:
+                        if d == date:
+                            return row
+                    if date is None:
+                        return cands[0][1]
+                    best, best_gap = None, None
+                    for d, row in cands:
+                        if d is None:
+                            continue
+                        try:
+                            gap = abs((datetime.fromisoformat(d)
+                                       - datetime.fromisoformat(date)).days)
+                        except ValueError:
+                            continue
+                        if gap <= 1 and (best_gap is None or gap < best_gap):
+                            best, best_gap = row, gap
+                    return best
+                for _, r in td.iterrows():
+                    call = clean_dict({
+                        "market": "TOTAL",
+                        "bet": f"OVER {r.get('line')} GOALS",
+                        "model": r.get("model"),
+                        "mkt": r.get("ask"),
+                        "advice": "ALIGNED",
+                        "label": "matches market",
+                        "tracked": False,
+                        "high_conviction": True,
+                        "lane": "paper",
+                    })
+                    row = _find(_teams(str(r.get("match") or "")),
+                                _et_date(r.get("when")))
+                    if row is not None:
+                        row["calls"].append(call)
+                        n_attached += 1
+                        continue
+                    # No winner row for this fixture — the totals market can
+                    # be listed when the winner market is not, and a call with
+                    # nowhere to sit would silently vanish. Give it its own
+                    # match row rather than dropping it.
+                    board.append({
+                        "sport": "soccer", "sport_label": "Soccer",
+                        "league": LG.pretty(str(r.get("league"))),
+                        "match": r.get("match"),
+                        "start": r.get("when"),
+                        "pick": None, "model": None, "mkt": None,
+                        "advice": None, "label": None,
+                        "tracked": False, "ledger_id": None,
+                        "stale_days": None, "mkt_now": None,
+                        "high_conviction": False,
+                        "calls": [call],
+                    })
+                    n_orphan += 1
+    except (OSError, ValueError, KeyError) as e:
+        print(f"  totals calls not attached: {e}")
+
+    board.sort(key=lambda x: (x["start"] is None, str(x["start"] or "")))
+    print(f"  calls: {sum(len(b['calls']) for b in board)} across "
+          f"{len(board)} fixtures ({n_attached} totals attached, "
+          f"{n_orphan} on their own row)")
+
     # Ship the board itself. This assignment was dropped when the
     # high_conviction flag was added, so for several runs the board was built,
     # counted, and then thrown away — board_counts said 183 while the array
@@ -619,8 +741,13 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                     "ticker": r.get("ticker"),
                 }))
             rows.sort(key=lambda x: (x.get("start") is None, str(x.get("start") or "")))
+            # `picks` is retained for anything reading the payload directly,
+            # but the board no longer renders it as its own section — every
+            # one of these also appears as a TOTAL call under its own match,
+            # which is where a person actually looks for it.
             out["totals"] = {
                 "picks": rows,
+                "rendered_inline": True,
                 "priced": int(len(td)),
                 "aligned": int(td["aligned"].sum()) if "aligned" in td else None,
                 "floor": MIN_CONVICTION,
