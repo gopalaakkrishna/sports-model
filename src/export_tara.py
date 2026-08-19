@@ -745,9 +745,41 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             # but the board no longer renders it as its own section — every
             # one of these also appears as a TOTAL call under its own match,
             # which is where a person actually looks for it.
+            # The lane's own record, so it can be judged rather than just
+            # displayed. Computed here from the paper ledger, on the same
+            # win-rate-minus-breakeven basis the headline readiness uses —
+            # a lane scored by a different yardstick could not be compared
+            # against the winner board, which is the entire point of it.
+            paper = None
+            try:
+                import totals_ledger as TL
+                tl_rows = TL._load()
+                done = [x for x in tl_rows if x.get("won") is not None]
+                if done:
+                    w = sum(1 for x in done if x["won"])
+                    n = len(done)
+                    px = [float(x["market_prob"]) for x in done]
+                    fee = sum(0.07 * q * (1 - q) for q in px) / n
+                    be = sum(px) / n * VIG + fee
+                    units = sum((1.0 if x["won"] else 0.0)
+                                - float(x["market_prob"])
+                                - 0.07 * float(x["market_prob"])
+                                * (1 - float(x["market_prob"])) for x in done)
+                    paper = clean_dict({
+                        "n": n, "wins": w, "losses": n - w,
+                        "win_rate": w / n, "breakeven": be,
+                        "edge": w / n - be, "units": units,
+                        "open": len(tl_rows) - n,
+                    })
+                elif tl_rows:
+                    paper = {"n": 0, "open": len(tl_rows)}
+            except (ImportError, OSError, ValueError, KeyError):
+                pass
+
             out["totals"] = {
                 "picks": rows,
                 "rendered_inline": True,
+                "paper_record": paper,
                 "priced": int(len(td)),
                 "aligned": int(td["aligned"].sum()) if "aligned" in td else None,
                 "floor": MIN_CONVICTION,

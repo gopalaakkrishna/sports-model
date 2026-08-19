@@ -66,6 +66,10 @@ SELF_STATE_PATHS = [
     "data/processed/inplay_calibration.json",
     "data/processed/best_params.json",
     "data/processed/totals_calibration.json",
+    # The totals paper lane's own record. Separate from ledger.jsonl on
+    # purpose (see totals_ledger.py) but just as much a record — if CI does
+    # not push it back, every locked paper pick vanishes with the checkout.
+    "data/processed/totals_ledger.jsonl",
     # Simultaneous Kalshi/bookmaker price snapshots and their settlement
     # cache. Append-only measurement data — the whole point is that it
     # accumulates across CI runs, so it must ride git like the ledger does.
@@ -315,6 +319,13 @@ def _run(args) -> int:
 
     log("settling finished games")
     run("settle.py", timeout=900)
+
+    # The totals paper lane records and settles itself. It runs AFTER
+    # totals_predict has written today's report and settles from Kalshi's own
+    # result, so a lane that only displayed picks now actually accumulates
+    # the evidence it exists to produce.
+    log("recording and settling the totals paper lane")
+    run("totals_ledger.py", timeout=600)
 
     # Push again after settling so the outcomes this run resolved are shared
     # immediately, rather than waiting for the next run's pre-settle pull.
