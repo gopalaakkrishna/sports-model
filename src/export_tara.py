@@ -591,6 +591,52 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                           "The interval sits entirely below zero.")),
         })
 
+    # ── totals lane: over 2.5 goals, paper-tracked separately ───────────
+    # A second market type on fixtures the winner board already prices, which
+    # is where extra pick volume comes from without touching the leagues the
+    # user asked to keep (majors only). Kept in its OWN lane and never merged
+    # into the headline record, for two reasons: the research supports only
+    # the calibrated OVER side (unders overstated by 11 points, BTTS no skill
+    # at all), and the model does not beat the closing line here any more than
+    # it does on winners. Treating these as proven picks would import an
+    # unearned claim into a record whose whole value is that it is honest.
+    try:
+        import glob as _glob
+        cands = sorted(_glob.glob(str(ROOT / "reports" / "totals_*.csv")))
+        if cands:
+            td = pd.read_csv(cands[-1])
+            picks = td[td["pick"] == True] if "pick" in td else td.iloc[0:0]
+            rows = []
+            for _, r in picks.iterrows():
+                rows.append(clean_dict({
+                    "match": r.get("match"),
+                    "league": LG.pretty(str(r.get("league"))),
+                    "bet": f"OVER {r.get('line')} GOALS",
+                    "model": r.get("model"),
+                    "mkt": r.get("ask"),
+                    "gap": r.get("gap"),
+                    "start": r.get("when"),
+                    "ticker": r.get("ticker"),
+                }))
+            rows.sort(key=lambda x: (x.get("start") is None, str(x.get("start") or "")))
+            out["totals"] = {
+                "picks": rows,
+                "priced": int(len(td)),
+                "aligned": int(td["aligned"].sum()) if "aligned" in td else None,
+                "floor": MIN_CONVICTION,
+                "source": Path(cands[-1]).name,
+                "note": ("Over 2.5 goals on fixtures already on the board. "
+                         "Paper only: the model beats a base rate on totals "
+                         "but not the closing line (blend weight 0.00), so "
+                         "these test whether the aligned+floor filter holds "
+                         "on a second market — they are not a proven edge. "
+                         "Unders and both-teams-to-score are excluded: "
+                         "measured at 51% actual against 63% stated, and no "
+                         "skill at all, respectively."),
+            }
+    except (OSError, ValueError, KeyError):
+        pass
+
     # ── the edge lab: live status of the pair experiment ────────────────
     # fetch_live_pairs.py snapshots Kalshi and DraftKings simultaneously;
     # pair_analysis.py settles them nightly. This block is a read-only

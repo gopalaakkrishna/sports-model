@@ -116,6 +116,10 @@ def run(
                         "m_draw": pred["p_draw"],
                         "m_away": pred["p_away"],
                         "m_over25": pred["p_over25"],
+                        # Recorded so the totals/BTTS markets can be scored on
+                        # the same walk-forward run as the winner market. The
+                        # model already computes these; nothing consumed them.
+                        "m_btts": pred["p_btts"],
                         "lam_h": pred["lambda_home"],
                         "lam_a": pred["lambda_away"],
                         "PSH": m["PSH"], "PSD": m["PSD"], "PSA": m["PSA"],

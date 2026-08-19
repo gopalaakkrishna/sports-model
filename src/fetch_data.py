@@ -53,6 +53,15 @@ KEEP = [
     "AvgH", "AvgD", "AvgA",         # market average closing odds
     "MaxH", "MaxD", "MaxA",         # best available closing odds
     "B365H", "B365D", "B365A",      # Bet365, deepest history
+    # Over/under 2.5 CLOSING odds. Absent until 2026-08-19, which is why the
+    # totals market could never be compared against the line retrospectively —
+    # we had the goals but not the price. "C" is the closing quote; the
+    # opening one is the wrong benchmark because it has not absorbed team news.
+    # Pinnacle first (sharpest), market average as the fallback that survives
+    # Pinnacle's withdrawal from the feed in 2025/26.
+    "PC>2.5", "PC<2.5",             # Pinnacle closing over/under
+    "AvgC>2.5", "AvgC<2.5",         # market average closing over/under
+    "MaxC>2.5", "MaxC<2.5",         # best available closing over/under
 ]
 NUMERIC = [c for c in KEEP if c not in ("Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR")]
 

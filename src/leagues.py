@@ -36,6 +36,17 @@ DIVISIONS = {
     "RUS": "Russia Premier League", "AUT": "Austria Bundesliga",
     "SWZ": "Switzerland Super League",
     "LC": "Leagues Cup",
+    # The year-round leagues are keyed by country code above, but the predict
+    # scripts pass a "COUNTRY:League" price division (kalshi_edge and
+    # totals_predict both do). Without these the board printed a raw
+    # "USA:MLS" where every other row showed a competition name.
+    "USA:MLS": "USA MLS",
+    "MEX:Liga MX": "Mexico Liga MX",
+    "JPN:J1 League": "Japan J1 League",
+    "NOR:Eliteserien": "Norway Eliteserien",
+    "SWE:Allsvenskan": "Sweden Allsvenskan",
+    "ARG:Liga Profesional": "Argentina Liga Profesional",
+    "BRA:Serie A": "Brazil Serie A",
 }
 
 # Kalshi series ticker -> (sport, league)

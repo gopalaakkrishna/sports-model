@@ -65,6 +65,7 @@ SELF_STATE_PATHS = [
     "data/processed/mlb_calibration.json",
     "data/processed/inplay_calibration.json",
     "data/processed/best_params.json",
+    "data/processed/totals_calibration.json",
     # Simultaneous Kalshi/bookmaker price snapshots and their settlement
     # cache. Append-only measurement data — the whole point is that it
     # accumulates across CI runs, so it must ride git like the ledger does.
@@ -128,6 +129,11 @@ def _locked():
 # into reports/; export_tara reads whatever is there.
 PREDICT = [
     ("soccer", "kalshi_edge.py"),
+    # Total goals on the same fixtures kalshi_edge already prices. Roughly
+    # triples soccer pick volume from a model that is already fitted; see
+    # totals_predict.py for what the research does and does not support
+    # (calibrated OVER 2.5 only, majors only, no edge over the line).
+    ("soccer totals", "totals_predict.py"),
     ("mlb", "mlb_predict.py"),
     ("wnba", "wnba_kalshi.py"),
     ("cricket", "hundred_predict.py"),

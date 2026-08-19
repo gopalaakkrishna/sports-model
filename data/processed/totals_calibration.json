@@ -1,0 +1,21 @@
+{
+  "a": 0.6681171116861344,
+  "b": 0.12504730363557803,
+  "n": 6732,
+  "fit_divisions": [
+    "D1",
+    "E0",
+    "F1",
+    "I1",
+    "MEX:Liga MX",
+    "SP1",
+    "USA:MLS"
+  ],
+  "fit_range": [
+    "2024-08-15",
+    "2026-08-01"
+  ],
+  "note": "Platt scaling for p_over25 on MAJOR divisions only. Raw model is overconfident in both tails. After calibration the OVER side at >=60% is honest (stated 64.7% / actual 64.1% on a held-out time split) but the UNDER side is NOT (stated 62.9% / actual 51.0%), so only the over side may be picked. BTTS showed no skill at all (-0.0002 vs a constant) and must never be picked.",
+  "under_side_usable": false,
+  "btts_usable": false
+}
