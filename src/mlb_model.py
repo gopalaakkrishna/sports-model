@@ -218,6 +218,23 @@ def predict(f: MLBFit, home: str, away: str,
         "p_home_uncalibrated": p_home_raw,
         "p_tie_regulation": p_tie,
         "exp_total": lam + mu,
+        # DO NOT TRADE THESE. Measured 2026-08-19 on a 6,572-game walk-forward
+        # (mlb_totals_bt.parquet): both lines score WORSE than a constant
+        # base rate (-0.0247 at 8.5, -0.0245 at 9.5) and are wildly
+        # overconfident — at a stated 80-90% the actual rate is 56%, and in
+        # the >=60% band the over side states 69.7% against an actual 54.4%.
+        #
+        # The cause is structural, not a tuning problem: runs are modelled as
+        # two independent Poissons, and baseball scoring is heavily
+        # overdispersed (one big inning breaks the assumption). The WINNER
+        # market survives this because the error largely cancels when you take
+        # the difference of two similarly-misspecified distributions; a TOTAL
+        # is exposed to it directly. Calibration cannot rescue a variance
+        # misspecification of this size — it only rescales.
+        #
+        # Soccer totals DID pass the same gate (see totals_predict.py), so the
+        # tempting inference "totals worked there, ship them here" is exactly
+        # the mistake this comment exists to stop.
         "p_over_8_5": float(m[total > 8.5].sum()),
         "p_over_9_5": float(m[total > 9.5].sum()),
         "eff_n_home": float(f.team_eff_n[i]),

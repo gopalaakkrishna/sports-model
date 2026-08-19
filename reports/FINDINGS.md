@@ -750,3 +750,63 @@ opportunity.
 
 The data now accumulates automatically, so the thin markets become testable
 with a few more months of fixtures.
+
+---
+
+## Totals markets: soccer works, baseball does not (2026-08-19)
+
+We priced one market per fixture while Kalshi listed roughly seven. Dixon-Coles
+and the MLB model both produce a full score matrix, and both already computed
+totals probabilities that nothing consumed. Kalshi lists ~450 open total
+markets at 1c spreads on leagues already on the board, so this was the largest
+available increase in pick volume with no new data source.
+
+Both were put through the same gate. They did not get the same answer.
+
+### Soccer — over 2.5 goals: SHIPPED (paper lane)
+
+Walk-forward, 24,898 matches (`totals_backtest.py`).
+
+| test | result |
+|---|---|
+| vs constant base rate | **+0.0067 log loss — beats it** |
+| vs closing line | 0.68110 vs 0.66899, **blend weight 0.00** |
+| 95% CI on that gap | [+0.00748, +0.01662] — market significantly sharper |
+| \|gap\|>10% subset | model 0.7418 vs market 0.6856 — disagreement is model error |
+
+Same verdict as the winner market: real information about goals, no edge over
+the price. Platt scaling on major divisions moved the over side from stated
+66.2%/actual 63.8% to **stated 64.7%/actual 64.1%** on a held-out time split.
+
+**Excluded:** the under side stays broken after calibration (stated 62.9%,
+actual 51.0%), and BTTS has **no skill at all** (−0.0002 against a constant).
+
+### MLB — over 8.5 / 9.5 runs: REJECTED
+
+Walk-forward, 6,572 games.
+
+| line | vs base rate | ≥60% band |
+|---|---|---|
+| over 8.5 | **−0.0247 — worse than a constant** | stated 69.7%, actual 54.4% |
+| over 9.5 | **−0.0245 — worse than a constant** | stated 68.5%, actual 48.1% |
+
+At a stated 80–90%, the actual rate is 56%. This is not a tuning problem. Runs
+are modelled as two independent Poissons, and baseball scoring is heavily
+overdispersed — one big inning breaks the assumption. The winner market
+survives because the error largely cancels when taking the difference of two
+similarly-misspecified distributions; a total is exposed to it directly.
+Calibration only rescales, so it cannot repair a variance misspecification of
+this size.
+
+**The lesson worth keeping:** "totals worked for soccer" does not transfer.
+The two models fail in different places, and each market has to earn its own
+evidence. A warning sits on the returned fields in `mlb_model.predict` so the
+numbers cannot be picked up without the measurement attached.
+
+### Data gap closed
+
+`fetch_data.KEEP` had never captured closing over/under odds, which is why the
+totals market could not be compared against the line retrospectively — we had
+the goals but not the price. Now keeping `PC/AvgC/MaxC >2.5`, rebuilt from the
+454 cached CSVs with no re-download: **49,858 matches with closing O/U prices
+across 21 divisions, 2019–2026.**

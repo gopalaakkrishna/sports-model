@@ -69,6 +69,12 @@ def run(start: str, end: str, xi: float, reg_team: float, reg_sp: float,
                 "p_home": p["p_home"],
                 "lam_h": p["lambda_home"], "lam_a": p["lambda_away"],
                 "exp_total": p["exp_total"],
+                # Total-runs probabilities off the same run matrix. The model
+                # has always produced these; nothing consumed them, so the
+                # totals market could not be scored on the same walk-forward
+                # as the winner market.
+                "p_over_8_5": p["p_over_8_5"],
+                "p_over_9_5": p["p_over_9_5"],
                 "actual_total": m["home_runs"] + m["away_runs"],
                 "eff_n_sp_home": p["eff_n_sp_home"],
                 "eff_n_sp_away": p["eff_n_sp_away"],
