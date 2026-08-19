@@ -526,7 +526,15 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             be = float(px.mean()) + fee
             n = len(cur)
             se = float(np.sqrt(max(wr * (1 - wr), 1e-9) / n))
-            lo = wr - 1.96 * se
+            # NOT named `lo`. The verdict block below reads the bootstrap
+            # `lo`/`hi` computed further up, and naming this one `lo` silently
+            # overwrote it — the board shipped "95% CI [+0.603, +0.034]", an
+            # interval whose lower bound sits above its upper because that
+            # lower bound was actually this win rate. The headline stayed
+            # correct (computed before the clobber), so only the printed
+            # interval was wrong — exactly the kind of error that survives
+            # review because everything around it looks healthy.
+            wr_lo = wr - 1.96 * se
             # Picks needed for a lower bound at this win rate to clear
             # breakeven. Infinite (reported as None) when the point estimate
             # is already below the bar — no amount of data rescues that.
@@ -536,10 +544,10 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             out["readiness"] = clean_dict({
                 "n": n, "wins": int(y.sum()), "losses": int(n - y.sum()),
                 "win_rate": wr, "breakeven": be, "edge": wr - be,
-                "ci_low": lo, "clears": bool(lo > be),
+                "ci_low": wr_lo, "clears": bool(wr_lo > be),
                 "needed": need, "floor": MIN_CONVICTION,
                 "verdict": ("enough evidence — lower bound clears breakeven"
-                            if lo > be else
+                            if wr_lo > be else
                             f"not yet — need about {need} settled picks"
                             if need else
                             "win rate is below breakeven; more data will not fix that"),
@@ -586,12 +594,39 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                 won = (t["result"] == "yes").astype(int)
                 edge_units = float((won - t["k_ask"]
                                     - 0.07 * t["k_ask"] * (1 - t["k_ask"])).sum())
+        # ── the verdict, once the sample is in ────────────────────────────
+        # The experiment was pre-registered to conclude at 150 settled legs.
+        # Reporting "collecting..." past that point would be the same
+        # goalpost-moving the readiness panel exists to prevent, so the
+        # conclusion is computed and shipped the moment the sample arrives.
+        target, concluded, verdict = 150, False, None
+        n_trades = int(len(t)) if settled_n else 0
+        if settled_n >= target:
+            concluded = True
+            spread_pts = float(gap.mean())
+            wide = float((gap > 0.05).mean())
+            verdict = (
+                f"No edge. Across {settled_n} settled legs priced at the same "
+                f"instant, Kalshi and the bookmaker differ by "
+                f"{spread_pts * 100:.1f}c on average and never by more than 5c "
+                f"({wide:.0%} of legs). Only {n_trades} leg"
+                f"{'' if n_trades == 1 else 's'} ever cleared spread plus fee, "
+                f"so there is no trade here to take. The +14.4% ROI "
+                f"the retrospective test showed was entirely the 8-hour "
+                f"lookahead in that test, not a real mispricing."
+            ) if wide < 0.02 else (
+                f"Divergence exists on {wide:.0%} of {settled_n} settled legs. "
+                f"See pair_analysis.py for whether it survives cost."
+            )
         out["edge_lab"] = clean_dict({
             "legs": int(len(last)), "games": int(lp["espn_id"].nunique()),
-            "snapshots": int(len(lp)), "settled": settled_n, "target": 150,
+            "snapshots": int(len(lp)), "settled": settled_n, "target": target,
             "mean_gap": float(gap.mean()) if len(gap) else None,
             "tradeable_now": tradeable,
             "paper_units": edge_units,
+            "trades": n_trades,
+            "concluded": concluded,
+            "verdict": verdict,
             "last_snapshot": (lp["ts_utc"].max().isoformat(timespec="minutes")
                               if lp["ts_utc"].notna().any() else None),
             "note": ("Kalshi vs DraftKings, priced at the same instant. "
