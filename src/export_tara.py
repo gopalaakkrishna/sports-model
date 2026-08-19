@@ -57,6 +57,14 @@ _CLOCK_SERIES = ["KXWNBAGAME", "KXNFLGAME", "KXMLSGAME", "KXLIGAMXGAME"]
 # fewer calls, each one the model actually has something to say about.
 MIN_CONVICTION = 0.60
 
+# Kalshi's overround: the sum of the asks across one event's legs. You buy at
+# the raw ask, so this is a real cost, but the reports store the de-vigged
+# price. Measured across 128 events of simultaneous quotes (live_pairs.csv):
+# median 1.0100, mean 1.0128. The conservative choice is the median — using
+# the mean would flatter nothing but would overstate the cost on a typical
+# fill. Revisit if the spread environment changes.
+VIG = 1.0100
+
 
 def split_fixture(text: str) -> tuple[str, str]:
     """'Away @ Home' or 'Home v Away' -> the two names, order-insensitive."""
@@ -522,8 +530,21 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             y = cur["won"].astype(int).to_numpy()
             px = cur["market_prob"].to_numpy(float)
             wr = float(y.mean())
-            fee = float(np.mean(0.07 * px * (1 - px)))
-            be = float(px.mean()) + fee
+            # market_prob is the ask NORMALISED across the event's legs
+            # (dashboard.py divides by the book sum), i.e. the vig has been
+            # stripped out. That is the right number for comparing against a
+            # probability, and the WRONG one for breakeven: you do not get to
+            # buy at the de-vigged price, you pay the raw ask. Using the
+            # normalised figure quietly understated the bar you have to clear.
+            #
+            # Measured on 128 events of live Kalshi quotes (data/live_pairs):
+            # asks sum to 1.0100 median / 1.0128 mean. Re-applying that puts
+            # breakeven back on what the fill actually costs — about +0.7pts,
+            # small but always in the flattering direction, which is exactly
+            # the kind of error to remove from a number that gates betting.
+            px_paid = px * VIG
+            fee = float(np.mean(0.07 * px_paid * (1 - px_paid)))
+            be = float(px_paid.mean()) + fee
             n = len(cur)
             se = float(np.sqrt(max(wr * (1 - wr), 1e-9) / n))
             # NOT named `lo`. The verdict block below reads the bootstrap
