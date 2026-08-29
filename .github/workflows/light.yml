@@ -11,7 +11,16 @@ name: Sports board — live refresh
 # module docstring for why that split exists.
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    # NOT */15. Every :00/:15/:30/:45 is the exact slot every other repo's
+    # default cron also targets, so it is GitHub's most congested queue —
+    # and GitHub's own docs say as much ("delayed during periods of high
+    # load... start of every hour... schedule at a different time of the
+    # hour"). Diagnosed 2026-08-29: runs that DID fire kept succeeding in
+    # ~70s every time, so the code was never the problem — only the trigger
+    # was, and it degraded from "close to 15 min" to multi-hour gaps once
+    # this repo's schedule started colliding with everyone else's on the
+    # clean quarter-hours. Offsetting onto odd minutes avoids that queue.
+    - cron: "6,21,36,51 * * * *"
   workflow_dispatch: {}
   # Also run when the pipeline code changes. Two reasons: a broken workflow
   # otherwise only reveals itself on the next scheduled tick (GitHub's cron
