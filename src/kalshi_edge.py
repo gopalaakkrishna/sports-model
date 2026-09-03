@@ -73,6 +73,12 @@ def kalshi_fee(price: float) -> float:
     return FEE_RATE * price * (1.0 - price)
 
 
+def _norm(s: str) -> str:
+    """Lowercase and strip punctuation, for tolerant name matching."""
+    s = re.sub(r"[^a-z0-9 ]", "", str(s).lower()).strip()
+    return re.sub(r"[ ]+", " ", s)
+
+
 def _f(x, default=None):
     try:
         return float(x)
@@ -80,10 +86,71 @@ def _f(x, default=None):
         return default
 
 
+def _event_titles(series: str) -> dict:
+    """event_ticker -> (home, away), read from the EVENTS endpoint.
+
+    Kalshi reformatted the per-market title in late Aug/early Sep 2026. It
+    used to carry the whole fixture ("Arsenal vs Coventry Winner?") and now
+    carries only the outcome ("Villarreal wins", "Tie is the result"). The
+    fixture pairing lives on the EVENT, which still reads "A vs B".
+
+    That change silently emptied the winner board: the old regex matched
+    nothing, fetch_fixtures returned zero, this script printed "no comparable
+    fixtures found" and exited 0, so auto_update logged it "ok" and
+    export_tara fell back to the newest report on disk. The board kept
+    publishing August picks under a fresh September timestamp for days.
+    totals_predict.py was unaffected because it already read the events
+    endpoint — which is why the totals lane kept working while this died.
+    """
+    r = requests.get(f"{KALSHI}/events",
+                     params={"series_ticker": series, "status": "open",
+                             "limit": 200}, timeout=60)
+    if r.status_code != 200:
+        return {}
+    out = {}
+    for e in r.json().get("events", []):
+        m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
+                     str(e.get("title", "")).split(":")[0])
+        if m:
+            out[str(e.get("event_ticker"))] = (m.group(1).strip(),
+                                               m.group(2).strip())
+    return out
+
+
+def _leg_side(sub: str, home: str, away: str) -> str | None:
+    """Which side a leg's yes_sub_title refers to.
+
+    Exact match first, then a normalised prefix/containment test, because
+    Kalshi's leg label and its own event title do not always agree on the
+    long form ("Newcastle" vs "Newcastle United"). Ambiguity returns None
+    rather than guessing — a leg attached to the wrong team would price the
+    opposite side of the fixture.
+    """
+    s = sub.strip()
+    if s.lower() in ("tie", "draw"):
+        return "DRAW"
+    if s == home:
+        return "HOME"
+    if s == away:
+        return "AWAY"
+    n = _norm(s)
+    if not n:
+        return None
+    hit = []
+    for side, name in (("HOME", home), ("AWAY", away)):
+        nn = _norm(name)
+        if nn and (nn.startswith(n) or n.startswith(nn) or n in nn or nn in n):
+            hit.append(side)
+    return hit[0] if len(hit) == 1 else None
+
+
 def fetch_fixtures(series: str) -> list[dict]:
     """Group Kalshi's per-outcome markets back into fixtures."""
+    events = _event_titles(series)
+    if not events:
+        return []
     r = requests.get(f"{KALSHI}/markets",
-                     params={"series_ticker": series, "status": "open", "limit": 200},
+                     params={"series_ticker": series, "status": "open", "limit": 500},
                      timeout=60)
     if r.status_code != 200:
         return []
@@ -93,17 +160,16 @@ def fetch_fixtures(series: str) -> list[dict]:
 
     fixtures = []
     for ev, mk in by_event.items():
-        title = str(mk[0].get("title", ""))
-        mt = re.match(r"^(.*?)\s+vs\.?\s+(.*?)\s+Winner\?*$", title)
-        if not mt:
+        pair = events.get(str(ev))
+        if not pair:
             continue
-        home, away = mt.group(1).strip(), mt.group(2).strip()
+        home, away = pair
         when = mk[0].get("occurrence_datetime") or mk[0].get("expected_expiration_time")
         legs = {}
         for m in mk:
-            sub = str(m.get("yes_sub_title", "")).strip()
-            key = ("DRAW" if sub.lower() in ("tie", "draw")
-                   else "HOME" if sub == home else "AWAY" if sub == away else sub)
+            key = _leg_side(str(m.get("yes_sub_title", "")), home, away)
+            if key is None:
+                continue
             legs[key] = {
                 "ticker": m.get("ticker"),
                 "bid": _f(m.get("yes_bid_dollars")),
@@ -221,8 +287,16 @@ def main():
                 })
 
     if not rows:
-        print("\nno comparable fixtures found")
-        return
+        # Non-zero, so auto_update logs this FAILED and the log says why.
+        # This returned 0 before, which is how a dead parser stayed invisible
+        # for days: the step read "ok", export_tara's latest() fell back to
+        # the newest report still on disk, and the board kept publishing
+        # two-week-old picks under a fresh timestamp. Producing nothing is a
+        # failure — eight major leagues do not all go dark on the same day.
+        print("\nno comparable fixtures found — FAILING rather than exiting "
+              "clean. Eight leagues cannot all be idle at once, so this is "
+              "the feed shape or the parser having changed.")
+        return 1
 
     df = pd.DataFrame(rows)
     out = ROOT / "reports" / f"kalshi_edge_{today.date()}.csv"
@@ -268,4 +342,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()'s return value has to reach the shell, or the guard above is
+    # decorative — auto_update decides pass/fail purely on the exit code.
+    raise SystemExit(main())

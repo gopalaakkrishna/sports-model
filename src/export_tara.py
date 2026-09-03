@@ -614,6 +614,45 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
         "high_conviction": sum(1 for b in board if b["high_conviction"]),
     }
 
+    # ── how old are the PREDICTIONS, as opposed to this export? ─────────
+    #
+    # `generated` is when export_tara ran, and the board has always shown its
+    # age as "Snapshot · N min old". That number stayed reassuringly small
+    # while the picks underneath it went two weeks stale, because
+    # dashboard.latest() falls back to the newest report on disk when today's
+    # is missing — by design, so the board does not empty at midnight. The
+    # cost of that fallback is that a dead predictor is indistinguishable
+    # from a quiet slate.
+    #
+    # So report the age of the FILES the board was actually built from. If
+    # the newest is a day old, every pick on screen is a day old no matter
+    # what the export timestamp says, and the app can state that plainly.
+    try:
+        import glob as _g
+        newest, per_source = None, {}
+        for prefix in ("kalshi_edge", "mlb_predictions", "wnba_kalshi",
+                       "hundred", "nfl_upcoming", "totals"):
+            cands = sorted(_g.glob(str(ROOT / "reports" / f"{prefix}_*.csv")))
+            if not cands:
+                per_source[prefix] = None
+                continue
+            mt = datetime.fromtimestamp(Path(cands[-1]).stat().st_mtime,
+                                        tz=timezone.utc)
+            per_source[prefix] = mt.isoformat(timespec="minutes")
+            newest = mt if newest is None else max(newest, mt)
+        if newest is not None:
+            age_h = (datetime.now(timezone.utc) - newest).total_seconds() / 3600.0
+            out["predictions"] = clean_dict({
+                "newest_report": newest.isoformat(timespec="minutes"),
+                "age_hours": round(age_h, 1),
+                # 18h clears an ordinary overnight gap between full runs but
+                # still catches a predictor that died yesterday.
+                "stale": bool(age_h > 18.0),
+                "sources": per_source,
+            })
+    except (OSError, ValueError):
+        pass
+
     # ── the verdict, computed once and shipped ──────────────────────────
     # The board's most important number is not the record, it is whether the
     # gap to the market has cleared the noise floor. Computing it here means

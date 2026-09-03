@@ -297,17 +297,43 @@ def upcoming_from_reports() -> list[dict]:
     R = ROOT / "reports"
     out: list[dict] = []
 
+    # How far back the fallback below may reach. The fallback exists so the
+    # board does not empty at midnight; three days covers that completely.
+    # Unbounded, it did something much worse than emptying: when the soccer
+    # parser broke on 2026-08-27 it silently reached back to the Aug 11
+    # reports committed in this repo and published three-week-old picks under
+    # a fresh timestamp for days. A stale board that admits it is stale is
+    # recoverable; one that looks current is not.
+    _MAX_FALLBACK_DAYS = 3
+
     def latest(prefix: str):
-        """Today's file, or the most recent one if today's is not written yet.
+        """Today's file, or a recent one if today's is not written yet.
 
         Requiring today's date emptied the entire board the moment the clock
         passed midnight: the export ran, found no 2026-08-07 files, and shipped
         an upcoming list of zero. The slate does not vanish at midnight, so
-        neither should the board — fall back to the newest file and let the
-        snapshot age in the header say how old it is.
+        neither should the board — fall back to the newest file, but only
+        within _MAX_FALLBACK_DAYS, so a dead predictor shows up as a missing
+        section rather than as confident month-old picks.
         """
         cands = sorted(R.glob(f"{prefix}_*.csv"))
-        return cands[-1] if cands else None
+        if not cands:
+            return None
+        newest = cands[-1]
+        m = re.search(r"(\d{4}-\d{2}-\d{2})", newest.name)
+        if not m:
+            return newest
+        try:
+            age = (pd.Timestamp.now().normalize()
+                   - pd.Timestamp(m.group(1))).days
+        except ValueError:
+            return newest
+        if age > _MAX_FALLBACK_DAYS:
+            print(f"  {prefix}: newest report is {age}d old "
+                  f"({newest.name}) — ignoring rather than publishing it as "
+                  f"current. The predictor that writes it is not running.")
+            return None
+        return newest
 
     def add(sport, league, match, pick, model, mkt, start=None,
             tradeable=None, thin=False, side=None):
