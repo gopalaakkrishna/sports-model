@@ -90,6 +90,12 @@ BANNED_PREFIXES = (
     "Avg", "Max", "B365", "PC>", "PC<",   # other books, over/under
     "FTHG", "FTAG", "FTR",        # the answer
     "HS", "AS", "HST", "AST",     # this match's shots (post-hoc)
+    # This match's xG. Understat publishes it AFTER the match, so it is
+    # future information in exactly the way HS/AS were — and far more
+    # dangerous, because xG predicts the result well enough that including it
+    # would produce a spectacular, entirely fake improvement. Only the shifted
+    # rolling forms (h_xgf_5, d_xga_10, ...) are causal.
+    "xg_h", "xg_a",
     "y",
 )
 
@@ -117,12 +123,15 @@ def team_form(df: pd.DataFrame) -> pd.DataFrame:
     after that does it pivot back — doing the shift after the pivot is how
     this kind of feature usually leaks.
     """
+    has_xg = "xg_h" in df.columns and "xg_a" in df.columns
     home = pd.DataFrame({
         "Date": df["Date"], "mid": df.index, "team": df["HomeTeam"],
         "opp": df["AwayTeam"], "is_home": 1,
         "gf": df["FTHG"], "ga": df["FTAG"],
         "sf": df.get("HS"), "sa": df.get("AS"),
         "stf": df.get("HST"), "sta": df.get("AST"),
+        "xgf": df["xg_h"] if has_xg else np.nan,
+        "xga": df["xg_a"] if has_xg else np.nan,
     })
     away = pd.DataFrame({
         "Date": df["Date"], "mid": df.index, "team": df["AwayTeam"],
@@ -130,15 +139,20 @@ def team_form(df: pd.DataFrame) -> pd.DataFrame:
         "gf": df["FTAG"], "ga": df["FTHG"],
         "sf": df.get("AS"), "sa": df.get("HS"),
         "stf": df.get("AST"), "sta": df.get("HST"),
+        "xgf": df["xg_a"] if has_xg else np.nan,
+        "xga": df["xg_h"] if has_xg else np.nan,
     })
     long = pd.concat([home, away], ignore_index=True)
     long["pts"] = np.where(long.gf > long.ga, 3, np.where(long.gf == long.ga, 1, 0))
     long = long.sort_values(["team", "Date"]).reset_index(drop=True)
 
+    cols = ["pts", "gf", "ga", "sf", "sa", "stf", "sta"]
+    if has_xg:
+        cols += ["xgf", "xga"]
     g = long.groupby("team", sort=False)
     out = {"mid": long["mid"], "team": long["team"], "is_home": long["is_home"]}
     for w in WINDOWS:
-        for col in ("pts", "gf", "ga", "sf", "sa", "stf", "sta"):
+        for col in cols:
             # shift(1) BEFORE rolling: the window ends at the previous match.
             out[f"{col}_{w}"] = (g[col].shift(1)
                                  .rolling(w, min_periods=max(2, w // 2)).mean()
@@ -163,8 +177,14 @@ def elo(df: pd.DataFrame, k: float = 20.0, ha: float = 60.0) -> pd.DataFrame:
                         index=df.index)
 
 
-def build(divs: list[str] | None = None) -> pd.DataFrame:
-    """Assemble the feature table: walk-forward DC output + causal form."""
+def build(divs: list[str] | None = None, with_xg: bool = False) -> pd.DataFrame:
+    """Assemble the feature table: walk-forward DC output + causal form.
+
+    `with_xg` attaches Understat xG so team_form can build rolling xG-for and
+    xG-against. The raw per-match xg_h/xg_a are prefix-banned from features —
+    they are published after the whistle, and a booster given them would post
+    a spectacular fake improvement.
+    """
     dc = pd.read_parquet(PREDS)
     dc["Date"] = pd.to_datetime(dc["Date"])
     raw = pd.read_parquet(RAW)
@@ -180,6 +200,17 @@ def build(divs: list[str] | None = None) -> pd.DataFrame:
     if divs:
         df = df[df["Div"].isin(divs)]
     df = df[df["FTR"].notna()].sort_values("Date").reset_index(drop=True)
+
+    if with_xg:
+        import xg_join
+        xg = xg_join.join(verbose=False)
+        if len(xg):
+            df = df.merge(xg[["Div", "Date", "HomeTeam", "AwayTeam",
+                              "xg_h", "xg_a"]],
+                          on=["Div", "Date", "HomeTeam", "AwayTeam"], how="left")
+            cov = df["xg_h"].notna().mean()
+            print(f"  xG attached to {df['xg_h'].notna().sum():,} of "
+                  f"{len(df):,} matches ({cov:.1%})")
 
     df = pd.concat([df, elo(df)], axis=1)
 
@@ -197,7 +228,7 @@ def build(divs: list[str] | None = None) -> pd.DataFrame:
 
     # Differences carry most of the signal; give the booster them directly.
     for w in WINDOWS:
-        for col in ("pts", "gf", "ga", "sf", "sa", "stf", "sta"):
+        for col in ("pts", "gf", "ga", "sf", "sa", "stf", "sta", "xgf", "xga"):
             hcol, acol = f"h_{col}_{w}", f"a_{col}_{w}"
             if hcol in df and acol in df:
                 df[f"d_{col}_{w}"] = df[hcol] - df[acol]

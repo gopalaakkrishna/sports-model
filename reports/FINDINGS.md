@@ -892,3 +892,59 @@ Bootstrapped, n=14,884:
 number and about 8% of the gap to the market. It is a real, significant,
 out-of-sample improvement in forecast quality. It is not an edge, and it does
 not move blend weight against the closing line off 0.00.
+
+### xG: acquired, tested, adds nothing (2026-09-04)
+
+`fetch_understat.py` had been written months ago and never run, so the model
+had no xG at all — the single feature most obviously separating us from
+Athena's published setup ("xg dixon coles").
+
+Extracted 5,330 matches across the five majors, 2022/23-2024/25, via browser
+navigation (Understat serves plain `requests` an 18KB shell with no match
+data; only a real browser navigation populates `datesData`).
+
+Joining it took an explicit alias map, not fuzzy matching. TeamResolver
+resolved only 66% of Understat names, and the failures were **not random** —
+they were the biggest clubs in every league (Manchester City, Manchester
+United, Borussia Dortmund, Bayer Leverkusen, AC Milan, Paris Saint Germain),
+because Understat writes formal club names and football-data writes terse
+ones. Dropping a third of matches skewed toward strong teams would have
+biased everything downstream toward mid-table fixtures, where model and
+market agree most, and flattered any result computed on the remainder.
+`xg_join.py` carries the map; join rate went 66% -> **100.0%** (5,328/5,330).
+
+Raw per-match `xg_h`/`xg_a` are prefix-banned from features. Understat
+publishes them after the whistle, so they are future information in exactly
+the way `HS/AS` were — and far more dangerous, since xG predicts the result
+well enough that including it would produce a spectacular fake improvement.
+Only shifted rolling forms (`h_xgf_5`, `d_xga_10`, ...) are causal.
+
+Result, on identical matches (n=5,401):
+
+    Dixon-Coles alone         0.2007
+    GBM, no xG                0.2038
+    GBM, with xG              0.2055
+    market (Pinnacle close)   0.1945
+
+    blend DC + GBM(no xG)     0.2000   best w=0.30
+    blend DC + GBM(xG)        0.2000   best w=0.25
+
+    xG contribution: -0.00006 RPS, 95% CI [-0.00038, +0.00025]
+
+**Not distinguishable from zero.** The 12 xG-derived features left the blend
+exactly where it was, and made the standalone GBM slightly worse — consistent
+with adding mostly-NaN columns that carry no signal the shot features did not
+already have.
+
+This corroborates Athena's own numbers rather than contradicting them: her
+xG-Dixon-Coles La Liga figure is 0.1960 against our goals-only 0.1962. xG was
+always worth ~0.0002 there, which is inside the noise here.
+
+**Scope of the test.** xG was used as rolling team-form features for the
+booster. The other route — refitting Dixon-Coles itself on xG rather than
+goals, which is literally what she does — was not tested. Her published
+0.1960-vs-our-0.1962 is the reason that is not expected to be worth much
+either, but it remains untested.
+
+The data is committed rather than regenerated: it cannot be refetched without
+a browser session, which no CI run has.
