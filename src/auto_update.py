@@ -70,6 +70,10 @@ SELF_STATE_PATHS = [
     # purpose (see totals_ledger.py) but just as much a record — if CI does
     # not push it back, every locked paper pick vanishes with the checkout.
     "data/processed/totals_ledger.jsonl",
+    # The unfiltered lane's own record. Separate from ledger.jsonl on purpose
+    # (see open_lane.py): the main record's value is that it has never
+    # flattered anyone, and unfiltered picks would destroy that measurement.
+    "data/processed/open_ledger.jsonl",
     # Simultaneous Kalshi/bookmaker price snapshots and their settlement
     # cache. Append-only measurement data — the whole point is that it
     # accumulates across CI runs, so it must ride git like the ledger does.
@@ -326,6 +330,11 @@ def _run(args) -> int:
     # the evidence it exists to produce.
     log("recording and settling the totals paper lane")
     run("totals_ledger.py", timeout=600)
+
+    # The unfiltered lane: every market, no floor, no aligned filter, draws
+    # and multi-leg calls included. Paper only, scored in its own ledger.
+    log("recording and settling the open (unfiltered) lane")
+    run("open_lane.py", ["--lock", "--settle"], timeout=900)
 
     # Push again after settling so the outcomes this run resolved are shared
     # immediately, rather than waiting for the next run's pre-settle pull.

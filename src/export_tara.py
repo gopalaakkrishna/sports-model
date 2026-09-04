@@ -835,6 +835,51 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
     except (OSError, ValueError, KeyError):
         pass
 
+    # ── the open lane: unfiltered calls, scored on their own ────────────
+    # No floor, no aligned filter, draws and multi-leg calls included. Kept
+    # entirely apart from `record`/`readiness`, which describe the filtered
+    # lane — merging them would answer a different question with the one
+    # measurement in this project that has never flattered anyone.
+    try:
+        import open_lane as OL
+        rws = OL._load()
+        done = [x for x in rws if x.get("won") is not None and not x.get("voided")]
+        blk = {"n_total": len(rws), "n_settled": len(done),
+               "note": ("Every market the model can price, with no conviction "
+                        "floor and no requirement that the model agree with "
+                        "the market. Draws and several calls per fixture are "
+                        "possible here and are not in the main record. Paper "
+                        "only, scored separately.")}
+        if done:
+            import numpy as _np
+            w = sum(1 for x in done if x["won"])
+            n = len(done)
+            px = _np.array([float(x["ask"]) for x in done
+                            if x.get("ask") is not None], dtype=float)
+            if px.size:
+                fee = float(_np.mean(0.07 * px * (1 - px)))
+                be = float(px.mean()) + fee
+                units = float(sum(
+                    (1.0 if x["won"] else 0.0) - float(x["ask"])
+                    - 0.07 * float(x["ask"]) * (1 - float(x["ask"]))
+                    for x in done if x.get("ask") is not None))
+            else:
+                be, units = float("nan"), 0.0
+            blk.update({"wins": w, "losses": n - w, "win_rate": w / n,
+                        "breakeven": be, "edge": w / n - be, "units": units})
+            by = {}
+            for x in done:
+                k = f"{x.get('market')}·{x.get('kind')}"
+                e = by.setdefault(k, {"n": 0, "w": 0})
+                e["n"] += 1
+                e["w"] += 1 if x["won"] else 0
+            blk["by_kind"] = [{"kind": k, "n": v["n"], "wins": v["w"],
+                               "win_rate": v["w"] / v["n"]}
+                              for k, v in sorted(by.items())]
+        out["open_lane"] = clean_dict(blk)
+    except (ImportError, OSError, ValueError, KeyError):
+        pass
+
     # ── the edge lab: live status of the pair experiment ────────────────
     # fetch_live_pairs.py snapshots Kalshi and DraftKings simultaneously;
     # pair_analysis.py settles them nightly. This block is a read-only
