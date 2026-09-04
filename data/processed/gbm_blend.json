@@ -1,0 +1,8 @@
+{
+  "weight": 0.25,
+  "n": 16763,
+  "rps_dc": 0.19981,
+  "rps_blend": 0.19928,
+  "rps_gain": 0.00053,
+  "note": "Weight on the GBM in the blend, fitted on the walk-forward, never hand-set. Athena's published 50/50 is hers: at 0.50 our blend measured no better than Dixon-Coles alone."
+}

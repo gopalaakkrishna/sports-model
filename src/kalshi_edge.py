@@ -205,6 +205,66 @@ def orderbook_depth(ticker: str, within: float = 0.05) -> float:
     return total
 
 
+def _blend_all(pending: list[dict], hist: pd.DataFrame) -> dict:
+    """Blend the GBM into Dixon-Coles for every eligible pending fixture.
+
+    Returns {(price_div, home, away): {"HOME":p, "DRAW":p, "AWAY":p}}; a
+    fixture absent from the result keeps its Dixon-Coles forecast untouched.
+
+    Only the five European majors are eligible. The booster is trained on
+    football-data divisions E0/SP1/I1/D1/F1 and has never seen MLS or Liga MX,
+    so blending them would be applying a model to leagues it was not fitted
+    on. Those keep pure Dixon-Coles, which is what they had before.
+
+    Every failure path here returns {} — an unavailable booster must degrade
+    to the previous behaviour, never block the board. This step produces the
+    picks; it is not allowed to be the thing that stops producing them.
+    """
+    if not pending:
+        return {}
+    try:
+        import gbm_live as GL
+        import gbm_model as GM
+    except ImportError as e:
+        print(f"  gbm blend unavailable ({e}); using Dixon-Coles alone")
+        return {}
+
+    w = GL.load_weight()
+    if w <= 0:
+        print("  gbm blend weight is 0; using Dixon-Coles alone")
+        return {}
+
+    elig = [r for r in pending if r["price_div"] in GM.MAJORS]
+    skipped = len(pending) - len(elig)
+    if not elig:
+        return {}
+    try:
+        base = GM.build(list(GM.MAJORS))
+        fixtures = pd.DataFrame([{
+            "Div": r["price_div"], "Date": pd.Timestamp.now().normalize(),
+            "HomeTeam": r["h"], "AwayTeam": r["a"],
+            "m_home": r["pred"]["p_home"], "m_draw": r["pred"]["p_draw"],
+            "m_away": r["pred"]["p_away"],
+            "lam_h": r["pred"]["lambda_home"], "lam_a": r["pred"]["lambda_away"],
+            "m_over25": r["pred"]["p_over25"],
+        } for r in elig])
+        out = GL.predict(base, fixtures, weight=w)
+    except Exception as e:                      # noqa: BLE001 - never fatal
+        print(f"  gbm blend failed ({type(e).__name__}: {e}); "
+              f"using Dixon-Coles alone")
+        return {}
+
+    res = {}
+    for _, r in out.iterrows():
+        res[(r["Div"], r["HomeTeam"], r["AwayTeam"])] = {
+            "HOME": float(r["p_home"]), "DRAW": float(r["p_draw"]),
+            "AWAY": float(r["p_away"])}
+    print(f"  gbm blend applied to {len(res)} fixtures at w={w:.2f}"
+          + (f"; {skipped} left on Dixon-Coles (not a fitted division)"
+             if skipped else ""))
+    return res
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--xi", type=float, default=0.0018)
@@ -223,6 +283,7 @@ def main():
     groups = D.country_groups(hist)
     fits: dict[str, M.FitResult] = {}
     rows = []
+    pending: list[dict] = []
 
     for series, (country, price_div) in SERIES_COUNTRY.items():
         fx = fetch_fixtures(series)
@@ -256,35 +317,50 @@ def main():
             pred = M.predict(fr, h, a, price_div)
             if pred is None:
                 continue
-            model = {"HOME": pred["p_home"], "DRAW": pred["p_draw"], "AWAY": pred["p_away"]}
+            # Collected rather than priced immediately: the GBM blend is
+            # applied to every fixture at once after this loop, because
+            # training the booster per fixture would be absurd and its
+            # features need the whole history in one frame anyway.
+            pending.append({"series": series, "price_div": price_div,
+                            "f": f, "h": h, "a": a, "pred": pred})
 
-            asks = [f["legs"][k]["ask"] for k in ("HOME", "DRAW", "AWAY")]
-            book_sum = sum(x for x in asks if x is not None)
+    blended = _blend_all(pending, hist)
 
-            for k in ("HOME", "DRAW", "AWAY"):
-                leg = f["legs"][k]
-                bid, ask = leg["bid"], leg["ask"]
-                if bid is None or ask is None:
-                    continue
-                spread = ask - bid
-                depth = max(leg["liq"], leg["oi"], orderbook_depth(leg["ticker"]))
-                p = model[k]
-                # Buy at the ask; profit is (1 - ask) less fee, loss is the ask.
-                fee = kalshi_fee(ask)
-                ev = p * (1.0 - ask) - (1.0 - p) * ask - fee
-                enough_data = pred["eff_n_min"] >= args.min_eff_n
-                tradeable = (spread <= args.max_spread
-                             and depth >= args.min_depth
-                             and enough_data)
-                rows.append({
-                    "series": series, "event": f["event"], "when": str(f["when"])[:16],
-                    "match": f"{h} v {a}", "leg": k,
-                    "model": p, "bid": bid, "ask": ask, "spread": spread,
-                    "depth": depth, "fee": fee, "ev": ev,
-                    "eff_n_min": pred["eff_n_min"],
-                    "book_sum": book_sum, "tradeable": tradeable,
-                    "thin_data": not enough_data,
-                })
+    for rec in pending:
+        series, price_div = rec["series"], rec["price_div"]
+        f, h, a, pred = rec["f"], rec["h"], rec["a"], rec["pred"]
+        model = blended.get((price_div, h, a))
+        if model is None:
+            model = {"HOME": pred["p_home"], "DRAW": pred["p_draw"],
+                     "AWAY": pred["p_away"]}
+
+        asks = [f["legs"][k]["ask"] for k in ("HOME", "DRAW", "AWAY")]
+        book_sum = sum(x for x in asks if x is not None)
+
+        for k in ("HOME", "DRAW", "AWAY"):
+            leg = f["legs"][k]
+            bid, ask = leg["bid"], leg["ask"]
+            if bid is None or ask is None:
+                continue
+            spread = ask - bid
+            depth = max(leg["liq"], leg["oi"], orderbook_depth(leg["ticker"]))
+            p = model[k]
+            # Buy at the ask; profit is (1 - ask) less fee, loss is the ask.
+            fee = kalshi_fee(ask)
+            ev = p * (1.0 - ask) - (1.0 - p) * ask - fee
+            enough_data = pred["eff_n_min"] >= args.min_eff_n
+            tradeable = (spread <= args.max_spread
+                         and depth >= args.min_depth
+                         and enough_data)
+            rows.append({
+                "series": series, "event": f["event"], "when": str(f["when"])[:16],
+                "match": f"{h} v {a}", "leg": k,
+                "model": p, "bid": bid, "ask": ask, "spread": spread,
+                "depth": depth, "fee": fee, "ev": ev,
+                "eff_n_min": pred["eff_n_min"],
+                "book_sum": book_sum, "tradeable": tradeable,
+                "thin_data": not enough_data,
+            })
 
     if not rows:
         # Non-zero, so auto_update logs this FAILED and the log says why.
