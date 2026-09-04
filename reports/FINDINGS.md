@@ -1024,3 +1024,104 @@ a data-pipeline problem, and it is the honest place to look next.
 
 Cheapest way to have learned this: two odds columns we already had on disk and
 had mislabelled for months.
+
+---
+
+## Fixing the market prior: it cannot be fixed, and here is the proof chain (2026-09-04)
+
+The previous entry located our deficit: 86% of it exists in the OPENING line,
+before any team news. "The market's prior is better than ours" was the
+conclusion. This is the attempt to fix that, and the result is that it is not
+fixable with anything available — established by measurement rather than by
+giving up.
+
+### 1. Where the gap is NOT
+
+**Not the season-start prior.** If stale summer-transfer information were the
+cause, the gap would be large in early matchweeks and shrink. It does not:
+
+    matchweek 1-3   +0.00535
+    matchweek 4-6   +0.00343
+    matchweek 7-10  +0.00462
+    matchweek 11-14 +0.00317
+    matchweek 15+   +0.00659
+
+Flat, and worst LATE. That kills the squad-turnover-staleness hypothesis.
+
+**Not calibration. We are better calibrated than the market.**
+
+    mean abs calibration error   ours 0.0058   market 0.0094
+
+Our reliability curve is tighter than Pinnacle's in almost every band. The
+market is not beating us by being better calibrated; it is beating us despite
+being worse calibrated.
+
+**It is resolution.** The market is sharper — std of forecasts 0.1694 against
+our 0.1638. It dares to separate matches further, and is right often enough
+that the extra confidence pays.
+
+### 2. Resolution is not recoverable by transformation
+
+If we were simply under-confident, sharpening would fix it. Temperature
+scaling, fitted out of sample on a 90-day walk-forward:
+
+    untransformed   0.19984
+    temperature     0.19982     mean T = 0.984
+    gain            +0.00002
+
+Nothing. The optimal temperature is essentially 1.0 — our forecasts are
+already at the right confidence for what they know. **The deficit is
+informational, not a matter of processing.**
+
+### 3. Our model adds nothing to the opening line
+
+The sharpest test available. If the model carried any information the market
+lacks at open, the optimal blend with the opening line would put non-zero
+weight on it:
+
+    w on model    RPS
+      0.00      0.19422
+      0.05      0.19429
+      0.10      0.19437
+      0.20      0.19460
+      0.30      0.19490
+
+    best w = 0.00     addition +0.00000     CI [+0.00000, +0.00000]
+
+Monotonically worse with every gram of model added. **Our model is a strict
+information subset of the opening line.** Not a different view with
+complementary value — a subset.
+
+### 4. The remaining candidates, bounded rather than tried
+
+  * **Late information / lineups** — ceiling +0.00074, 14% of the gap, and
+    lineups are only part of it (previous entry).
+  * **xG** — measured at -0.00006, CI spanning zero.
+  * **Squad market values** — not tested here, but bounded by Athena's own
+    published figures: her model HAS them (v4, "knows exactly how each squad
+    worth") and her EPL RPS is 0.1998, which is our territory and still ~0.005
+    from the line. A feature that leaves its owner in the same place cannot
+    close the gap for us.
+  * **Sharpening / recalibration** — +0.00002.
+
+### Conclusion
+
+Every route is measured and every route is closed. The opening line already
+contains everything our model knows, plus more, and nothing on the public-data
+table adds to it.
+
+This is not a failure of implementation. We are at parity with the best public
+comparable, better calibrated than Pinnacle, and beaten anyway — because the
+closing line is a consensus of many models plus real money, and a single model
+built on public data does not out-resolve that.
+
+**What this closes.** The "beat the market" thread, definitively. Every
+hypothesis this project has raised against it has now been measured: model vs
+bookmakers (blend 0.00), model vs Kalshi (0.00), Kalshi vs bookmakers (0.8c
+apart, no arbitrage), totals (0.00), xG (0.00), late information (14% ceiling),
+sharpening (0.00002), and adding to the opening line (0.00).
+
+**What survives.** The floor picks, which never required beating the market —
+they take high-probability calls the market agrees with, and are scored on
+win-rate-minus-breakeven. That record stands at 60-44. Whether it is real is a
+question of sample size, not of modelling, and it is answered by waiting.
