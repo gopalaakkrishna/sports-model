@@ -3,3 +3,7 @@ pandas>=2.2
 scipy>=1.13
 requests>=2.31
 pyarrow>=16.0
+# Gradient-boosted 1X2 model (gbm_model.py). Blended with Dixon-Coles at a
+# walk-forward-chosen weight; measured +0.00053 RPS, CI [+0.00033, +0.00074].
+lightgbm>=4.5
+scikit-learn>=1.5

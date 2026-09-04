@@ -810,3 +810,85 @@ totals market could not be compared against the line retrospectively — we had
 the goals but not the price. Now keeping `PC/AvgC/MaxC >2.5`, rebuilt from the
 454 cached CSVs with no re-download: **49,858 matches with closing O/U prices
 across 21 divisions, 2019–2026.**
+
+---
+
+## We are at parity with the best public comparable, and the GBM blend adds 0.0005 (2026-09-04)
+
+### The parity measurement
+
+Athena Huo (@athena_huo, athena-soccer.vercel.app) publishes walk-forward RPS
+against the closing line on each league board. Measuring ourselves in the same
+units, on the same dataset, over the same window:
+
+| league | our RPS | our market | her RPS | her market | n |
+|---|---|---|---|---|---|
+| EPL | 0.2008 | 0.1945 | 0.1998 | 0.1943 | 4,180 |
+| La Liga | 0.1962 | 0.1913 | 0.1960 | 0.1910 | 4,180 |
+| Serie A | 0.1937 | 0.1877 | — | — | 4,180 |
+| Bundesliga | 0.2040 | 0.1994 | — | — | 3,366 |
+| Ligue 1 | 0.2054 | 0.2005 | — | — | 3,857 |
+
+Her n is 4,180 and ours is 4,180; her market benchmark is 0.1943 and ours is
+0.1945. Same data, same window, same place.
+
+**Gap to her: 0.0010 (EPL), 0.0002 (La Liga). Gap to the market: 0.0063 and
+0.0049.** The gap to the market is 5-25x the gap to her.
+
+Her two leagues use different models, which prices each component:
+
+    La Liga   xG Dixon-Coles only     0.1960  (ours, goals-only  0.1962)
+    EPL       50/50 GBM + xG DC       0.1998  (ours, DC only     0.2008)
+
+So xG is worth ~0.0002 and the GBM ensemble ~0.0010. The ensemble is the
+larger piece and needs no new data source, so it was built first.
+
+### The GBM blend: +0.00053 RPS, and it is real
+
+`gbm_model.py`. LightGBM multiclass on 55 causal features — walk-forward DC
+output (stacking), Elo, and rolling team form over 5 and 10 matches including
+shots and shots on target as the xG proxy we do not otherwise have.
+
+Three leakage hazards, each closed explicitly, and the first build tripped two
+of them:
+
+  1. **Odds as features.** The raw/DC merge suffixed Pinnacle odds to `PSH_x`
+     and `PSH_y`, which slipped past an exact-name ban. A booster given closing
+     odds learns the market and proves nothing. Now banned by PREFIX, and raw
+     supplies only shot columns.
+  2. **This match's own shots.** `HS/AS/HST/AST` are known only at full time.
+     They were in the feature list on the first build. Now prefix-banned; only
+     the shifted rolling versions survive.
+  3. **Training on the future.** Refit on a 90-day walk-forward cursor,
+     predicting strictly forward. 38 refits, 16,763 matches predicted.
+
+Result, and the shape of it is itself the leakage check — **the GBM alone is
+WORSE than Dixon-Coles**, which is what an honest model of this kind should do:
+
+    DC alone                  0.2009
+    GBM alone                 0.2053
+    fixed 50/50 (her weight)  0.2008     <- essentially no gain
+    weight chosen OOS         0.2003     <- +0.00053
+
+**The 50/50 ratio does not transfer.** Our optimal weight sits at ~0.17
+(range 0.10-0.20, stable across refits), presumably because our GBM is weaker
+than hers without xG. Copying her ratio would have bought nothing.
+
+The weight is chosen out of sample — refit on everything before each cursor and
+applied forward — because picking it on the rows being scored is the blend
+equivalent of fitting on the test set, and at the fourth decimal that is the
+difference between a result and a flattering number.
+
+Bootstrapped, n=14,884:
+
+    pooled       +0.00053   CI [+0.00033, +0.00074]   significant
+    EPL          +0.00059   CI [+0.00014, +0.00102]   significant
+    La Liga      +0.00042   CI [+0.00002, +0.00086]   significant
+    Bundesliga   +0.00083   CI [+0.00038, +0.00128]   significant
+    Ligue 1      +0.00050   CI [+0.00002, +0.00095]   significant
+    Serie A      +0.00037   CI [-0.00006, +0.00081]   not distinguishable
+
+**What this does and does not buy.** It closes roughly half the gap to her EPL
+number and about 8% of the gap to the market. It is a real, significant,
+out-of-sample improvement in forecast quality. It is not an edge, and it does
+not move blend weight against the closing line off 0.00.
