@@ -161,6 +161,39 @@ _KALSHI_SOCCER_SERIES = [
 _SOCCER_TITLE = re.compile(r"^(.+?)\s+vs\.?\s+(.+?)(?:\s+Winner)?\s*\??$", re.I)
 
 
+def _kalshi_event_pairs(series: str) -> dict:
+    """event_ticker -> (side_a, side_b), from settled EVENTS.
+
+    The events endpoint still titles a fixture "Connecticut vs Dallas" even
+    though the per-market titles no longer do. Paired with the winning leg's
+    yes_sub_title, that is everything settlement needs and none of it depends
+    on a title format Kalshi is free to keep changing.
+    """
+    out: dict = {}
+    cursor = None
+    for _ in range(6):
+        params = {"series_ticker": series, "status": "settled", "limit": 200}
+        if cursor:
+            params["cursor"] = cursor
+        try:
+            r = requests.get(f"{K}/events", params=params, timeout=45)
+            r.raise_for_status()
+            body = r.json()
+        except (requests.RequestException, ValueError):
+            break
+        evs = body.get("events", [])
+        for e in evs:
+            m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
+                         str(e.get("title", "")).split(":")[0])
+            if m:
+                out[str(e.get("event_ticker"))] = (m.group(1).strip(),
+                                                   m.group(2).strip())
+        cursor = body.get("cursor")
+        if not cursor or not evs:
+            break
+    return out
+
+
 def _kalshi_results(series: str) -> dict:
     """(YYYY-MM-DD, frozenset of both sides) -> winning side, from Kalshi.
 
@@ -175,6 +208,15 @@ def _kalshi_results(series: str) -> dict:
     are slower — basketball-reference still had a finished game unplayed hours
     afterwards.
     """
+    # Kalshi reformatted market titles in late August 2026. They used to name
+    # the whole fixture ("... Toronto vs Phoenix ...") and now name only the
+    # outcome ("Phoenix wins"), so both regexes below match nothing on anything
+    # recent. That silently stopped WNBA settling on 2026-08-21: seven finished
+    # games sat UNRESOLVED on the board for two weeks while the picker's
+    # equivalent break was being chased separately. Same root cause, same fix —
+    # the fixture pairing still lives on the EVENT.
+    pairs = _kalshi_event_pairs(series)
+
     out: dict = {}
     cursor = None
     for _ in range(6):                       # ~1200 markets is months of games
@@ -193,14 +235,24 @@ def _kalshi_results(series: str) -> dict:
                 continue                     # only the winning leg names it
             title = str(m.get("title", ""))
             tick = str(m.get("ticker", ""))
-            mw = _KT_WILL.match(title)
-            if mw:
-                winner, a, b = (x.strip() for x in mw.groups())
+            # Preferred path: the event names both sides, the winning leg's
+            # own sub-title names the winner. No title parsing involved.
+            ev = pairs.get(str(m.get("event_ticker", "")))
+            sub = str(m.get("yes_sub_title", "")).strip()
+            if ev and sub:
+                a, b = ev
+                winner = sub
             else:
-                mc = _KT_COLON.match(title)
-                if not mc:
-                    continue
-                a, b, winner = (x.strip() for x in mc.groups())
+                # Fallback for markets written in the old title format, so
+                # anything still unsettled from before the change resolves.
+                mw = _KT_WILL.match(title)
+                if mw:
+                    winner, a, b = (x.strip() for x in mw.groups())
+                else:
+                    mc = _KT_COLON.match(title)
+                    if not mc:
+                        continue
+                    a, b, winner = (x.strip() for x in mc.groups())
             # close_time is just after the final whistle; the ticker carries the
             # scheduled date (…-26AUG06LVIND-…), which is the one our event
             # strings use. Prefer it over deriving a date from close_time, which
