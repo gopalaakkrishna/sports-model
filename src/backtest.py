@@ -1,4 +1,12 @@
-"""Walk-forward backtest against Pinnacle closing odds.
+"""Walk-forward backtest against the Pinnacle line.
+
+NOTE ON WHICH LINE. PSH/PSD/PSA from football-data are PRE-CLOSING (opening)
+odds; closing carries an extra "C" (PSCH/PSCD/PSCA). This module described
+them as "closing" from the start, so every market comparison it has produced
+was against the OPENING line. The direction of every conclusion survives —
+closing is sharper still, so the model's deficit is larger, not smaller — but
+the label was wrong. Both are recorded now; measured 2026-09-04, the gap
+between them is +0.00074 RPS.
 
 The only honest test of a football model is: predict matches you have not seen,
 using only data available beforehand, then compare to the closing line. Closing
@@ -122,7 +130,15 @@ def run(
                         "m_btts": pred["p_btts"],
                         "lam_h": pred["lambda_home"],
                         "lam_a": pred["lambda_away"],
+                        # PSH/PSD/PSA are PRE-CLOSING (opening). football-data
+                        # marks closing with an extra "C" — PSCH/PSCD/PSCA.
+                        # This file called them "closing" for months and every
+                        # market benchmark computed here was really against the
+                        # OPENING line, which is the weaker one. Both are now
+                        # recorded so the distinction can never be lost again.
                         "PSH": m["PSH"], "PSD": m["PSD"], "PSA": m["PSA"],
+                        "PSCH": m.get("PSCH"), "PSCD": m.get("PSCD"),
+                        "PSCA": m.get("PSCA"),
                         "AvgH": m["AvgH"], "AvgD": m["AvgD"], "AvgA": m["AvgA"],
                         "MaxH": m["MaxH"], "MaxD": m["MaxD"], "MaxA": m["MaxA"],
                     }

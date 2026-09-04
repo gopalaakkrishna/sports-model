@@ -49,10 +49,23 @@ KEEP = [
     "Div", "Date", "Time", "HomeTeam", "AwayTeam",
     "FTHG", "FTAG", "FTR",          # full-time goals and result
     "HS", "AS", "HST", "AST",       # shots / shots on target
-    "PSH", "PSD", "PSA",            # Pinnacle closing odds (sharpest)
-    "AvgH", "AvgD", "AvgA",         # market average closing odds
-    "MaxH", "MaxD", "MaxA",         # best available closing odds
-    "B365H", "B365D", "B365A",      # Bet365, deepest history
+    # PRE-CLOSING (opening) odds. football-data's notes.txt is explicit:
+    # "These are for pre-closing odds. For the closing odds, as below but with
+    # an additional C character". These columns were labelled "closing" here
+    # for months and they are not — every market benchmark computed from them
+    # was measured against the OPENING line, which is the weaker one.
+    "PSH", "PSD", "PSA",            # Pinnacle opening
+    "AvgH", "AvgD", "AvgA",         # market average opening
+    "MaxH", "MaxD", "MaxA",         # best available opening
+    "B365H", "B365D", "B365A",      # Bet365 opening, deepest history
+    # CLOSING odds — the actual sharp benchmark, and the thing our model has
+    # to be measured against. The move from opening to closing is the market
+    # pricing information that arrives late (team news, lineups, money), so
+    # the gap between these two columns is a direct measure of how much that
+    # late information is worth.
+    "PSCH", "PSCD", "PSCA",         # Pinnacle closing (sharpest)
+    "AvgCH", "AvgCD", "AvgCA",      # market average closing
+    "MaxCH", "MaxCD", "MaxCA",      # best available closing
     # Over/under 2.5 CLOSING odds. Absent until 2026-08-19, which is why the
     # totals market could never be compared against the line retrospectively —
     # we had the goals but not the price. "C" is the closing quote; the

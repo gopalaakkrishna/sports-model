@@ -948,3 +948,79 @@ either, but it remains untested.
 
 The data is committed rather than regenerated: it cannot be refetched without
 a browser session, which no CI run has.
+
+---
+
+## Lineup scoping: the prize is 14% of the gap, so do not build it (2026-09-04)
+
+The plan was a live team-news/lineup feed, on the reasoning that starting XIs
+are public information the market prices within minutes and our model cannot
+see at all — "plausibly the bulk" of our ~0.005 RPS deficit. The scoping pass
+was meant to find a data source. It found the size of the prize first, and the
+prize is small enough that the source no longer matters.
+
+### The mislabel that made the measurement possible
+
+football-data's `notes.txt` is explicit: *"These are for pre-closing odds. For
+the closing odds, as below but with an additional C character."*
+
+So `PSH/PSD/PSA` are **opening** odds and `PSCH/PSCD/PSCA` are closing. This
+repo has called `PSH` "Pinnacle closing odds (sharpest)" since the first
+commit, in `fetch_data.KEEP`, `backtest.py`, `calibrate.py`, `analyze_edge.py`
+and `eval_vs_avg.py`. **Every market benchmark ever quoted here was against the
+OPENING line.**
+
+No conclusion reverses. Closing is sharper, so the model's deficit is larger
+than reported, not smaller — blend weight 0.00 stays 0.00. But the parity
+table against Athena, and every "vs market" figure in this document before
+today, is a comparison to the opening line and should be read that way. (Her
+published market figures match ours to 0.0002, which suggests she is using the
+same pre-closing columns.)
+
+Capturing both columns is what allowed the measurement below.
+
+### The measurement
+
+The move from opening to closing is the market pricing everything that arrives
+late — team news, lineups, injuries, weather, sharp money. Its total value is
+therefore a hard ceiling on what any lineup feed could contribute.
+
+24,359 major-league matches with both lines:
+
+    Pinnacle OPENING          0.19455
+    Pinnacle CLOSING          0.19381
+    value of ALL late info    +0.00074   95% CI [+0.00047, +0.00101]
+
+Per league: EPL +0.00094, La Liga +0.00100, Serie A +0.00084,
+Ligue 1 +0.00060, Bundesliga +0.00021.
+
+Decomposing our own deficit, on the 15,889 matches where we have predictions
+and both lines:
+
+    our Dixon-Coles           0.19941
+    our DC+GBM blend (live)   0.19889
+    Pinnacle OPENING          0.19422
+    Pinnacle CLOSING          0.19347
+
+    blend -> closing gap      +0.00542
+      of which late info      +0.00074   ( 14% )
+      already in the OPEN     +0.00468   ( 86% )
+
+### What this means
+
+**86% of our deficit exists before a single team sheet is published.** The
+market opens sharper than our model finishes. A perfect lineup feed — capturing
+every injury, rotation and suspension the instant it broke — competes for the
+remaining 14%, and lineups are only one component of that 14%; sharp money and
+everything else share it.
+
+The thesis was wrong, and it was wrong by roughly a factor of six. Building the
+feed would have cost weeks and, at best, closed a seventh of the gap.
+
+**The real finding is where the deficit actually lives: the market's PRIOR is
+better than ours.** Not its reaction speed, not its access to news — its
+starting estimate of how good these teams are. That is a modelling problem, not
+a data-pipeline problem, and it is the honest place to look next.
+
+Cheapest way to have learned this: two odds columns we already had on disk and
+had mislabelled for months.
