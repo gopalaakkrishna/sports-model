@@ -36,6 +36,8 @@ KALSHI_TO_MLB = {
     "Los Angeles A": "Los Angeles Angels", "Los Angeles D": "Los Angeles Dodgers",
     "New York Y": "New York Yankees", "New York M": "New York Mets",
     "Chicago C": "Chicago Cubs", "Chicago W": "Chicago White Sox",
+    # Kalshi relabelled the White Sox mid-season; keep both spellings.
+    "Chicago WS": "Chicago White Sox", "Chicago Cubs": "Chicago Cubs",
     "A's": "Athletics", "Athletics": "Athletics",
     "Boston": "Boston Red Sox", "Atlanta": "Atlanta Braves",
     "Detroit": "Detroit Tigers", "San Francisco": "San Francisco Giants",
@@ -106,6 +108,32 @@ def _ticker_date(event_ticker: str) -> str | None:
     return f"20{yy}-{_MONTHS[mon]:02d}-{int(dd):02d}"
 
 
+def _mlb_event_pairs() -> dict[str, tuple[str, str]]:
+    """{event_ticker: (away_raw, home_raw)} from the EVENTS endpoint.
+
+    Kalshi changed per-market titles from "A vs B Winner?" to the per-outcome
+    form ("Cincinnati wins"), so splitting a market title on " vs " matches
+    nothing and every MLB game silently lost its price — the model kept
+    publishing picks with no bid/ask, which made EV and edge uncomputable
+    rather than wrong, so nothing raised. The EVENTS endpoint still carries
+    the pairing ("Milwaukee vs Cincinnati"), same as the soccer fix in
+    settle.py and kalshi_edge.py.
+    """
+    r = requests.get(f"{KALSHI}/events",
+                     params={"series_ticker": "KXMLBGAME", "status": "open",
+                             "limit": 200}, timeout=60)
+    if r.status_code != 200:
+        return {}
+    out = {}
+    for e in r.json().get("events", []):
+        m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
+                     str(e.get("title", "")).split(":")[0])
+        if m:
+            out[str(e.get("event_ticker"))] = (m.group(1).strip(),
+                                               m.group(2).strip())
+    return out
+
+
 def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
     """{(date, home, away): {team: {bid, ask, ticker, ...}}} keyed on MLB names."""
     r = requests.get(f"{KALSHI}/markets",
@@ -113,19 +141,26 @@ def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
                              "limit": 200}, timeout=60)
     if r.status_code != 200:
         return {}
+    pairs = _mlb_event_pairs()
     by_ev = defaultdict(list)
     for m in r.json().get("markets", []):
         by_ev[m.get("event_ticker")].append(m)
 
     out = {}
     for ev, mk in by_ev.items():
-        title = str(mk[0].get("title", "")).replace(" Winner?", "").strip()
-        if " vs " not in title:
-            continue
+        # Events first; fall back to the old market-title split so a future
+        # revert of Kalshi's title format still works.
+        pair = pairs.get(str(ev))
+        if pair:
+            a_raw, b_raw = pair
+        else:
+            title = str(mk[0].get("title", "")).replace(" Winner?", "").strip()
+            if " vs " not in title:
+                continue
+            a_raw, b_raw = [s.strip() for s in title.split(" vs ", 1)]
         date = _ticker_date(ev)
         if not date:
             continue
-        a_raw, b_raw = [s.strip() for s in title.split(" vs ", 1)]
         # Kalshi lists AWAY vs HOME for baseball, matching the usual convention.
         away = KALSHI_TO_MLB.get(a_raw)
         home = KALSHI_TO_MLB.get(b_raw)
