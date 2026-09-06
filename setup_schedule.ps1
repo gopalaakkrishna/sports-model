@@ -3,6 +3,22 @@
 #   .\setup_schedule.ps1            # install
 #   .\setup_schedule.ps1 -Remove    # uninstall
 #
+# SUPERSEDED — do not run this unless GitHub Actions is down or removed.
+# .github/workflows/light.yml (every 15 min) and full.yml (daily 07:30 EDT)
+# have been the sole live runner since 2026-08-10. These local tasks stopped
+# on 2026-08-11 (this machine was off/idle, nothing re-registered them) and
+# were never missed — checked 2026-09-06, GitHub Actions has run cleanly for
+# 27 straight days with zero gap. Running BOTH at once is not merely
+# redundant, it actively corrupts the board: this file's own reports/ writers
+# already caused a real incident when two overlapping runs (a manual run +
+# a Task Scheduler catch-up) interleaved writes to the same CSV and halved
+# every MLB/WNBA price on the board (see auto_update.py's _LOCK_MAX_AGE_S
+# comment). A local task racing against GitHub Actions' commits to the same
+# origin/main is that same failure mode, now between two independent
+# machines instead of two local runs. If you ever need this as a fallback,
+# confirm the GHA workflows are disabled or the repo has no Actions minutes
+# left BEFORE registering these tasks, not after.
+#
 # Two tasks, because the chain has two halves with very different costs:
 #
 #   TaraSportsLight  every 30 min   settle finished games, re-price, publish
