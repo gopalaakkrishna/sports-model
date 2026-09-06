@@ -190,11 +190,24 @@ def _rows_from_two_sided(prefix: str, sport: str, league: str) -> list[dict]:
     if "match" not in d.columns or "model" not in d.columns:
         return []
     out = []
-    for match, g in d.groupby("match"):
+    # Group on date+match, not match alone. MLB/WNBA reports span 2-4 dates,
+    # so the same "Away @ Home" string is several DIFFERENT games (a 3-game
+    # series at Boston is one match string on three dates). Grouping on the
+    # string alone ran idxmax across the whole series and kept exactly one
+    # row: 26 of 56 games in mlb_predictions_2026-09-06.csv never became
+    # rows at all. Worse than a plain drop, because the two sides of a game
+    # sum to 1 — so the survivor is the highest-conviction FAVOURITE across
+    # the series, and the lane's win rate was measured on a conviction-
+    # selected subset, biased in the flattering direction. dashboard.py:388
+    # already fixed this for these same two files; this never got it.
+    d = d.copy()
+    d["_gkey"] = d["date"].astype(str) + "|" + d["match"].astype(str)
+    for _, g in d.groupby("_gkey"):
         g = g.dropna(subset=["model"])
         if g.empty:
             continue
         top = g.loc[g["model"].idxmax()]
+        match = str(top["match"])
         date = str(top.get("date") or top.get("start") or "")[:10]
         out.append({
             "sport": sport, "league": league,

@@ -629,25 +629,54 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
     # what the export timestamp says, and the app can state that plainly.
     try:
         import glob as _g
-        newest, per_source = None, {}
-        for prefix in ("kalshi_edge", "mlb_predictions", "wnba_kalshi",
-                       "hundred", "nfl_upcoming", "totals"):
+        # Age reports by the DATE IN THE FILENAME, never by st_mtime.
+        # These CSVs are tracked in git and the pipeline runs in GitHub
+        # Actions, where actions/checkout rewrites every tracked file with
+        # mtime = job start. So mtime measured the checkout, not the report:
+        # the published board carried "stale": false, age_hours 0.0 and six
+        # sources all timestamped minutes ago while wnba_kalshi and hundred
+        # were 26 days old and nfl_upcoming 31. dashboard.latest() and
+        # open_lane._latest() already age these same files by filename.
+        #
+        # Second fix: staleness is now per source. It used to come from the
+        # max across all six, so one live predictor (kalshi_edge, which runs
+        # every 15 min) reported the whole board fresh no matter how many of
+        # the others were dead.
+        produced = ("kalshi_edge", "totals", "mlb_predictions",
+                    "wnba_kalshi", "hundred")
+        today = datetime.now(timezone.utc).date()
+        newest_d, per_source, stale_srcs = None, {}, []
+        for prefix in produced + ("nfl_upcoming",):
             cands = sorted(_g.glob(str(ROOT / "reports" / f"{prefix}_*.csv")))
             if not cands:
                 per_source[prefix] = None
+                if prefix in produced:
+                    stale_srcs.append(prefix)
                 continue
-            mt = datetime.fromtimestamp(Path(cands[-1]).stat().st_mtime,
-                                        tz=timezone.utc)
-            per_source[prefix] = mt.isoformat(timespec="minutes")
-            newest = mt if newest is None else max(newest, mt)
-        if newest is not None:
-            age_h = (datetime.now(timezone.utc) - newest).total_seconds() / 3600.0
+            name = Path(cands[-1]).name
+            m = re.search(r"(\d{4}-\d{2}-\d{2})", name)
+            if m:
+                d_ = datetime.strptime(m.group(1), "%Y-%m-%d").date()
+            else:
+                d_ = datetime.fromtimestamp(
+                    Path(cands[-1]).stat().st_mtime, tz=timezone.utc).date()
+            age_d = (today - d_).days
+            per_source[prefix] = {"date": d_.isoformat(), "age_days": age_d}
+            if prefix in produced:
+                if age_d > 1:
+                    stale_srcs.append(prefix)
+                newest_d = d_ if newest_d is None else max(newest_d, d_)
+        if newest_d is not None or stale_srcs:
             out["predictions"] = clean_dict({
-                "newest_report": newest.isoformat(timespec="minutes"),
-                "age_hours": round(age_h, 1),
-                # 18h clears an ordinary overnight gap between full runs but
-                # still catches a predictor that died yesterday.
-                "stale": bool(age_h > 18.0),
+                "newest_report": newest_d.isoformat() if newest_d else None,
+                "age_days": (today - newest_d).days if newest_d else None,
+                # True if ANY predictor that is supposed to run is missing or
+                # more than a day stale, not just if all of them are.
+                "stale": bool(stale_srcs),
+                "stale_sources": sorted(stale_srcs) or None,
+                # Read but never written by any producer — reported so it is
+                # visible, excluded from `stale` so it cannot flap forever.
+                "unproduced": ["nfl_upcoming"],
                 "sources": per_source,
             })
     except (OSError, ValueError):
