@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import data as D
 import model as M
 from team_names import TeamResolver
+import guards as G
 
 ROOT = Path(__file__).resolve().parents[1]
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
@@ -106,14 +107,18 @@ def _event_titles(series: str) -> dict:
                              "limit": 200}, timeout=60)
     if r.status_code != 200:
         return {}
+    evs = r.json().get("events", [])
     out = {}
-    for e in r.json().get("events", []):
+    for e in evs:
         m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
                      str(e.get("title", "")).split(":")[0])
         if m:
             out[str(e.get("event_ticker"))] = (m.group(1).strip(),
                                                m.group(2).strip())
-    return out
+    # This exact parse has silently returned {} before. See src/guards.py.
+    return G.parsed_or_die(evs, out, what="kalshi_edge event titles",
+                           series=series,
+                           samples=[e.get("title") for e in evs])
 
 
 def _leg_side(sub: str, home: str, away: str) -> str | None:

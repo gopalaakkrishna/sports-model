@@ -25,9 +25,15 @@ import requests
 sys.path.insert(0, str(Path(__file__).parent))
 import data as D
 from team_names import TeamResolver
+import guards as G
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = ROOT / "data" / "processed" / "ledger.jsonl"
+
+# Filled by _kalshi_event_pairs when a non-empty Kalshi response parses to
+# nothing. Collected rather than raised so one dead series still lets every
+# other league settle; main() turns it into a non-zero exit at the end.
+_PARSE_FAILURES: list = []
 STATS = "https://statsapi.mlb.com/api/v1"
 
 
@@ -188,6 +194,8 @@ def _kalshi_event_pairs(series: str) -> dict:
     on a title format Kalshi is free to keep changing.
     """
     out: dict = {}
+    seen = 0
+    titles: list = []
     cursor = None
     for _ in range(6):
         params = {"series_ticker": series, "status": "settled", "limit": 200}
@@ -200,7 +208,10 @@ def _kalshi_event_pairs(series: str) -> dict:
         except (requests.RequestException, ValueError):
             break
         evs = body.get("events", [])
+        seen += len(evs)
         for e in evs:
+            if len(titles) < 3:
+                titles.append(e.get("title"))
             m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
                          str(e.get("title", "")).split(":")[0])
             if m:
@@ -209,7 +220,18 @@ def _kalshi_event_pairs(series: str) -> dict:
         cursor = body.get("cursor")
         if not cursor or not evs:
             break
-    return out
+    try:
+        return G.parsed_or_die(seen, out, what="settle event pairs",
+                               series=series, samples=titles)
+    except G.ParseYieldedNothing as e:
+        # Swallowed HERE on purpose, unlike the predictors. settle.py is what
+        # RESOLVES picks, and both callers run this once per series — letting
+        # one broken series abort the loop would strand every other league's
+        # finished games, which is the same harm the guard exists to stop.
+        # Recorded instead, and main() exits non-zero at the end so the run
+        # is still logged FAILED with this text in the stderr tail.
+        _PARSE_FAILURES.append(str(e))
+        return out
 
 
 def _kalshi_results(series: str) -> dict:
@@ -506,6 +528,18 @@ def main():
         print("  Unresolved rows are left alone on purpose: a guessed settlement")
         print("  corrupts the record more than a missing one.")
 
+    if _PARSE_FAILURES:
+        # Everything settleable above has already been written. This only
+        # marks the run FAILED so auto_update logs it and echoes the tail,
+        # instead of the whole thing looking healthy while a league quietly
+        # stopped resolving — which is what happened for two weeks.
+        print(f"\n{len(_PARSE_FAILURES)} Kalshi series parsed to nothing:",
+              file=sys.stderr)
+        for msg in _PARSE_FAILURES:
+            print(f"  {msg}", file=sys.stderr)
+        return 1
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

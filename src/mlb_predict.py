@@ -25,6 +25,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
 import mlb_model as MM
+import guards as G
 
 ROOT = Path(__file__).resolve().parents[1]
 STATS = "https://statsapi.mlb.com/api/v1"
@@ -124,14 +125,18 @@ def _mlb_event_pairs() -> dict[str, tuple[str, str]]:
                              "limit": 200}, timeout=60)
     if r.status_code != 200:
         return {}
+    evs = r.json().get("events", [])
     out = {}
-    for e in r.json().get("events", []):
+    for e in evs:
         m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
                      str(e.get("title", "")).split(":")[0])
         if m:
             out[str(e.get("event_ticker"))] = (m.group(1).strip(),
                                                m.group(2).strip())
-    return out
+    # The pairing this file lost for ~4 weeks. See src/guards.py.
+    return G.parsed_or_die(evs, out, what="MLB event pairs",
+                           series="KXMLBGAME",
+                           samples=[e.get("title") for e in evs])
 
 
 def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
@@ -182,7 +187,14 @@ def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
             }
         if len(legs) == 2:
             out[(date, home, away)] = legs
-    return out
+    # min_ratio, not just zero: KALSHI_TO_MLB is a fixed 30-team map, so a
+    # wholesale rename by Kalshi (it moved "Chicago W" to "Chicago WS"
+    # mid-season) should fail loudly rather than quietly shrinking the slate.
+    # 0.5 tolerates one or two renames — those still print per fixture above —
+    # while catching a map that has gone stale as a whole. See src/guards.py.
+    return G.parsed_or_die(by_ev, out, what="MLB fixtures priced",
+                           series="KXMLBGAME", min_ratio=0.5,
+                           samples=[mk[0].get("title") for mk in by_ev.values()])
 
 
 def depth(ticker: str, within: float = 0.05) -> float:

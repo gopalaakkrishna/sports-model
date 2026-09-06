@@ -55,6 +55,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import data as D
 import model as M
 from team_names import TeamResolver
+import guards as G
 
 ROOT = Path(__file__).resolve().parents[1]
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
@@ -122,14 +123,19 @@ def fetch_events(series: str) -> dict:
                              "limit": 200}, timeout=60)
     if r.status_code != 200:
         return {}
+    evs = r.json().get("events", [])
     out = {}
-    for e in r.json().get("events", []):
+    for e in evs:
         m = re.match(r"^(.*?)\s+vs\.?\s+(.*?)\s*:\s*Total Goals\s*$",
                      str(e.get("title", "")), re.I)
         if m:
             out[str(e.get("event_ticker"))] = {"home": m.group(1).strip(),
                                                "away": m.group(2).strip()}
-    return out
+    # Narrower regex than the winner board's (it also pins ": Total Goals"),
+    # so it has more ways to break. See src/guards.py.
+    return G.parsed_or_die(evs, out, what="totals event titles",
+                           series=series,
+                           samples=[e.get("title") for e in evs])
 
 
 def fetch_lines(series: str) -> dict:
