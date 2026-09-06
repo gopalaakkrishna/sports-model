@@ -153,10 +153,28 @@ _KALSHI_SERIES = {"basketball": "KXWNBAGAME", "wnba": "KXWNBAGAME",
 # Kalshi had every one of them settled within minutes of the whistle, and it
 # is the same venue the price came from, so the result matches the market the
 # pick was scored against.
+# Every soccer series that can appear in the ledger, INCLUDING ones no longer
+# priced — a pick already locked must still be able to settle.
+#
+# This list drifted. It was written during the European summer, when only the
+# minor leagues were in season, and was never updated when the majors came
+# back in late August and were added to leagues.py and
+# kalshi_edge.SERIES_COUNTRY. The result: EPL, Serie A, Ligue 1 and the top
+# Bundesliga were being PRICED and LOCKED but their series was never queried
+# at settlement, so those picks could never resolve. Stuttgart and Leverkusen
+# sat "awaiting result" with nothing wrong except that nobody asked Kalshi.
+#
+# Note KXBUNDESLIGA2GAME was here and KXBUNDESLIGAGAME was not, which is the
+# tell: the second tier was in season first.
 _KALSHI_SOCCER_SERIES = [
-    "KXMLSGAME", "KXLIGAMXGAME", "KXLALIGAGAME", "KXBUNDESLIGA2GAME",
-    "KXALLSVENSKANGAME", "KXELITESERIENGAME", "KXSCOTTISHPREMGAME",
-    "KXJLEAGUEGAME", "KXLEAGUESCUPGAME",
+    # European majors — added 2026-09-06 after they were found missing.
+    "KXEPLGAME", "KXSERIEAGAME", "KXBUNDESLIGAGAME", "KXLIGUE1GAME",
+    "KXLALIGAGAME", "KXUCLGAME",
+    # Year-round and the Americas.
+    "KXMLSGAME", "KXLIGAMXGAME", "KXLEAGUESCUPGAME",
+    # Kept for already-locked picks even though these are no longer priced.
+    "KXBUNDESLIGA2GAME", "KXALLSVENSKANGAME", "KXELITESERIENGAME",
+    "KXSCOTTISHPREMGAME", "KXJLEAGUEGAME",
 ]
 _SOCCER_TITLE = re.compile(r"^(.+?)\s+vs\.?\s+(.+?)(?:\s+Winner)?\s*\??$", re.I)
 
@@ -282,6 +300,18 @@ def _kalshi_soccer_results() -> dict:
     """
     out: dict = {}
     for series in _KALSHI_SOCCER_SERIES:
+        # Fixture pairing comes from the EVENT, not the market title.
+        #
+        # This function was missed when the same break was fixed in
+        # _kalshi_results on 2026-09-03. Kalshi's market titles stopped
+        # naming the fixture in late August — they now read "Villarreal wins"
+        # and "Tie is the result" — so _SOCCER_TITLE matched nothing and this
+        # returned only markets written before the change. It kept returning
+        # 420 entries, none newer than 2026-08-31, which is worse than
+        # returning zero: the caller saw a populated dict and every soccer
+        # pick from September onward simply sat UNRESOLVED on the board with
+        # no error anywhere.
+        pairs = _kalshi_event_pairs(series)
         cursor = None
         for _ in range(4):
             params = {"series_ticker": series, "status": "settled", "limit": 200}
@@ -298,10 +328,18 @@ def _kalshi_soccer_results() -> dict:
                 if str(m.get("result", "")).lower() != "yes":
                     continue
                 leg = str(m.get("yes_sub_title", "")).strip()
-                mt = _SOCCER_TITLE.match(str(m.get("title", "")).strip())
-                if not leg or not mt:
+                if not leg:
                     continue
-                a, b = mt.group(1).strip(), mt.group(2).strip()
+                ev = pairs.get(str(m.get("event_ticker", "")))
+                if ev:
+                    a, b = ev
+                else:
+                    # Old-format fallback, so anything still unsettled from
+                    # before the change resolves too.
+                    mt = _SOCCER_TITLE.match(str(m.get("title", "")).strip())
+                    if not mt:
+                        continue
+                    a, b = mt.group(1).strip(), mt.group(2).strip()
                 dm = re.search(r"-(\d{2})([A-Z]{3})(\d{2})",
                                str(m.get("ticker", "")))
                 if not dm:
