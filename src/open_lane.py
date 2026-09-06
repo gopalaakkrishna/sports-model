@@ -163,6 +163,14 @@ def _rows_from_totals() -> list[dict]:
         mp = float(r["model"])
         over = mp >= 0.5
         ask = float(r["ask"])
+        # An UNDER pick is buying the NO side, and NO costs 1 - yes_BID, not
+        # 1 - yes_ask. Recording 1 - ask understated the price paid by the
+        # full spread, which flatters UNDER in report()'s breakeven and units
+        # (those read the `ask` field). Only wrong by the spread, so the
+        # number stayed plausible and nothing could detect it.
+        bid = r.get("bid")
+        bid = float(bid) if bid is not None and bid == bid else None
+        under_ask = round(1.0 - bid, 4) if bid is not None else None
         out.append({
             "sport": "soccer",
             "league": LG.pretty(str(r.get("league"))),
@@ -171,8 +179,10 @@ def _rows_from_totals() -> list[dict]:
             "pick": "OVER" if over else "UNDER",
             "line": float(r.get("line", 2.5)),
             "model_prob": mp if over else 1.0 - mp,
+            # market_prob stays the market's implied probability from the yes
+            # quote; `ask` is what the position actually costs.
             "market_prob": ask if over else 1.0 - ask,
-            "ask": ask if over else round(1.0 - ask, 4),
+            "ask": ask if over else under_ask,
             "start": str(r.get("when")),
             # Totals settle straight off their own Kalshi market, which is
             # exact and needs no name matching at all.

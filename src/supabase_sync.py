@@ -170,6 +170,21 @@ def push(rows: list[dict]) -> None:
             f"write failed — HTTP {r.status_code}: {r.text[:200]}")
 
 
+def _state(rows: list[dict]) -> dict:
+    """id -> full row, for deciding whether the cloud copy differs at all.
+
+    The push test used to be `len(merged) != len(remote) or gained or
+    updated`, but merge() returns gained/updated counting only what came
+    FROM the remote (see its docstring). Nothing counted the other
+    direction, so a row this side had just SETTLED — same id set, same
+    cardinality, different content — failed every clause and was never
+    uploaded. It only ever reached the cloud incidentally, when an
+    unrelated new pick happened to change the row count on the same run.
+    """
+    return {r["id"]: json.dumps(r, sort_keys=True, default=str)
+            for r in rows if r.get("id") is not None}
+
+
 def sync() -> str:
     """Pull, merge, save, push. Returns a one-line human summary."""
     local = load_local()
@@ -177,7 +192,7 @@ def sync() -> str:
     merged, gained, updated = merge(local, remote)
     if gained or updated:
         save_local(merged)
-    if len(merged) != len(remote) or gained or updated:
+    if _state(merged) != _state(remote):
         push(merged)
         return (f"synced {len(merged)} rows "
                 f"(+{gained} new from cloud, {updated} settled by cloud, "

@@ -50,7 +50,6 @@ SERIES_COUNTRY = {
     "KXEPLGAME": ("England", "E0"),
     "KXSERIEAGAME": ("Italy", "I1"),
     "KXBUNDESLIGAGAME": ("Germany", "D1"),
-    "KXBUNDESLIGA2GAME": ("Germany", "D2"),
     "KXLIGUE1GAME": ("France", "F1"),
     "KXMLSGAME": ("USA", "USA:MLS"),
     "KXLIGAMXGAME": ("Mexico", "MEX:Liga MX"),
