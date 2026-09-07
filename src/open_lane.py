@@ -240,7 +240,8 @@ def lock() -> int:
     now = datetime.now(timezone.utc)
     new = (_rows_from_soccer_1x2() + _rows_from_totals()
            + _rows_from_two_sided("mlb_predictions", "baseball", "MLB")
-           + _rows_from_two_sided("wnba_kalshi", "basketball", "WNBA"))
+           + _rows_from_two_sided("wnba_kalshi", "basketball", "WNBA")
+           + _rows_from_two_sided("nfl_predictions", "nfl", "NFL"))
     n = 0
     nxt = max((r.get("id", 0) for r in rows), default=0) + 1
     for r in new:

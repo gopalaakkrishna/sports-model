@@ -145,6 +145,10 @@ PREDICT = [
     ("mlb", "mlb_predict.py"),
     ("wnba", "wnba_kalshi.py"),
     ("cricket", "hundred_predict.py"),
+    # margin_model.py + its backtest (margin_backtest.py, nfl_qb_ablation.py)
+    # already existed and were validated; nothing ever wired the model to a
+    # live Kalshi price. nfl_predict.py is that missing piece.
+    ("nfl", "nfl_predict.py"),
 ]
 
 

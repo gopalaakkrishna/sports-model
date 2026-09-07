@@ -367,10 +367,13 @@ def upcoming_from_reports() -> list[dict]:
                     tradeable=bool(r["tradeable"]) if "tradeable" in r else None,
                     thin=bool(r.get("thin_data", False)))
 
-    # MLB / WNBA / cricket: one league each, market is the ask.
+    # MLB / WNBA / NFL: one league each, market is the ask. nfl_predictions.csv
+    # is written in the exact same per-side schema as mlb_predictions.csv, so
+    # it drops straight into this shared loop.
     for sport, league, fname, teamcol in [
             ("baseball", "MLB", "mlb_predictions", "team"),
-            ("basketball", "WNBA", "wnba_kalshi", "team")]:
+            ("basketball", "WNBA", "wnba_kalshi", "team"),
+            ("nfl", "NFL", "nfl_predictions", "team")]:
         p = latest(fname)
         if not p:
             continue
