@@ -382,6 +382,17 @@ def _kalshi_soccer_results() -> dict:
 _K_CACHE: dict[str, dict] = {}
 
 
+# Word-level token overlap (below) cannot bridge two spellings of the same
+# team that share no whole word: "espanol" (our historical source's ASCII
+# transliteration) and "espanyol" (Kalshi's spelling) overlap on zero tokens,
+# so Espanyol v Sevilla sat UNRESOLVED past both the archive AND Kalshi
+# despite Kalshi having settled it hours earlier. Found 2026-09-07 chasing why
+# a fixture from that afternoon still hadn't settled by midnight. Add
+# variants here as they turn up rather than guessing at a general fuzzy-
+# transliteration scheme.
+_NAME_VARIANTS = {"espanol": "espanyol"}
+
+
 def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
     home, away, date = parse_event(rec["event"])
     if not away or not date:
@@ -390,7 +401,8 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
         _K_CACHE["soccer"] = _kalshi_soccer_results()
 
     def toks(s):
-        return {w for w in re.sub(r"[^a-z ]", " ", s.lower()).split() if len(w) >= 2}
+        words = re.sub(r"[^a-z ]", " ", s.lower()).split()
+        return {_NAME_VARIANTS.get(w, w) for w in words if len(w) >= 2}
 
     ht, at = toks(home), toks(away)
     if not ht or not at:
