@@ -1007,6 +1007,42 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
     return out
 
 
+def refresh_settlements(previous: dict) -> dict:
+    """Refresh record data without repricing, relocking, or aging forecasts to now.
+
+    Useful when a scheduled runner is delayed: preserve the published slate,
+    its quotes, paper lanes, clocks and original generated timestamp verbatim.
+    Only ledger-derived metrics and resolved tracked rows change.
+    """
+    import copy
+    if not isinstance(previous.get("board"), list) or not previous.get("generated"):
+        raise ValueError("A published board is required for a settlement-only refresh")
+    fresh = build([], StartTimes())
+    result = copy.deepcopy(previous)
+    keys = ("record", "by_sport", "by_league", "by_strategy", "open", "settled",
+            "calibration", "disclosures", "readiness", "verdict")
+    for key in keys:
+        if key in fresh:
+            result[key] = fresh[key]
+        else:
+            result.pop(key, None)
+    # Keep already verified fixture clocks instead of reverting to date-only.
+    clocks = {r["id"]: r.get("start") for r in previous.get("open", []) + previous.get("settled", [])}
+    for row in result["open"] + result["settled"]:
+        if clocks.get(row["id"]):
+            row["start"] = clocks[row["id"]]
+    resolved = {r["id"] for r in result["settled"]} | {
+        r["id"] for r in result["disclosures"] if r.get("kind") in ("voided", "non-binary")}
+    result["board"] = [r for r in result["board"] if r.get("ledger_id") not in resolved]
+    result["board_counts"] = {
+        "total": len(result["board"]),
+        "tracked": sum(bool(r.get("tracked")) for r in result["board"]),
+        "high_conviction": sum(bool(r.get("high_conviction")) for r in result["board"]),
+    }
+    result["record_updated"] = fresh["generated"]
+    return result
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(DEFAULT_OUT))
@@ -1014,7 +1050,17 @@ def main():
                     help="lock ALIGNED calls starting within this many hours")
     ap.add_argument("--no-lock", action="store_true",
                     help="export without committing anything to the ledger")
+    ap.add_argument("--settlements-only", action="store_true",
+                    help="refresh ledger-derived results in an existing board, preserving forecast age and quotes")
     args = ap.parse_args()
+
+    if args.settlements_only:
+        out = Path(args.out)
+        data = refresh_settlements(json.loads(out.read_text(encoding="utf-8")))
+        out.write_text(json.dumps(data, allow_nan=False, separators=(",", ":")), encoding="utf-8")
+        print(f"updated record: {data['record']['wins']}-{data['record']['losses']}; "
+              f"{len(data['open'])} pending; forecast timestamp preserved: {data['generated']}")
+        return
 
     upcoming, st = resolve_clocks(datetime.now(timezone.utc))
     if not args.no_lock:
