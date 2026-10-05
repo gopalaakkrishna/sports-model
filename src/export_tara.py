@@ -356,6 +356,7 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                     and (pd.Timestamp.now().normalize() - start).days >= 1
                     else None),
                 "outcome": r.get("outcome"),
+                "settled_at": clean(r.get("settled_at")),
                 "won": clean(r.get("won")),
                 "backfilled": bool(r.get("backfilled", False) is True)})
 
@@ -987,7 +988,7 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
     out["settled"].sort(key=lambda x: (x["start"] or ""), reverse=True)
 
     for _, r in voided.iterrows():
-        out["disclosures"].append({"id": int(r["id"]), "kind": "voided",
+        out["disclosures"].append({"id": int(r["id"]), "kind": "non-binary" if r.get("outcome") == "SCALAR" else "voided",
                                    "event": r["event"],
                                    "reason": r.get("void_reason")})
     if "backfilled" in df:

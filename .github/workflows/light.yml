@@ -87,6 +87,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Test settlement regressions
+        run: python -m unittest discover -s tests -v
+
       - name: Restore raw historical data
         id: cache
         uses: actions/cache/restore@v4

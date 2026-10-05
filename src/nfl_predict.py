@@ -54,11 +54,7 @@ FEE_RATE = 0.07
 #
 # Two abbreviations differ from nflverse outright, not just in format:
 # Kalshi's JAC/LAR are nflverse's JAX/LA.
-_KALSHI_ABBR_TO_NFL = {"JAC": "JAX", "LAR": "LA"}
-
-
-def _nfl_abbr(a: str) -> str:
-    return _KALSHI_ABBR_TO_NFL.get(a, a)
+from nfl_teams import KALSHI_TO_NFL, nfl_abbr as _nfl_abbr
 
 
 # Kalshi names cities; nflverse uses standard team abbreviations. Built from
@@ -68,18 +64,6 @@ def _nfl_abbr(a: str) -> str:
 # 32-team bijection with none of MLB's Chicago/LA ambiguity. This map is for
 # per-market LEGS (yes_sub_title) only — event pairing uses sub_title and
 # _KALSHI_ABBR_TO_NFL instead, per the note above.
-KALSHI_TO_NFL = {
-    "Arizona": "ARI", "Atlanta": "ATL", "Baltimore": "BAL", "Buffalo": "BUF",
-    "Carolina": "CAR", "Chicago": "CHI", "Cincinnati": "CIN", "Cleveland": "CLE",
-    "Dallas": "DAL", "Denver": "DEN", "Detroit": "DET", "Green Bay": "GB",
-    "Houston": "HOU", "Indianapolis": "IND", "Jacksonville": "JAX",
-    "Kansas City": "KC", "Las Vegas": "LV", "Los Angeles C": "LAC",
-    "Los Angeles R": "LA", "Miami": "MIA", "Minnesota": "MIN",
-    "New England": "NE", "New Orleans": "NO", "New York G": "NYG",
-    "New York J": "NYJ", "Philadelphia": "PHI", "Pittsburgh": "PIT",
-    "San Francisco": "SF", "Seattle": "SEA", "Tampa Bay": "TB",
-    "Tennessee": "TEN", "Washington": "WAS",
-}
 
 
 def kalshi_fee(p: float) -> float:

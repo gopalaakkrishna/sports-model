@@ -304,7 +304,7 @@ def settle() -> int:
                 res = (actual, f"Kalshi settled: {actual}")
         else:
             sport = str(r.get("sport", "")).lower()
-            rec = {"event": r["event"], "sport": sport, "pick": r["pick"]}
+            rec = {"event": r["event"], "sport": sport, "pick": r["pick"], "league": r.get("league")}
             if sport == "soccer":
                 res = S.settle_soccer_via_kalshi(rec)
                 if res is None:
@@ -319,10 +319,10 @@ def settle() -> int:
 
         if res is None:
             continue
-        outcome, _ = res
-        r["outcome"] = outcome
-        r["won"] = bool(outcome == r["pick"])
-        r["settled_at"] = now.isoformat(timespec="seconds")
+        outcome, detail = res
+        if r["market"] != "TOTAL" and rec.get("settlement_evidence"):
+            r["settlement_evidence"] = rec["settlement_evidence"]
+        S.apply_settlement(r, outcome, detail)
         n += 1
     if n:
         _save(rows)

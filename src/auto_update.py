@@ -326,7 +326,7 @@ def _run(args) -> int:
     run("supabase_sync.py", timeout=180)
 
     log("settling finished games")
-    run("settle.py", timeout=900)
+    settlement_ok = run("settle.py", timeout=900)
 
     # The totals paper lane records and settles itself. It runs AFTER
     # totals_predict has written today's report and settles from Kalshi's own
@@ -374,15 +374,17 @@ def _run(args) -> int:
     after = signature(PAYLOAD)
     if before is not None and before == after:
         log(f"no material board change — not publishing  ({time.time() - t0:.0f}s)")
-        return 0
+        return 0 if settlement_ok else 1
 
     if args.no_publish:
         log("board changed; --no-publish set")
-        return 0
+        return 0 if settlement_ok else 1
     log("board changed — publishing")
     publish(args.dry_run)
     log(f"=== done in {time.time() - t0:.0f}s")
-    return 0
+    if not settlement_ok:
+        log("settlement failed — partial results published, run requires attention")
+    return 0 if settlement_ok else 1
 
 
 if __name__ == "__main__":

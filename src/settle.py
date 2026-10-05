@@ -16,6 +16,7 @@ import argparse
 import json
 import re
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -26,6 +27,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 import data as D
 from team_names import TeamResolver
 import guards as G
+from nfl_teams import nfl_team
+import leagues as LG
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = ROOT / "data" / "processed" / "ledger.jsonl"
@@ -34,6 +37,9 @@ LEDGER = ROOT / "data" / "processed" / "ledger.jsonl"
 # nothing. Collected rather than raised so one dead series still lets every
 # other league settle; main() turns it into a non-zero exit at the end.
 _PARSE_FAILURES: list = []
+# Source evidence is retained with each newly resolved ledger row.
+_EVIDENCE: dict = {}
+_SCALAR_RESULTS: dict = {}
 STATS = "https://statsapi.mlb.com/api/v1"
 
 
@@ -122,6 +128,16 @@ def settle_mlb(rec: dict) -> tuple[str, str] | None:
 
 K = "https://api.elections.kalshi.com/trade-api/v2"
 
+
+def kalshi_get(url, **kwargs):
+    """Bounded backoff for public rate limits; do not turn a 429 into no results."""
+    for attempt in range(4):
+        response = requests.get(url, **kwargs)
+        if response.status_code not in (429, 500, 502, 503, 504) or attempt == 3:
+            return response
+        time.sleep(2 ** attempt)
+    return response
+
 # Kalshi settled titles come in two shapes across every sport we track. The
 # winning leg is the one with result == "yes", and it names the winner:
 #
@@ -202,16 +218,27 @@ def _kalshi_event_pairs(series: str) -> dict:
         if cursor:
             params["cursor"] = cursor
         try:
-            r = requests.get(f"{K}/events", params=params, timeout=45)
+            r = kalshi_get(f"{K}/events", params=params, timeout=45)
             r.raise_for_status()
             body = r.json()
-        except (requests.RequestException, ValueError):
+        except (requests.RequestException, ValueError) as exc:
+            _PARSE_FAILURES.append(f"{series} events request failed: {exc}")
             break
         evs = body.get("events", [])
         seen += len(evs)
         for e in evs:
             if len(titles) < 3:
                 titles.append(e.get("title"))
+            if series == "KXNFLGAME":
+                # Titles say 'LA Rams', legs say 'Los Angeles R', and our
+                # ledger says 'LA'. The stable subtitle carries team codes.
+                m = re.match(r"^\s*([A-Z]{2,3})\s+vs\.?\s+([A-Z]{2,3})\s*\(",
+                             str(e.get("sub_title", "")))
+                if m:
+                    a, b = (nfl_team(x) for x in m.groups())
+                    if a and b and a != b:
+                        out[str(e.get("event_ticker"))] = (a, b)
+                continue
             m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
                          str(e.get("title", "")).split(":")[0])
             if m:
@@ -264,10 +291,11 @@ def _kalshi_results(series: str) -> dict:
         if cursor:
             params["cursor"] = cursor
         try:
-            r = requests.get(f"{K}/markets", params=params, timeout=45)
+            r = kalshi_get(f"{K}/markets", params=params, timeout=45)
             r.raise_for_status()
             body = r.json()
-        except (requests.RequestException, ValueError):
+        except (requests.RequestException, ValueError) as exc:
+            _PARSE_FAILURES.append(f"{series} markets request failed: {exc}")
             break
         ms = body.get("markets", [])
         for m in ms:
@@ -279,7 +307,17 @@ def _kalshi_results(series: str) -> dict:
             # own sub-title names the winner. No title parsing involved.
             ev = pairs.get(str(m.get("event_ticker", "")))
             sub = str(m.get("yes_sub_title", "")).strip()
-            if ev and sub:
+            if series == "KXNFLGAME":
+                winner = nfl_team(sub)
+                if not ev:
+                    # Events and markets have different page boundaries; an
+                    # older market need not be in the fetched event pages.
+                    continue
+                if winner not in ev:
+                    _PARSE_FAILURES.append(f"NFL winner identity unresolved: {tick}")
+                    continue
+                a, b = ev
+            elif ev and sub:
                 a, b = ev
                 winner = sub
             else:
@@ -305,14 +343,22 @@ def _kalshi_results(series: str) -> dict:
                 d = datetime.strptime(f"{dd}{mon}{yy}", "%d%b%y").date()
             except ValueError:
                 continue
-            out[(d.isoformat(), frozenset({a.lower(), b.lower()}))] = winner.lower()
+            key = (d.isoformat(), frozenset({a.lower(), b.lower()}))
+            if key in out:
+                # More than one winning event for this identity is ambiguous.
+                out[key] = None
+                _PARSE_FAILURES.append(f"Duplicate settled fixture: {tick}")
+                continue
+            out[key] = winner.lower()
+            _EVIDENCE[(series, key)] = {"source": "kalshi", "ticker": tick,
+                "event_ticker": m.get("event_ticker"), "result": "yes"}
         cursor = body.get("cursor")
         if not cursor or not ms:
             break
     return out
 
 
-def _kalshi_soccer_results() -> dict:
+def _kalshi_soccer_results(series_list=None) -> dict:
     """(YYYY-MM-DD, frozenset{home, away}) -> 'DRAW' or the winning team name.
 
     Reads `yes_sub_title` for the leg rather than parsing the title, because
@@ -321,7 +367,7 @@ def _kalshi_soccer_results() -> dict:
     which soccer has and the other sports here do not.
     """
     out: dict = {}
-    for series in _KALSHI_SOCCER_SERIES:
+    for series in (series_list or _KALSHI_SOCCER_SERIES):
         # Fixture pairing comes from the EVENT, not the market title.
         #
         # This function was missed when the same break was fixed in
@@ -340,14 +386,16 @@ def _kalshi_soccer_results() -> dict:
             if cursor:
                 params["cursor"] = cursor
             try:
-                r = requests.get(f"{K}/markets", params=params, timeout=45)
+                r = kalshi_get(f"{K}/markets", params=params, timeout=45)
                 r.raise_for_status()
                 body = r.json()
-            except (requests.RequestException, ValueError):
+            except (requests.RequestException, ValueError) as exc:
+                _PARSE_FAILURES.append(f"{series} soccer request failed: {exc}")
                 break
             ms = body.get("markets", [])
             for m in ms:
-                if str(m.get("result", "")).lower() != "yes":
+                result = str(m.get("result", "")).lower()
+                if result not in ("yes", "scalar"):
                     continue
                 leg = str(m.get("yes_sub_title", "")).strip()
                 if not leg:
@@ -371,8 +419,23 @@ def _kalshi_soccer_results() -> dict:
                     d = datetime.strptime(f"{dd}{mon}{yy}", "%d%b%y").date()
                 except ValueError:
                     continue
+                key = (d.isoformat(), frozenset({a.lower(), b.lower()}))
+                evidence = {"source": "kalshi", "ticker": m.get("ticker"),
+                            "event_ticker": m.get("event_ticker"), "result": result}
+                if result == "scalar":
+                    if m.get("status") != "finalized":
+                        continue
+                    try:
+                        payout = float(m.get("settlement_value_dollars"))
+                    except (TypeError, ValueError):
+                        continue
+                    if 0 <= payout <= 1:
+                        _SCALAR_RESULTS.setdefault(key, {})[leg.lower()] = {
+                            **evidence, "payout_dollars": payout}
+                    continue
                 winner = "DRAW" if leg.lower() in ("tie", "draw") else leg.lower()
-                out[(d.isoformat(), frozenset({a.lower(), b.lower()}))] = winner
+                out[key] = winner
+                _EVIDENCE[("soccer", key)] = evidence
             cursor = body.get("cursor")
             if not cursor or not ms:
                 break
@@ -397,8 +460,14 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
     home, away, date = parse_event(rec["event"])
     if not away or not date:
         return None
-    if "soccer" not in _K_CACHE:
-        _K_CACHE["soccer"] = _kalshi_soccer_results()
+    league = LG.pretty(rec.get("league"))
+    series = [k for k, (sport, name) in LG.SERIES.items()
+              if sport == "soccer" and name == league]
+    # Query only the pick's league when known instead of scanning 14 leagues
+    # and hundreds of irrelevant pages on every run.
+    cache_key = "soccer:" + ",".join(series) if series else "soccer"
+    if cache_key not in _K_CACHE:
+        _K_CACHE[cache_key] = _kalshi_soccer_results(series)
 
     def toks(s):
         words = re.sub(r"[^a-z ]", " ", s.lower()).split()
@@ -414,7 +483,7 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
     except ValueError:
         pass
 
-    for (d, pair), winner in _K_CACHE["soccer"].items():
+    for (d, pair), winner in _K_CACHE[cache_key].items():
         if d not in want:
             continue
         names = list(pair)
@@ -424,12 +493,32 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
         # merely shares a word ("Manchester", "Real", "Atletico").
         if m_home == m_away or not (toks(m_home) & ht) or not (toks(m_away) & at):
             continue
+        rec["settlement_evidence"] = _EVIDENCE.get(("soccer", (d, pair)))
         if winner == "DRAW":
             return "DRAW", "Kalshi settled: draw"
         if winner == m_home:
             return "HOME", f"Kalshi settled: {winner.title()} won"
         if winner == m_away:
             return "AWAY", f"Kalshi settled: {winner.title()} won"
+    # Finalized proportional payouts have no binary winner. Only an exact
+    # scheduled date and distinctly matched teams can resolve this state.
+    candidates = []
+    for (d, pair), legs in _SCALAR_RESULTS.items():
+        if d != date or len(pair) != 2:
+            continue
+        names = list(pair)
+        homes = [n for n in names if toks(n) & ht]
+        aways = [n for n in names if toks(n) & at]
+        if len(homes) != 1 or len(aways) != 1 or homes[0] == aways[0]:
+            continue
+        chosen = {"HOME": homes[0], "AWAY": aways[0], "DRAW": "tie"}.get(rec.get("pick"))
+        evidence = legs.get(chosen)
+        if evidence:
+            candidates.append(evidence)
+    if len(candidates) == 1:
+        rec["settlement_evidence"] = candidates[0]
+        return "SCALAR", (f"Kalshi finalized with non-binary payout "
+                          f"${candidates[0]['payout_dollars']:.2f}; excluded from W/L record")
     return None
 
 
@@ -442,6 +531,16 @@ def settle_via_kalshi(rec: dict, sport: str) -> tuple[str, str] | None:
         return None
     if series not in _K_CACHE:
         _K_CACHE[series] = _kalshi_results(series)
+    if series == "KXNFLGAME":
+        h, a = nfl_team(home), nfl_team(away)
+        if not h or not a or h == a:
+            return None
+        key = (date, frozenset({h.lower(), a.lower()}))
+        winner = _K_CACHE[series].get(key)
+        if winner not in (h.lower(), a.lower()):
+            return None
+        rec["settlement_evidence"] = _EVIDENCE.get((series, key))
+        return ("HOME" if winner == h.lower() else "AWAY"), f"Kalshi settled: {winner.upper()} won"
     # Kalshi names cities ("Las Vegas"), our events name franchises ("Las Vegas
     # Aces"), so match on whichever side's words overlap.
     def toks(s):
@@ -472,8 +571,25 @@ def settle_via_kalshi(rec: dict, sport: str) -> tuple[str, str] | None:
         outcome = "HOME" if winner == m_home else "AWAY" if winner == m_away else None
         if outcome is None:
             continue
+        rec["settlement_evidence"] = _EVIDENCE.get((series, (d, pair)))
         return outcome, f"Kalshi settled: {winner.title()} won"
     return None
+
+
+def apply_settlement(rec: dict, outcome: str, detail: str) -> None:
+    """Store a resolution without changing the original prediction or price."""
+    rec["outcome"] = outcome
+    rec["settled_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    rec["settlement_detail"] = detail
+    if outcome == "SCALAR":
+        # 'voided' excludes this prediction from binary scoring; it does NOT
+        # mean the exchange refunded it. Retain its actual proportional payout.
+        rec.update(won=None, voided=True, void_reason=detail)
+        return
+    won = outcome == rec["pick"]
+    rec["won"] = won
+    if rec.get("odds") and rec.get("stake_units"):
+        rec["pnl_units"] = rec["stake_units"] * (rec["odds"] - 1) if won else -rec["stake_units"]
 
 
 def main():
@@ -520,17 +636,13 @@ def main():
             continue
         outcome, detail = res
         won = bool(outcome == rec["pick"])
-        print(f"  #{rec['id']:<3} {outcome:<5} ({'WON ' if won else 'lost'})  "
+        label = "unscored" if outcome == "SCALAR" else "WON " if won else "lost"
+        print(f"  #{rec['id']:<3} {outcome:<5} ({label})  "
               f"{rec['event']}  [{detail}]")
+        settled += 1
         if args.dry_run:
             continue
-        rec["outcome"] = outcome
-        rec["settled_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        rec["won"] = won
-        if rec.get("odds") and rec.get("stake_units"):
-            rec["pnl_units"] = (rec["stake_units"] * (rec["odds"] - 1)) if won \
-                else -rec["stake_units"]
-        settled += 1
+        apply_settlement(rec, outcome, detail)
 
     if not args.dry_run and settled:
         save(rows)
@@ -545,7 +657,7 @@ def main():
         # marks the run FAILED so auto_update logs it and echoes the tail,
         # instead of the whole thing looking healthy while a league quietly
         # stopped resolving — which is what happened for two weeks.
-        print(f"\n{len(_PARSE_FAILURES)} Kalshi series parsed to nothing:",
+        print(f"\n{len(_PARSE_FAILURES)} Kalshi settlement errors:",
               file=sys.stderr)
         for msg in _PARSE_FAILURES:
             print(f"  {msg}", file=sys.stderr)
