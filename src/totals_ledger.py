@@ -48,6 +48,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+import paper_settlement as PS
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).parent))
@@ -62,24 +63,11 @@ LOCK_HOURS = 36.0
 
 
 def _load() -> list[dict]:
-    if not LEDGER.exists():
-        return []
-    out = []
-    for line in LEDGER.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if line:
-            try:
-                out.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    return out
+    return PS.load(LEDGER)
 
 
 def _save(rows: list[dict]) -> None:
-    LEDGER.parent.mkdir(parents=True, exist_ok=True)
-    LEDGER.write_text(
-        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
-        encoding="utf-8")
+    PS.atomic_save(LEDGER, rows)
 
 
 def _latest_report() -> Path | None:
@@ -149,12 +137,14 @@ def lock() -> int:
 def settle() -> int:
     """Resolve open rows from Kalshi's own settlement."""
     rows = _load()
-    open_rows = [r for r in rows if r.get("won") is None]
+    import settle as S
+    open_rows = [r for r in rows if PS.pending(r)]
     if not open_rows:
         print("nothing open to settle")
         return 0
     now = datetime.now(timezone.utc)
     n = 0
+    before = json.dumps(rows, sort_keys=True)
     for r in open_rows:
         # Do not even ask until the game has had time to finish; an open
         # market returns no result and burns a request.
@@ -166,21 +156,23 @@ def settle() -> int:
                 continue
         except (ValueError, KeyError):
             pass
-        try:
-            resp = requests.get(f"{KALSHI}/markets/{r['id']}", timeout=30)
-            if resp.status_code != 200:
-                continue
-            res = str((resp.json().get("market") or {}).get("result") or "").lower()
-            time.sleep(0.1)
-        except requests.RequestException:
+        res = S.settle_exact_market(r, r['id'], "OVER", "UNDER")
+        if res is None:
             continue
-        if res not in ("yes", "no"):
-            continue
-        r["outcome"] = "OVER" if res == "yes" else "UNDER"
-        r["won"] = bool(res == "yes")
+        outcome, detail = res
+        # This lane always buys OVER; never change its original capture to
+        # manufacture the pick field required by winner-ledger settlement.
+        r["outcome"] = outcome
+        r["won"] = None if outcome == "SCALAR" else outcome == "OVER"
         r["settled_at"] = now.isoformat(timespec="seconds")
+        r["settlement_detail"] = detail
+        r["settlement_status"] = "resolved"
+        r["settlement_version"] = PS.VERSION
+        r.pop("settlement_blocker", None)
+        if outcome == "SCALAR":
+            r.update(voided=True, void_reason=detail)
         n += 1
-    if n:
+    if json.dumps(rows, sort_keys=True) != before:
         _save(rows)
     print(f"settled {n} totals pick(s)")
     return n
@@ -189,7 +181,7 @@ def settle() -> int:
 def report() -> dict:
     """Score the lane the same way the winner board is scored."""
     rows = _load()
-    done = [r for r in rows if r.get("won") is not None]
+    done = [r for r in rows if r.get("won") is not None and not r.get("voided")]
     out = {"n_total": len(rows), "n_settled": len(done),
            "wins": 0, "losses": 0}
     if not done:
@@ -210,7 +202,7 @@ def report() -> dict:
     print(f"totals lane (paper): {w}-{n - w} of {n} settled  "
           f"win rate {wr:.0%}  breakeven {be:.0%}  edge {wr - be:+.0%}  "
           f"units {units:+.2f}")
-    print(f"  {len(rows) - n} still open")
+    print(f"  {PS.health(rows)['pending']} still open; non-binary/cancelled excluded from W/L")
     return out
 
 
@@ -228,7 +220,7 @@ def main() -> int:
         settle()
     if a.report:
         report()
-    return 0
+    return 1 if PS.health(_load())["source_errors"] else 0
 
 
 if __name__ == "__main__":

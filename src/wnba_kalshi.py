@@ -155,6 +155,7 @@ def main():
             rows.append({
                 "date": date, "match": f"{away} @ {home}", "team": team,
                 "side": side, "model": mp, "bid": leg["bid"], "ask": ask,
+                "ticker": leg["ticker"], "event_ticker": leg["ticker"].rsplit("-", 1)[0],
                 "spread": spr, "depth": dep, "ev": ev_,
                 "exp_margin": p["exp_margin"], "exp_total": p["exp_total"],
                 "tradeable": (spr <= args.max_spread and dep >= args.min_depth

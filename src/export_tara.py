@@ -35,6 +35,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 import dashboard as D
 import leagues as LG
 from start_times import StartTimes
+import paper_settlement as PS
+
+
+def paper_settlement_state():
+    """Read both paper ledgers; never merge them into headline scoring."""
+    import open_lane as OL
+    import totals_ledger as TL
+    return {"version": PS.VERSION, "open": PS.health(OL._load()), "totals": PS.health(TL._load())}
 
 # Series whose fixtures reach the app without a clock in their source file.
 _CLOCK_SERIES = ["KXWNBAGAME", "KXNFLGAME", "KXMLSGAME", "KXLIGAMXGAME"]
@@ -823,7 +831,7 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             try:
                 import totals_ledger as TL
                 tl_rows = TL._load()
-                done = [x for x in tl_rows if x.get("won") is not None]
+                done = [x for x in tl_rows if x.get("won") is not None and not x.get("voided")]
                 if done:
                     w = sum(1 for x in done if x["won"])
                     n = len(done)
@@ -838,10 +846,10 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                         "n": n, "wins": w, "losses": n - w,
                         "win_rate": w / n, "breakeven": be,
                         "edge": w / n - be, "units": units,
-                        "open": len(tl_rows) - n,
+                        "open": PS.health(tl_rows)["pending"],
                     })
                 elif tl_rows:
-                    paper = {"n": 0, "open": len(tl_rows)}
+                    paper = {"n": 0, "open": PS.health(tl_rows)["pending"]}
             except (ImportError, OSError, ValueError, KeyError):
                 pass
 
@@ -909,6 +917,8 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
         out["open_lane"] = clean_dict(blk)
     except (ImportError, OSError, ValueError, KeyError):
         pass
+
+    out["paper_settlement"] = paper_settlement_state()
 
     # ── the edge lab: live status of the pair experiment ────────────────
     # fetch_live_pairs.py snapshots Kalshi and DraftKings simultaneously;
@@ -1020,12 +1030,14 @@ def refresh_settlements(previous: dict) -> dict:
     fresh = build([], StartTimes())
     result = copy.deepcopy(previous)
     keys = ("record", "by_sport", "by_league", "by_strategy", "open", "settled",
-            "calibration", "disclosures", "readiness", "verdict")
+            "calibration", "disclosures", "readiness", "verdict", "paper_settlement", "open_lane")
     for key in keys:
         if key in fresh:
             result[key] = fresh[key]
         else:
             result.pop(key, None)
+    if "totals" in fresh and "paper_record" in fresh["totals"]:
+        result.setdefault("totals", {})["paper_record"] = fresh["totals"]["paper_record"]
     # Keep already verified fixture clocks instead of reverting to date-only.
     clocks = {r["id"]: r.get("start") for r in previous.get("open", []) + previous.get("settled", [])}
     for row in result["open"] + result["settled"]:

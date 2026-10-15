@@ -79,6 +79,7 @@ def schedule(date: str) -> list[dict]:
             t = g["teams"]
             out.append({
                 "date": d["date"],
+                "game_id": g.get("gamePk"), "start_utc": g.get("gameDate"),
                 "home": t["home"]["team"]["name"], "away": t["away"]["team"]["name"],
                 "home_sp": (t["home"].get("probablePitcher") or {}).get("fullName"),
                 "away_sp": (t["away"].get("probablePitcher") or {}).get("fullName"),
@@ -287,6 +288,9 @@ def main():
                              and not thin_sp)
                 rows.append({
                     "date": g["date"], "start": g["start"],
+                    "game_id": g.get("game_id"), "start_utc": g.get("start_utc"),
+                    "ticker": leg.get("ticker") if leg else None,
+                    "event_ticker": leg["ticker"].rsplit("-", 1)[0] if leg and leg.get("ticker") else None,
                     "match": f"{g['away']} @ {g['home']}", "side": side, "team": team,
                     "model": mp, "raw_model": (p["p_home_uncalibrated"] if side == "HOME"
                                                else 1 - p["p_home_uncalibrated"]),

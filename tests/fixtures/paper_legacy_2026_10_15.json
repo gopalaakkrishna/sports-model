@@ -1,0 +1,1051 @@
+{
+  "source_ref": "39343a4f963745e457eca5e07be277a65b8e17ee",
+  "observed": "2026-10-15T20:18:10.551Z",
+  "rows": [
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Puebla v Toluca (2026-09-05)",
+      "market": "1X2",
+      "kind": "TOP",
+      "pick": "AWAY",
+      "model_prob": 0.6022784752047521,
+      "market_prob": 0.58,
+      "ask": 0.58,
+      "spread": 0.01,
+      "depth": 23645.9,
+      "tradeable": true,
+      "start": "2026-09-05T04:00",
+      "ticker": null,
+      "id": 137,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Puebla v Toluca (2026-09-05)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "DRAW",
+      "model_prob": 0.2233303137376157,
+      "market_prob": 0.22,
+      "ask": 0.22,
+      "spread": 0.01,
+      "depth": 6041.510200000001,
+      "tradeable": true,
+      "start": "2026-09-05T04:00",
+      "ticker": null,
+      "id": 138,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Puebla v Toluca (2026-09-05)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "AWAY",
+      "model_prob": 0.6022784752047521,
+      "market_prob": 0.58,
+      "ask": 0.58,
+      "spread": 0.01,
+      "depth": 23645.9,
+      "tradeable": true,
+      "start": "2026-09-05T04:00",
+      "ticker": null,
+      "id": 139,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "market": "1X2",
+      "kind": "TOP",
+      "pick": "AWAY",
+      "model_prob": 0.4327221479988961,
+      "market_prob": 0.45544554455445546,
+      "ask": 0.46,
+      "spread": 0.01,
+      "depth": 6735.7164,
+      "tradeable": true,
+      "start": "2026-09-06T02:00",
+      "ticker": null,
+      "id": 145,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "HOME",
+      "model_prob": 0.2948573987607062,
+      "market_prob": 0.2871287128712871,
+      "ask": 0.29,
+      "spread": 0.0099999999999999,
+      "depth": 6391.3393,
+      "tradeable": true,
+      "start": "2026-09-06T02:00",
+      "ticker": null,
+      "id": 146,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "DRAW",
+      "model_prob": 0.2724204532403976,
+      "market_prob": 0.25742574257425743,
+      "ask": 0.26,
+      "spread": 0.01,
+      "depth": 5474.5436,
+      "tradeable": true,
+      "start": "2026-09-06T02:00",
+      "ticker": null,
+      "id": 147,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "FC Cincinnati v DC United (2026-09-06)",
+      "market": "1X2",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.6488356727796337,
+      "market_prob": 0.62,
+      "ask": 0.62,
+      "spread": 0.01,
+      "depth": 25649.2238,
+      "tradeable": true,
+      "start": "2026-09-06T02:30",
+      "ticker": null,
+      "id": 206,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "FC Cincinnati v DC United (2026-09-06)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "HOME",
+      "model_prob": 0.6488356727796337,
+      "market_prob": 0.62,
+      "ask": 0.62,
+      "spread": 0.01,
+      "depth": 25649.2238,
+      "tradeable": true,
+      "start": "2026-09-06T02:30",
+      "ticker": null,
+      "id": 207,
+      "locked_at": "2026-09-04T06:14:34+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Puebla v Toluca (2026-09-05)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.5773,
+      "market_prob": 0.62,
+      "ask": 0.62,
+      "start": "2026-09-05T05:00:00Z",
+      "ticker": "KXLIGAMXTOTAL-26SEP04PUETOL-3",
+      "id": 394,
+      "locked_at": "2026-09-04T06:17:19+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.5256,
+      "market_prob": 0.64,
+      "ask": 0.64,
+      "start": "2026-09-06T03:00:00Z",
+      "ticker": "KXLIGAMXTOTAL-26SEP05QUEMON-3",
+      "id": 411,
+      "locked_at": "2026-09-04T06:17:19+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "FC Cincinnati v DC United (2026-09-06)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.647,
+      "market_prob": 0.69,
+      "ask": 0.69,
+      "start": "2026-09-06T03:30:00Z",
+      "ticker": "KXMLSTOTAL-26SEP05CINDCU-3",
+      "id": 414,
+      "locked_at": "2026-09-04T06:17:19+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "UNAM Pumas v Club Leon (2026-09-06)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.5532,
+      "market_prob": 0.54,
+      "ask": 0.54,
+      "start": "2026-09-06T22:00:00Z",
+      "ticker": "KXLIGAMXTOTAL-26SEP06PUMLEO-3",
+      "id": 435,
+      "locked_at": "2026-09-04T06:17:19+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Club Leon v Atl. San Luis (2026-09-13)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.5676,
+      "market_prob": 0.95,
+      "ask": 0.95,
+      "start": "2026-09-13T03:00:00Z",
+      "ticker": "KXLIGAMXTOTAL-26SEP12LEOASL-3",
+      "id": 641,
+      "locked_at": "2026-09-05T23:25:57+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "Mexico Liga MX",
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "AWAY",
+      "model_prob": 0.410884591899908,
+      "market_prob": 0.36986301369863017,
+      "ask": 0.54,
+      "spread": 0.2,
+      "depth": 6603.87,
+      "tradeable": false,
+      "start": "2026-09-06T02:00",
+      "ticker": null,
+      "id": 656,
+      "locked_at": "2026-09-06T01:19:43+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "New York Red Bulls v St. Louis City (2026-09-27)",
+      "market": "1X2",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.420095383785749,
+      "market_prob": 0.3333333333333333,
+      "ask": 0.65,
+      "spread": 0.6,
+      "depth": 273.94,
+      "tradeable": false,
+      "start": "2026-09-27T02:30",
+      "ticker": null,
+      "id": 1004,
+      "locked_at": "2026-09-12T05:01:56+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "New York Red Bulls v St. Louis City (2026-09-27)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "HOME",
+      "model_prob": 0.420095383785749,
+      "market_prob": 0.3333333333333333,
+      "ask": 0.65,
+      "spread": 0.6,
+      "depth": 273.94,
+      "tradeable": false,
+      "start": "2026-09-27T02:30",
+      "ticker": null,
+      "id": 1005,
+      "locked_at": "2026-09-12T05:01:56+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "New York Red Bulls v St. Louis City (2026-09-27)",
+      "market": "1X2",
+      "kind": "VALUE",
+      "pick": "DRAW",
+      "model_prob": 0.2575296120553031,
+      "market_prob": 0.23529411764705882,
+      "ask": 0.4,
+      "spread": 0.37,
+      "depth": 45.01,
+      "tradeable": false,
+      "start": "2026-09-27T02:30",
+      "ticker": null,
+      "id": 1104,
+      "locked_at": "2026-09-13T06:02:00+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "baseball",
+      "league": "MLB",
+      "event": "Toronto Blue Jays @ Baltimore Orioles (2026-09-22)",
+      "market": "ML",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.5513606583097044,
+      "market_prob": null,
+      "ask": null,
+      "start": "2026-09-22",
+      "ticker": null,
+      "id": 1304,
+      "locked_at": "2026-09-19T01:42:54+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "soccer",
+      "league": "USA MLS",
+      "event": "New York Red Bulls v St. Louis City (2026-09-27)",
+      "market": "TOTAL",
+      "kind": "TOP",
+      "pick": "OVER",
+      "line": 2.5,
+      "model_prob": 0.5766,
+      "market_prob": 0.71,
+      "ask": 0.71,
+      "start": "2026-09-27T03:30:00Z",
+      "ticker": "KXMLSTOTAL-26SEP26NYRBSTL-3",
+      "id": 1323,
+      "locked_at": "2026-09-20T01:44:46+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "baseball",
+      "league": "MLB",
+      "event": "Baltimore Orioles @ New York Yankees (2026-09-26)",
+      "market": "ML",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.5779358322962183,
+      "market_prob": null,
+      "ask": null,
+      "start": "2026-09-26",
+      "ticker": null,
+      "id": 1418,
+      "locked_at": "2026-09-23T01:27:24+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "baseball",
+      "league": "MLB",
+      "event": "Chicago Cubs @ Boston Red Sox (2026-09-26)",
+      "market": "ML",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.524428752341714,
+      "market_prob": null,
+      "ask": null,
+      "start": "2026-09-26",
+      "ticker": null,
+      "id": 1419,
+      "locked_at": "2026-09-23T01:27:24+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "baseball",
+      "league": "MLB",
+      "event": "Baltimore Orioles @ New York Yankees (2026-09-27)",
+      "market": "ML",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.5758375098243546,
+      "market_prob": null,
+      "ask": null,
+      "start": "2026-09-27",
+      "ticker": null,
+      "id": 1438,
+      "locked_at": "2026-09-24T01:30:33+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    },
+    {
+      "sport": "nfl",
+      "league": "NFL",
+      "event": "NYG @ WAS (2026-10-11)",
+      "market": "ML",
+      "kind": "TOP",
+      "pick": "HOME",
+      "model_prob": 0.6904589836887673,
+      "market_prob": 0.58,
+      "ask": 0.58,
+      "start": "2026-10-11",
+      "ticker": null,
+      "id": 1686,
+      "locked_at": "2026-10-01T00:13:32+00:00",
+      "outcome": null,
+      "won": null,
+      "settled_at": null,
+      "voided": false,
+      "notes": "open lane: unfiltered, no floor, no aligned filter"
+    }
+  ],
+  "totals": [
+    {
+      "id": 394,
+      "event": "Puebla v Toluca (2026-09-05)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXLIGAMXTOTAL-26SEP04PUETOL-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXLIGAMXTOTAL-26SEP04PUETOL-3",
+        "event_ticker": "KXLIGAMXTOTAL-26SEP04PUETOL",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.6100",
+        "close_time": "2026-09-07T07:00:00Z",
+        "expiration_time": "2026-09-07T07:00:00Z"
+      },
+      "error": null
+    },
+    {
+      "id": 411,
+      "event": "Queretaro v Monterrey (2026-09-06)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXLIGAMXTOTAL-26SEP05QUEMON-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXLIGAMXTOTAL-26SEP05QUEMON-3",
+        "event_ticker": "KXLIGAMXTOTAL-26SEP05QUEMON",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.6200",
+        "close_time": "2026-09-06T15:28:58Z",
+        "expiration_time": "2026-09-08T05:00:00Z"
+      },
+      "error": null
+    },
+    {
+      "id": 414,
+      "event": "FC Cincinnati v DC United (2026-09-06)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXMLSTOTAL-26SEP05CINDCU-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXMLSTOTAL-26SEP05CINDCU-3",
+        "event_ticker": "KXMLSTOTAL-26SEP05CINDCU",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.6700",
+        "close_time": "2026-09-08T05:30:00Z",
+        "expiration_time": "2026-09-08T05:30:00Z"
+      },
+      "error": null
+    },
+    {
+      "id": 435,
+      "event": "UNAM Pumas v Club Leon (2026-09-06)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXLIGAMXTOTAL-26SEP06PUMLEO-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXLIGAMXTOTAL-26SEP06PUMLEO-3",
+        "event_ticker": "KXLIGAMXTOTAL-26SEP06PUMLEO",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.5500",
+        "close_time": "2026-09-06T01:22:32Z",
+        "expiration_time": "2026-09-09T00:00:00Z"
+      },
+      "error": null
+    },
+    {
+      "id": 641,
+      "event": "Club Leon v Atl. San Luis (2026-09-13)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXLIGAMXTOTAL-26SEP12LEOASL-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXLIGAMXTOTAL-26SEP12LEOASL-3",
+        "event_ticker": "KXLIGAMXTOTAL-26SEP12LEOASL",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.5200",
+        "close_time": "2026-09-08T04:45:07Z",
+        "expiration_time": "2026-09-15T05:00:00Z"
+      },
+      "error": null
+    },
+    {
+      "id": 1323,
+      "event": "New York Red Bulls v St. Louis City (2026-09-27)",
+      "source": "https://api.elections.kalshi.com/trade-api/v2/markets/KXMLSTOTAL-26SEP26NYRBSTL-3",
+      "http": 200,
+      "market": {
+        "ticker": "KXMLSTOTAL-26SEP26NYRBSTL-3",
+        "event_ticker": "KXMLSTOTAL-26SEP26NYRBSTL",
+        "title": "Will over 2.5 goals be scored?",
+        "yes_sub_title": "Over 2.5 goals scored",
+        "status": "finalized",
+        "result": "scalar",
+        "settlement_value_dollars": "0.6800",
+        "close_time": "2026-09-26T22:33:55Z",
+        "expiration_time": "2026-09-28T23:30:00Z"
+      },
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "series": "KXLIGAMXGAME",
+      "pageCount": 2,
+      "eventCount": 296,
+      "errors": [],
+      "matchingEventCount": 2,
+      "matches": [
+        {
+          "event_ticker": "KXLIGAMXGAME-26SEP05QUEMON",
+          "title": "Queretaro vs Monterrey",
+          "sub_title": "QUE vs MON (Sep 5)",
+          "ids": [
+            145,
+            146,
+            147,
+            656
+          ],
+          "source": "https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXLIGAMXGAME-26SEP05QUEMON&limit=100",
+          "http": 200,
+          "markets": [
+            {
+              "ticker": "KXLIGAMXGAME-26SEP05QUEMON-QUE",
+              "event_ticker": "KXLIGAMXGAME-26SEP05QUEMON",
+              "title": "Queretaro wins",
+              "yes_sub_title": "Queretaro",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2900",
+              "close_time": "2026-09-06T15:28:13Z",
+              "expiration_time": "2026-09-08T05:00:00Z"
+            },
+            {
+              "ticker": "KXLIGAMXGAME-26SEP05QUEMON-MON",
+              "event_ticker": "KXLIGAMXGAME-26SEP05QUEMON",
+              "title": "Monterrey wins",
+              "yes_sub_title": "Monterrey",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.4700",
+              "close_time": "2026-09-06T15:28:13Z",
+              "expiration_time": "2026-09-08T05:00:00Z"
+            },
+            {
+              "ticker": "KXLIGAMXGAME-26SEP05QUEMON-TIE",
+              "event_ticker": "KXLIGAMXGAME-26SEP05QUEMON",
+              "title": "Tie is the result",
+              "yes_sub_title": "Tie",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2400",
+              "close_time": "2026-09-06T15:28:13Z",
+              "expiration_time": "2026-09-08T05:00:00Z"
+            }
+          ]
+        },
+        {
+          "event_ticker": "KXLIGAMXGAME-26SEP04PUETOL",
+          "title": "Puebla vs Toluca",
+          "sub_title": "PUE vs TOL (Sep 4)",
+          "ids": [
+            137,
+            138,
+            139
+          ],
+          "source": "https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXLIGAMXGAME-26SEP04PUETOL&limit=100",
+          "http": 200,
+          "markets": [
+            {
+              "ticker": "KXLIGAMXGAME-26SEP04PUETOL-TOL",
+              "event_ticker": "KXLIGAMXGAME-26SEP04PUETOL",
+              "title": "Toluca wins",
+              "yes_sub_title": "Toluca",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.5800",
+              "close_time": "2026-09-08T03:42:01Z",
+              "expiration_time": "2026-09-08T03:42:01Z"
+            },
+            {
+              "ticker": "KXLIGAMXGAME-26SEP04PUETOL-TIE",
+              "event_ticker": "KXLIGAMXGAME-26SEP04PUETOL",
+              "title": "Tie is the result",
+              "yes_sub_title": "Tie",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2200",
+              "close_time": "2026-09-08T03:42:01Z",
+              "expiration_time": "2026-09-08T03:42:01Z"
+            },
+            {
+              "ticker": "KXLIGAMXGAME-26SEP04PUETOL-PUE",
+              "event_ticker": "KXLIGAMXGAME-26SEP04PUETOL",
+              "title": "Puebla wins",
+              "yes_sub_title": "Puebla",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2000",
+              "close_time": "2026-09-08T03:42:01Z",
+              "expiration_time": "2026-09-08T03:42:01Z"
+            }
+          ]
+        }
+      ],
+      "otherMatchingEvents": []
+    },
+    {
+      "series": "KXMLSGAME",
+      "pageCount": 4,
+      "eventCount": 759,
+      "errors": [],
+      "matchingEventCount": 2,
+      "matches": [
+        {
+          "event_ticker": "KXMLSGAME-26SEP26NYRBSTL",
+          "title": "New York RB vs Saint Louis",
+          "sub_title": "NYRB vs STL (Sep 26)",
+          "ids": [
+            1004,
+            1005,
+            1104
+          ],
+          "source": "https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXMLSGAME-26SEP26NYRBSTL&limit=100",
+          "http": 200,
+          "markets": [
+            {
+              "ticker": "KXMLSGAME-26SEP26NYRBSTL-NYRB",
+              "event_ticker": "KXMLSGAME-26SEP26NYRBSTL",
+              "title": "New York RB wins",
+              "yes_sub_title": "New York RB",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2600",
+              "close_time": "2026-09-26T21:59:59Z",
+              "expiration_time": "2026-09-28T23:30:00Z"
+            },
+            {
+              "ticker": "KXMLSGAME-26SEP26NYRBSTL-STL",
+              "event_ticker": "KXMLSGAME-26SEP26NYRBSTL",
+              "title": "Saint Louis wins",
+              "yes_sub_title": "Saint Louis",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.5200",
+              "close_time": "2026-09-26T21:59:59Z",
+              "expiration_time": "2026-09-28T23:30:00Z"
+            },
+            {
+              "ticker": "KXMLSGAME-26SEP26NYRBSTL-TIE",
+              "event_ticker": "KXMLSGAME-26SEP26NYRBSTL",
+              "title": "Tie is the result",
+              "yes_sub_title": "Tie",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2200",
+              "close_time": "2026-09-26T21:59:59Z",
+              "expiration_time": "2026-09-28T23:30:00Z"
+            }
+          ]
+        },
+        {
+          "event_ticker": "KXMLSGAME-26SEP05CINDCU",
+          "title": "Cincinnati vs DC United",
+          "sub_title": "CIN vs DCU (Sep 5)",
+          "ids": [
+            206,
+            207
+          ],
+          "source": "https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXMLSGAME-26SEP05CINDCU&limit=100",
+          "http": 200,
+          "markets": [
+            {
+              "ticker": "KXMLSGAME-26SEP05CINDCU-DCU",
+              "event_ticker": "KXMLSGAME-26SEP05CINDCU",
+              "title": "DC United wins",
+              "yes_sub_title": "DC United",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2000",
+              "close_time": "2026-09-08T05:30:00Z",
+              "expiration_time": "2026-09-08T05:30:00Z"
+            },
+            {
+              "ticker": "KXMLSGAME-26SEP05CINDCU-TIE",
+              "event_ticker": "KXMLSGAME-26SEP05CINDCU",
+              "title": "Tie is the result",
+              "yes_sub_title": "Tie",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.2100",
+              "close_time": "2026-09-08T05:30:00Z",
+              "expiration_time": "2026-09-08T05:30:00Z"
+            },
+            {
+              "ticker": "KXMLSGAME-26SEP05CINDCU-CIN",
+              "event_ticker": "KXMLSGAME-26SEP05CINDCU",
+              "title": "Cincinnati wins",
+              "yes_sub_title": "Cincinnati",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.5900",
+              "close_time": "2026-09-08T05:30:00Z",
+              "expiration_time": "2026-09-08T05:30:00Z"
+            }
+          ]
+        }
+      ],
+      "otherMatchingEvents": []
+    },
+    {
+      "series": "KXNFLGAME",
+      "pageCount": 3,
+      "eventCount": 460,
+      "errors": [],
+      "matchingEventCount": 3,
+      "matches": [
+        {
+          "event_ticker": "KXNFLGAME-26OCT11NYGWAS",
+          "title": "NY Giants vs WAS Commanders",
+          "sub_title": "NYG vs WAS (Oct 11)",
+          "ids": [
+            1686
+          ],
+          "source": "https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXNFLGAME-26OCT11NYGWAS&limit=100",
+          "http": 200,
+          "markets": [
+            {
+              "ticker": "KXNFLGAME-26OCT11NYGWAS-NYG",
+              "event_ticker": "KXNFLGAME-26OCT11NYGWAS",
+              "title": "New York G wins",
+              "yes_sub_title": "New York G",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.5000",
+              "close_time": "2026-10-11T20:50:45Z",
+              "expiration_time": "2026-10-13T17:00:00Z"
+            },
+            {
+              "ticker": "KXNFLGAME-26OCT11NYGWAS-WAS",
+              "event_ticker": "KXNFLGAME-26OCT11NYGWAS",
+              "title": "Washington wins",
+              "yes_sub_title": "Washington",
+              "status": "finalized",
+              "result": "scalar",
+              "settlement_value_dollars": "0.5000",
+              "close_time": "2026-10-11T20:50:45Z",
+              "expiration_time": "2026-10-13T17:00:00Z"
+            }
+          ]
+        }
+      ],
+      "otherMatchingEvents": [
+        {
+          "event_ticker": "KXNFLGAME-25DEC14WASNYG",
+          "title": "Washington at New York G",
+          "sub_title": "WAS at NYG (Dec 14)"
+        },
+        {
+          "event_ticker": "KXNFLGAME-25SEP07NYGWAS",
+          "title": "New York G at Washington",
+          "sub_title": "NYG at WAS (Sep 7)"
+        }
+      ]
+    }
+  ],
+  "mlb": [
+    {
+      "id": 1304,
+      "event": "Toronto Blue Jays @ Baltimore Orioles (2026-09-22)",
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-09-22&endDate=2026-09-27&hydrate=team,linescore",
+      "http": 200,
+      "exactMatches": [
+        {
+          "gamePk": 824785,
+          "gameDate": "2026-09-22T22:35:00Z",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "D",
+            "detailedState": "Postponed",
+            "statusCode": "DR",
+            "startTimeTBD": false,
+            "reason": "Rain",
+            "abstractGameCode": "F"
+          },
+          "home": "Baltimore Orioles",
+          "away": "Toronto Blue Jays",
+          "rescheduleDate": "2026-09-23T17:35:00Z"
+        }
+      ],
+      "sameDateInvolvingEitherTeam": [
+        {
+          "gamePk": 824785,
+          "gameDate": "2026-09-22T22:35:00Z",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "D",
+            "detailedState": "Postponed",
+            "statusCode": "DR",
+            "startTimeTBD": false,
+            "reason": "Rain",
+            "abstractGameCode": "F"
+          },
+          "home": "Baltimore Orioles",
+          "away": "Toronto Blue Jays",
+          "rescheduleDate": "2026-09-23T17:35:00Z"
+        }
+      ]
+    },
+    {
+      "id": 1418,
+      "event": "Baltimore Orioles @ New York Yankees (2026-09-26)",
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-09-22&endDate=2026-09-27&hydrate=team,linescore",
+      "http": 200,
+      "exactMatches": [],
+      "sameDateInvolvingEitherTeam": []
+    },
+    {
+      "id": 1419,
+      "event": "Chicago Cubs @ Boston Red Sox (2026-09-26)",
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-09-22&endDate=2026-09-27&hydrate=team,linescore",
+      "http": 200,
+      "exactMatches": [],
+      "sameDateInvolvingEitherTeam": []
+    },
+    {
+      "id": 1438,
+      "event": "Baltimore Orioles @ New York Yankees (2026-09-27)",
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-09-22&endDate=2026-09-27&hydrate=team,linescore",
+      "http": 200,
+      "exactMatches": [
+        {
+          "gamePk": 823490,
+          "gameDate": "2026-09-27T17:05:00Z",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "C",
+            "detailedState": "Cancelled",
+            "statusCode": "CR",
+            "startTimeTBD": false,
+            "reason": "Rain",
+            "abstractGameCode": "F"
+          },
+          "home": "New York Yankees",
+          "away": "Baltimore Orioles"
+        }
+      ],
+      "sameDateInvolvingEitherTeam": [
+        {
+          "gamePk": 823490,
+          "gameDate": "2026-09-27T17:05:00Z",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "C",
+            "detailedState": "Cancelled",
+            "statusCode": "CR",
+            "startTimeTBD": false,
+            "reason": "Rain",
+            "abstractGameCode": "F"
+          },
+          "home": "New York Yankees",
+          "away": "Baltimore Orioles"
+        }
+      ]
+    }
+  ],
+  "rescheduled_mlb": {
+    "source": "https://statsapi.mlb.com/api/v1/schedule?gamePks=824785&hydrate=team,linescore",
+    "dates": [
+      {
+        "date": "2026-09-22",
+        "games": [
+          {
+            "gamePk": 824785,
+            "gameDate": "2026-09-22T22:35:00Z",
+            "status": {
+              "abstractGameState": "Final",
+              "codedGameState": "D",
+              "detailedState": "Postponed",
+              "statusCode": "DR",
+              "startTimeTBD": false,
+              "reason": "Rain",
+              "abstractGameCode": "F"
+            },
+            "teams": {
+              "home": {
+                "team": {
+                  "name": "Baltimore Orioles"
+                }
+              },
+              "away": {
+                "team": {
+                  "name": "Toronto Blue Jays"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "date": "2026-09-23",
+        "games": [
+          {
+            "gamePk": 824785,
+            "gameDate": "2026-09-23T17:35:00Z",
+            "status": {
+              "abstractGameState": "Final",
+              "codedGameState": "F",
+              "detailedState": "Final",
+              "statusCode": "F",
+              "startTimeTBD": false,
+              "abstractGameCode": "F"
+            },
+            "rescheduledFrom": "2026-09-22T22:35:00Z",
+            "rescheduledFromDate": "2026-09-22",
+            "teams": {
+              "home": {
+                "team": {
+                  "name": "Baltimore Orioles"
+                },
+                "score": 4
+              },
+              "away": {
+                "team": {
+                  "name": "Toronto Blue Jays"
+                },
+                "score": 2
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

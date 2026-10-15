@@ -359,6 +359,7 @@ def main():
             rows.append({
                 "series": series, "event": f["event"], "when": str(f["when"])[:16],
                 "match": f"{h} v {a}", "leg": k,
+                "ticker": leg["ticker"],
                 "model": p, "bid": bid, "ask": ask, "spread": spread,
                 "depth": depth, "fee": fee, "ev": ev,
                 "eff_n_min": pred["eff_n_min"],

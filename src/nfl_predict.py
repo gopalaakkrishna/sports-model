@@ -259,6 +259,8 @@ def main():
                 "date": date, "start": str(g.get("date"))[11:16] or "",
                 "match": f"{g['away_team']} @ {g['home_team']}",
                 "side": side, "team": team,
+                "ticker": leg.get("ticker") if leg else None,
+                "event_ticker": leg["ticker"].rsplit("-", 1)[0] if leg and leg.get("ticker") else None,
                 "model": mp, "bid": bid, "ask": ask, "spread": spr,
                 "depth": dep, "ev": ev, "exp_total": p["exp_total"],
                 "tradeable": trade,

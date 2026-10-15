@@ -61,29 +61,22 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).parent))
 
 import leagues as LG
+import paper_settlement as PS
 
 LEDGER = ROOT / "data" / "processed" / "open_ledger.jsonl"
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
 
 
 def _load() -> list[dict]:
-    if not LEDGER.exists():
-        return []
-    out = []
-    for line in LEDGER.read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            try:
-                out.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    return out
+    return PS.load(LEDGER)
 
 
 def _save(rows: list[dict]) -> None:
-    LEDGER.parent.mkdir(parents=True, exist_ok=True)
-    LEDGER.write_text(
-        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
-        encoding="utf-8")
+    PS.atomic_save(LEDGER, rows)
+
+
+def _optional(value):
+    return None if value is None or pd.isna(value) or str(value).strip() in ("", "nan", "None") else value
 
 
 def _latest(prefix: str):
@@ -133,10 +126,11 @@ def _rows_from_soccer_1x2() -> list[dict]:
                 # Bayern at home. Nothing is filtered out here — the user
                 # asked for free rein — but every row carries the spread so
                 # the report can separate real prices from dead books.
-                "spread": float(r["spread"]) if r.get("spread") == r.get("spread") else None,
-                "depth": float(r["depth"]) if r.get("depth") == r.get("depth") else None,
+                "spread": float(r["spread"]) if _optional(r.get("spread")) is not None else None,
+                "depth": float(r["depth"]) if _optional(r.get("depth")) is not None else None,
                 "tradeable": bool(r["tradeable"]) if "tradeable" in r else None,
-                "start": str(r.get("when")), "ticker": None,
+                "start": str(r.get("when")), "ticker": _optional(r.get("ticker")),
+                "event_ticker": _optional(r.get("event")),
             }
 
         # TOP — the single outcome the model thinks most likely. Note this can
@@ -212,6 +206,10 @@ def _rows_from_two_sided(prefix: str, sport: str, league: str) -> list[dict]:
     # already fixed this for these same two files; this never got it.
     d = d.copy()
     d["_gkey"] = d["date"].astype(str) + "|" + d["match"].astype(str)
+    # Two games of a doubleheader share date/teams, not stable fixture IDs.
+    for field in ("event_ticker", "game_id"):
+        if field in d:
+            d["_gkey"] += "|" + d[field].fillna("").astype(str)
     for _, g in d.groupby("_gkey"):
         g = g.dropna(subset=["model"])
         if g.empty:
@@ -227,7 +225,10 @@ def _rows_from_two_sided(prefix: str, sport: str, league: str) -> list[dict]:
             "model_prob": float(top["model"]),
             "market_prob": float(top["ask"]) if "ask" in top and top["ask"] == top["ask"] else None,
             "ask": float(top["ask"]) if "ask" in top and top["ask"] == top["ask"] else None,
-            "start": date, "ticker": None,
+            "start": str(top.get("start_utc")) if _optional(top.get("start_utc")) else date,
+            "ticker": _optional(top.get("ticker")),
+            "event_ticker": _optional(top.get("event_ticker")),
+            "game_id": int(top["game_id"]) if _optional(top.get("game_id")) is not None else None,
         })
     return out
 
@@ -235,8 +236,14 @@ def _rows_from_two_sided(prefix: str, sport: str, league: str) -> list[dict]:
 def lock() -> int:
     """Write down everything the model currently thinks. No filters."""
     rows = _load()
-    have = {(r["event"], r["market"], r.get("kind"), r.get("pick"),
-         r.get("line")) for r in rows}
+    def legacy_key(r):
+        return (r["event"], r["market"], r.get("kind"), r.get("pick"), r.get("line"))
+    def stable_key(r):
+        fixture = ("mlb", str(r["game_id"])) if r.get("game_id") else ("event", r.get("event_ticker"))
+        return fixture + (r["market"], r.get("kind"), r.get("pick"), r.get("line"))
+    have = {stable_key(r) for r in rows if r.get("game_id") or r.get("event_ticker")}
+    legacy = {legacy_key(r) for r in rows if not (r.get("game_id") or r.get("event_ticker"))}
+    all_legacy = {legacy_key(r) for r in rows}
     now = datetime.now(timezone.utc)
     new = (_rows_from_soccer_1x2() + _rows_from_totals()
            + _rows_from_two_sided("mlb_predictions", "baseball", "MLB")
@@ -245,16 +252,17 @@ def lock() -> int:
     n = 0
     nxt = max((r.get("id", 0) for r in rows), default=0) + 1
     for r in new:
-        key = (r["event"], r["market"], r.get("kind"), r.get("pick"),
-               r.get("line"))
-        if key in have:
+        stable = bool(r.get("game_id") or r.get("event_ticker"))
+        key = stable_key(r) if stable else legacy_key(r)
+        if legacy_key(r) in legacy or (stable and key in have) or (not stable and legacy_key(r) in all_legacy):
             continue
         r.update({"id": nxt, "locked_at": now.isoformat(timespec="seconds"),
                   "outcome": None, "won": None, "settled_at": None,
                   "voided": False,
                   "notes": "open lane: unfiltered, no floor, no aligned filter"})
         rows.append(r)
-        have.add(key)
+        (have if stable else legacy).add(key)
+        all_legacy.add(legacy_key(r))
         nxt += 1
         n += 1
     if n:
@@ -263,29 +271,18 @@ def lock() -> int:
     return n
 
 
-def _settle_ticker(tk: str):
-    try:
-        r = requests.get(f"{KALSHI}/markets/{tk}", timeout=30)
-        if r.status_code != 200:
-            return None
-        res = str((r.json().get("market") or {}).get("result") or "").lower()
-        time.sleep(0.1)
-        return res if res in ("yes", "no") else None
-    except requests.RequestException:
-        return None
-
-
 def settle() -> int:
     """Resolve open calls. Totals settle by ticker; the rest reuse settle.py."""
     import settle as S
     rows = _load()
-    opn = [r for r in rows if r.get("won") is None and not r.get("voided")]
+    opn = [r for r in rows if PS.pending(r)]
     if not opn:
         print("open lane: nothing to settle")
         return 0
     now = datetime.now(timezone.utc)
     hist = None
     n = 0
+    before = json.dumps(rows, sort_keys=True)
     for r in opn:
         # Do not ask before the game can plausibly have finished.
         try:
@@ -296,18 +293,21 @@ def settle() -> int:
             pass
 
         res = None
+        errors_before = len(S._PARSE_FAILURES)
+        rec = dict(r)
+        rec.pop("settlement_blocker", None)
+        rec.pop("settlement_status", None)
         if r["market"] == "TOTAL" and r.get("ticker"):
-            got = _settle_ticker(r["ticker"])
-            if got is not None:
-                # The ticker is the OVER market, so "yes" means the over hit.
-                actual = "OVER" if got == "yes" else "UNDER"
-                res = (actual, f"Kalshi settled: {actual}")
+            res = S.settle_exact_market(rec, r["ticker"], "OVER", "UNDER", selected_no=r.get("pick") == "UNDER")
+        elif r.get("ticker"):
+            opposite = ("NOT_" + str(r.get("pick")) if r.get("market") == "1X2" else
+                        {"HOME": "AWAY", "AWAY": "HOME"}.get(r.get("pick"), "NOT_" + str(r.get("pick"))))
+            res = S.settle_exact_market(rec, r["ticker"], r["pick"], opposite)
         else:
             sport = str(r.get("sport", "")).lower()
-            rec = {"event": r["event"], "sport": sport, "pick": r["pick"], "league": r.get("league")}
             if sport == "soccer":
                 res = S.settle_soccer_via_kalshi(rec)
-                if res is None:
+                if res is None and not rec.get("settlement_blocker") and len(S._PARSE_FAILURES) == errors_before:
                     if hist is None:
                         import data as D
                         hist = D.load_history()
@@ -317,16 +317,23 @@ def settle() -> int:
             elif sport in S._KALSHI_SERIES:
                 res = S.settle_via_kalshi(rec, sport)
 
+        for key, value in rec.items():
+            if key.startswith("settlement_"):
+                r[key] = value
         if res is None:
+            if len(S._PARSE_FAILURES) > errors_before:
+                PS.block(r, "source-error", "; ".join(S._PARSE_FAILURES[errors_before:]))
+            elif not rec.get("settlement_blocker"):
+                PS.block(r, "fixture-unmatched", "No unambiguous official result matches the captured fixture; not scored")
+            print(f"  #{r['id']} {r['event']}: {r['settlement_blocker']['code']} — {r['settlement_blocker']['detail']}")
             continue
         outcome, detail = res
-        if r["market"] != "TOTAL" and rec.get("settlement_evidence"):
-            r["settlement_evidence"] = rec["settlement_evidence"]
         S.apply_settlement(r, outcome, detail)
         n += 1
-    if n:
+    if json.dumps(rows, sort_keys=True) != before:
         _save(rows)
     print(f"open lane: settled {n}")
+    print("open lane settlement health:", json.dumps(PS.health(rows), ensure_ascii=False))
     return n
 
 
@@ -350,7 +357,7 @@ def report() -> dict:
     print(f"\nOPEN LANE (unfiltered)  {w}-{n - w} of {n} settled")
     print(f"  win rate {w / n:.1%}   breakeven {be:.1%}   "
           f"edge {w / n - be:+.1%}   units {units:+.2f}")
-    print(f"  {len(rows) - n} still open\n")
+    print(f"  {PS.health(rows)['pending']} still open; non-binary/cancelled excluded from W/L\n")
     print(f"  {'market':<10}{'n':>5}{'W-L':>10}{'win%':>8}{'breakeven':>11}{'edge':>8}{'units':>9}")
     for mk, g in df.groupby("market"):
         gw = int(g["won"].sum())
@@ -384,7 +391,7 @@ def main() -> int:
         settle()
     if a.report:
         report()
-    return 0
+    return 1 if PS.health(_load())["source_errors"] else 0
 
 
 if __name__ == "__main__":

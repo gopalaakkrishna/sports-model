@@ -32,7 +32,7 @@ class RefreshTests(unittest.TestCase):
                     self.assertEqual(git.call_count, 1)
 
     def test_real_chain_stamps_honest_health_preserves_evidence_and_reports_source_failure(self):
-        for failed in [None, 'settle.py', 'mlb_predict.py']:
+        for failed in [None, 'settle.py', 'mlb_predict.py', 'open_lane.py', 'totals_ledger.py']:
             with self.subTest(failed=failed), tempfile.TemporaryDirectory() as directory:
                 target = Path(directory) / 'sports.json'
                 original = {'generated': '2026-10-15T18:00:00Z', 'open': [{'id': 7}],
@@ -49,6 +49,7 @@ class RefreshTests(unittest.TestCase):
                 self.assertEqual(saved['settled'], original['settled'])
                 self.assertEqual(saved['refresh']['status'], 'degraded' if failed else 'ok')
                 self.assertEqual(saved['refresh']['failed_steps'], [failed] if failed else [])
+                self.assertEqual(saved['refresh']['pipeline_version'], '14.7.5')
                 self.assertEqual(result, 1 if failed else 0)
 
 

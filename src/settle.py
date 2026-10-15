@@ -29,6 +29,7 @@ from team_names import TeamResolver
 import guards as G
 from nfl_teams import nfl_team
 import leagues as LG
+from paper_settlement import block, market_result, VERSION as SETTLEMENT_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = ROOT / "data" / "processed" / "ledger.jsonl"
@@ -40,6 +41,7 @@ _PARSE_FAILURES: list = []
 # Source evidence is retained with each newly resolved ledger row.
 _EVIDENCE: dict = {}
 _SCALAR_RESULTS: dict = {}
+_MARKET_CACHE: dict = {}
 STATS = "https://statsapi.mlb.com/api/v1"
 
 
@@ -103,13 +105,19 @@ def settle_mlb(rec: dict) -> tuple[str, str] | None:
     if not away or not date:
         return None
     try:
-        r = requests.get(f"{STATS}/schedule",
-                         params={"sportId": 1, "startDate": date, "endDate": date,
-                                 "hydrate": "team,linescore"}, timeout=45)
+        params = {"sportId": 1, "hydrate": "team,linescore"}
+        if rec.get("game_id"):
+            params["gamePks"] = rec["game_id"]
+        else:
+            params.update(startDate=date, endDate=date)
+        r = requests.get(f"{STATS}/schedule", params=params, timeout=45)
         r.raise_for_status()
-    except requests.RequestException:
+        body = r.json()
+    except (requests.RequestException, ValueError) as exc:
+        block(rec, "source-error", f"MLB result request failed: {exc}")
         return None
-    for d in r.json().get("dates", []):
+    matches = []
+    for d in body.get("dates", []):
         for g in d.get("games", []):
             t = g["teams"]
             hn, an = t["home"]["team"]["name"], t["away"]["team"]["name"]
@@ -117,12 +125,75 @@ def settle_mlb(rec: dict) -> tuple[str, str] | None:
                 continue
             if away not in an and an not in away:
                 continue
-            if (g.get("status") or {}).get("detailedState") != "Final":
-                return None
-            hs, as_ = t["home"].get("score"), t["away"].get("score")
-            if hs is None or as_ is None:
-                return None
-            return ("HOME" if hs > as_ else "AWAY"), f"{an} {as_} @ {hn} {hs}"
+            if rec.get("game_id") and str(g.get("gamePk")) != str(rec["game_id"]):
+                continue
+            matches.append(g)
+    # Official schedule may include BOTH the postponed original and its makeup
+    # under the same stable gamePk. Only that identity, not a nearby game of
+    # a doubleheader, may supply the final result.
+    if len(matches) > 1 and len({g.get("gamePk") for g in matches}) == 1:
+        final = [g for g in matches if (g.get("status") or {}).get("detailedState") == "Final"]
+        if len(final) == 1:
+            matches = final
+    if len(matches) != 1:
+        block(rec, "fixture-unmatched" if not matches else "fixture-ambiguous",
+              "No unique official MLB fixture matches the saved identity; reconciliation required",
+              {"source": "mlb", "saved_date": date, "game_id": rec.get("game_id")})
+        return None
+    g = matches[0]
+    state = (g.get("status") or {}).get("detailedState")
+    if state == "Postponed" and g.get("gamePk") and not rec.get("game_id"):
+        follow = dict(rec, game_id=g["gamePk"])
+        result = settle_mlb(follow)
+        if result:
+            rec["settlement_evidence"] = follow["settlement_evidence"]
+            return result
+        if follow.get("settlement_status") == "source-error":
+            block(rec, "source-error", follow["settlement_blocker"]["detail"])
+            return None
+    ev = {"source": "mlb", "game_id": g.get("gamePk"), "status": state,
+          "game_date": g.get("gameDate"), "reschedule_date": g.get("rescheduleDate"),
+          "reason": (g.get("status") or {}).get("reason")}
+    if state == "Cancelled":
+        rec["settlement_evidence"] = ev
+        return "CANCELLED", f"Official MLB cancellation: {ev['reason'] or 'no final score'}; excluded from W/L"
+    if state != "Final":
+        block(rec, "postponed" if state == "Postponed" else "waiting-result",
+              f"Official MLB state: {state}; no final score is inferred", ev)
+        return None
+    hs, as_ = g["teams"]["home"].get("score"), g["teams"]["away"].get("score")
+    if hs is None or as_ is None or hs == as_:
+        block(rec, "result-unavailable", "Official MLB final score is unavailable or tied", ev)
+        return None
+    rec["settlement_evidence"] = ev
+    return ("HOME" if hs > as_ else "AWAY"), f"{away} {as_} @ {home} {hs}"
+
+
+def settle_exact_market(rec, ticker, yes_outcome, no_outcome, *, selected_no=False):
+    """Resolve the original exact market. No name/date substitutions."""
+    if ticker not in _MARKET_CACHE:
+        try:
+            response = kalshi_get(f"{K}/markets/{ticker}", timeout=30)
+            response.raise_for_status()
+            _MARKET_CACHE[ticker] = response.json().get("market") or {}
+        except (requests.RequestException, ValueError) as exc:
+            block(rec, "source-error", f"Exact market request failed: {exc}", {"ticker": ticker})
+            return None
+    market = _MARKET_CACHE[ticker]
+    if market.get("ticker") != ticker:
+        block(rec, "market-identity-mismatch", "Response does not match the captured ticker", {"ticker": ticker})
+        return None
+    if rec.get("event_ticker") and market.get("event_ticker") != rec["event_ticker"]:
+        block(rec, "market-identity-mismatch", "Response does not match the captured event", {"ticker": ticker})
+        return None
+    resolution = market_result(market, yes_outcome, no_outcome, selected_no=selected_no)
+    if resolution is None:
+        block(rec, "waiting-result" if market.get("status") not in ("finalized", "settled") else "result-unavailable",
+              "Original market has no verified final binary or scalar payout", {"ticker": ticker, "status": market.get("status"), "result": market.get("result")})
+        return None
+    outcome, detail, evidence = resolution
+    rec["settlement_evidence"] = evidence
+    return outcome, detail
     return None
 
 
@@ -299,7 +370,8 @@ def _kalshi_results(series: str) -> dict:
             break
         ms = body.get("markets", [])
         for m in ms:
-            if str(m.get("result", "")).lower() != "yes":
+            result = str(m.get("result", "")).lower()
+            if result not in ("yes", "scalar"):
                 continue                     # only the winning leg names it
             title = str(m.get("title", ""))
             tick = str(m.get("ticker", ""))
@@ -344,6 +416,11 @@ def _kalshi_results(series: str) -> dict:
             except ValueError:
                 continue
             key = (d.isoformat(), frozenset({a.lower(), b.lower()}))
+            if result == "scalar":
+                resolved = market_result(m, "YES", "NO")
+                if resolved:
+                    _SCALAR_RESULTS.setdefault((series, key), {})[winner.lower()] = resolved[2]
+                continue
             if key in out:
                 # More than one winning event for this identity is ambiguous.
                 out[key] = None
@@ -504,7 +581,7 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
     # scheduled date and distinctly matched teams can resolve this state.
     candidates = []
     for (d, pair), legs in _SCALAR_RESULTS.items():
-        if d != date or len(pair) != 2:
+        if not isinstance(d, str) or d not in want or len(pair) != 2:
             continue
         names = list(pair)
         homes = [n for n in names if toks(n) & ht]
@@ -513,12 +590,18 @@ def settle_soccer_via_kalshi(rec: dict) -> tuple[str, str] | None:
             continue
         chosen = {"HOME": homes[0], "AWAY": aways[0], "DRAW": "tie"}.get(rec.get("pick"))
         evidence = legs.get(chosen)
+        if evidence and series and not any(str(evidence.get("event_ticker", "")).startswith(s + "-") for s in series):
+            continue
+        if evidence and rec.get("event_ticker") and evidence.get("event_ticker") != rec["event_ticker"]:
+            continue
         if evidence:
             candidates.append(evidence)
     if len(candidates) == 1:
         rec["settlement_evidence"] = candidates[0]
         return "SCALAR", (f"Kalshi finalized with non-binary payout "
                           f"${candidates[0]['payout_dollars']:.2f}; excluded from W/L record")
+    if len(candidates) > 1:
+        block(rec, "fixture-ambiguous", "Multiple scalar fixtures match; no payout is inferred")
     return None
 
 
@@ -536,6 +619,10 @@ def settle_via_kalshi(rec: dict, sport: str) -> tuple[str, str] | None:
         if not h or not a or h == a:
             return None
         key = (date, frozenset({h.lower(), a.lower()}))
+        scalar = _SCALAR_RESULTS.get((series, key), {}).get(h.lower() if rec.get("pick") == "HOME" else a.lower())
+        if scalar:
+            rec["settlement_evidence"] = scalar
+            return "SCALAR", f"Kalshi finalized partial payout ${scalar['payout_dollars']:.4f}; excluded from W/L"
         winner = _K_CACHE[series].get(key)
         if winner not in (h.lower(), a.lower()):
             return None
@@ -581,7 +668,10 @@ def apply_settlement(rec: dict, outcome: str, detail: str) -> None:
     rec["outcome"] = outcome
     rec["settled_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     rec["settlement_detail"] = detail
-    if outcome == "SCALAR":
+    rec["settlement_status"] = "resolved"
+    rec["settlement_version"] = SETTLEMENT_VERSION
+    rec.pop("settlement_blocker", None)
+    if outcome in ("SCALAR", "CANCELLED"):
         # 'voided' excludes this prediction from binary scoring; it does NOT
         # mean the exchange refunded it. Retain its actual proportional payout.
         rec.update(won=None, voided=True, void_reason=detail)

@@ -367,7 +367,7 @@ def _run(args) -> int:
     try:
         payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
         payload["refresh"] = {
-            "pipeline_version": "14.7.4", "started_at": started,
+            "pipeline_version": "14.7.5", "started_at": started,
             "completed_at": datetime.now(timezone.utc).isoformat(),
             "status": "degraded" if failed_steps else "ok",
             "failed_steps": failed_steps,
