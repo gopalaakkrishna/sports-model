@@ -101,7 +101,9 @@ class VerifiedPaperReconciliationTests(unittest.TestCase):
             self.assertTrue(group)
             self.assertEqual(summary['n'],len(group))
             self.assertEqual(summary['wins'],sum(r['won'] for r in group))
-            self.assertEqual(summary['win_rate'],round(sum(r['won'] for r in group)/len(group),4))
+            # Normal export retains nested full precision; record-only updates
+            # may round. Both must represent the same rate to display precision.
+            self.assertEqual(round(summary['win_rate'],4),round(sum(r['won'] for r in group)/len(group),4))
         headline=PS.load(ROOT/'data/processed/ledger.jsonl')
         headline_done=[r for r in headline if r.get('won') is not None and not r.get('voided')]
         self.assertEqual(board['record']['wins'],sum(r['won'] for r in headline_done))
