@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Check out sports-model
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       # tara-app is not checked out — see light.yml for why. The board is
       # published into this repo and fetched by the app at runtime.
@@ -45,6 +47,16 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Test pipeline and settlement regressions
+        run: python -m unittest discover -s tests -v
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test independent scheduler guards
+        run: node --test tests/scheduler.test.mjs
 
       - name: Configure git identity
         run: |

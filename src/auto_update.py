@@ -22,11 +22,12 @@ Committing that unconditionally would mean a commit and a Vercel rebuild every
 payload is compared with `generated` and the diagnostics excluded: if nothing
 that a reader would notice has changed, the run publishes nothing and says so.
 
-WHAT THIS CANNOT DO
+SCHEDULING
 
-It runs on this machine, so it only runs while this machine is awake. That is
-the honest limit of a local scheduler; moving it to CI would need the model code
-and data in a repo with credentials, which is a bigger change than a timer.
+GitHub cron is a best-effort fallback. The independent Cloudflare scheduler
+dispatches this same workflow when the published board is due; the shared
+workflow concurrency group remains the sole pipeline writer. No local task
+or duplicate prediction engine is started.
 """
 
 from __future__ import annotations
@@ -110,6 +111,10 @@ _LOCK_MAX_AGE_S = 45 * 60
 
 class _AlreadyRunning(RuntimeError):
     pass
+
+
+class PublishError(RuntimeError):
+    """A failed durable publish must fail the job, not report refresh success."""
 
 
 @contextlib.contextmanager
@@ -225,8 +230,7 @@ def _commit_and_push(cwd: Path, paths: list[str], message: str, dry: bool,
         return False
     code, out = git(cwd, "status", "--porcelain", "--", *existing)
     if code != 0:
-        log(f"  [{label}] git status failed: {out}")
-        return False
+        raise PublishError(f"[{label}] git status failed: {out}")
     if not out.strip():
         log(f"  [{label}] nothing changed")
         return False
@@ -235,16 +239,13 @@ def _commit_and_push(cwd: Path, paths: list[str], message: str, dry: bool,
         return False
     code, out = git(cwd, "add", "--", *existing)
     if code != 0:
-        log(f"  [{label}] git add failed: {out}")
-        return False
+        raise PublishError(f"[{label}] git add failed: {out}")
     code, out = git(cwd, "commit", "-q", "-m", message)
     if code != 0:
-        log(f"  [{label}] git commit failed: {out}")
-        return False
+        raise PublishError(f"[{label}] git commit failed: {out}")
     code, out = git(cwd, "push", "-q", "origin", "main")
     if code != 0:
-        log(f"  [{label}] git push failed: {out}")
-        return False
+        raise PublishError(f"[{label}] git push failed: {out}")
     log(f"  [{label}] published")
     return True
 
@@ -283,26 +284,36 @@ def main() -> int:
     except _AlreadyRunning as e:
         log(f"skipping — {e}")
         return 0
+    except PublishError as e:
+        log(f"publish failed — {e}")
+        return 1
 
 
 def _run(args) -> int:
     t0 = time.time()
+    started = datetime.now(timezone.utc).isoformat()
+    failed_steps = []
+    def step(script, args=None, timeout=1800):
+        ok = run(script, args, timeout)
+        if not ok:
+            failed_steps.append(script)
+        return ok
     log(f"=== auto_update --mode {args.mode}")
     before = signature(PAYLOAD)
 
     if args.mode == "full":
         log("refreshing sources")
-        run("refresh_all.py", timeout=3600)
+        step("refresh_all.py", timeout=3600)
         # Daily scoring of the simultaneous price pairs: pulls settlement
         # results for finished games into the cache and logs the current
         # verdict. Pure measurement, non-fatal.
         log("scoring kalshi/book price pairs")
-        run("pair_analysis.py", timeout=600)
+        step("pair_analysis.py", timeout=600)
         # Daily snapshot of MLB season win totals vs Kalshi — the "season
         # market is softer than the game market" hypothesis. Logged, never
         # traded; October settles it.
         log("logging season win totals vs market")
-        run("mlb_season_wins.py", ["--log", "--sims", "10000"], timeout=900)
+        step("mlb_season_wins.py", ["--log", "--sims", "10000"], timeout=900)
 
     # Re-price on EVERY run, not just the full one. The first version only
     # re-predicted in full mode, so the board carried prices up to 24h old while
@@ -311,43 +322,60 @@ def _run(args) -> int:
     # nothing against a 30-minute interval.
     log("re-pricing against the live market")
     for name, script in PREDICT:
-        run(script, timeout=1800)
+        step(script, timeout=1800)
 
     # Snapshot Kalshi and DraftKings prices for the same games at the same
     # moment. Pure measurement — feeds pair_analysis.py, touches nothing
     # else — so a failure here must never block settling or the board.
     log("snapshotting kalshi/book price pairs")
-    run("fetch_live_pairs.py", timeout=600)
+    step("fetch_live_pairs.py", timeout=600)
 
     # Pull the shared ledger BEFORE settling, so this run sees predictions
     # another runner locked that this checkout does not have yet — otherwise
     # settle.py cannot resolve them and they sit open forever.
     log("syncing ledger with Supabase (pre-settle)")
-    run("supabase_sync.py", timeout=180)
+    step("supabase_sync.py", timeout=180)
 
     log("settling finished games")
-    settlement_ok = run("settle.py", timeout=900)
+    settlement_ok = step("settle.py", timeout=900)
 
     # The totals paper lane records and settles itself. It runs AFTER
     # totals_predict has written today's report and settles from Kalshi's own
     # result, so a lane that only displayed picks now actually accumulates
     # the evidence it exists to produce.
     log("recording and settling the totals paper lane")
-    run("totals_ledger.py", timeout=600)
+    step("totals_ledger.py", timeout=600)
 
     # The unfiltered lane: every market, no floor, no aligned filter, draws
     # and multi-leg calls included. Paper only, scored in its own ledger.
     log("recording and settling the open (unfiltered) lane")
-    run("open_lane.py", ["--lock", "--settle"], timeout=900)
+    step("open_lane.py", ["--lock", "--settle"], timeout=900)
 
     # Push again after settling so the outcomes this run resolved are shared
     # immediately, rather than waiting for the next run's pre-settle pull.
     log("syncing ledger with Supabase (post-settle)")
-    run("supabase_sync.py", timeout=180)
+    step("supabase_sync.py", timeout=180)
 
     log("exporting board")
     if not run("export_tara.py", timeout=900):
         log("export failed — nothing published")
+        return 1
+
+    # Preserve the real forecast clock, original picks and results. A freshly
+    # generated document must disclose failed refresh steps rather than pass as
+    # fresh quotes simply because export itself completed.
+    try:
+        payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
+        payload["refresh"] = {
+            "pipeline_version": "14.7.4", "started_at": started,
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "status": "degraded" if failed_steps else "ok",
+            "failed_steps": failed_steps,
+            "source": os.environ.get("SYNC_SOURCE", "local"),
+        }
+        PAYLOAD.write_text(json.dumps(payload, allow_nan=False, separators=(",", ":")), encoding="utf-8")
+    except (OSError, ValueError) as e:
+        log(f"refresh evidence could not be saved — {e}")
         return 1
 
     # Mirror the freshly exported board into this repo's public/ so it is
@@ -374,17 +402,17 @@ def _run(args) -> int:
     after = signature(PAYLOAD)
     if before is not None and before == after:
         log(f"no material board change — not publishing  ({time.time() - t0:.0f}s)")
-        return 0 if settlement_ok else 1
+        return 0 if not failed_steps else 1
 
     if args.no_publish:
         log("board changed; --no-publish set")
-        return 0 if settlement_ok else 1
+        return 0 if not failed_steps else 1
     log("board changed — publishing")
     publish(args.dry_run)
     log(f"=== done in {time.time() - t0:.0f}s")
     if not settlement_ok:
         log("settlement failed — partial results published, run requires attention")
-    return 0 if settlement_ok else 1
+    return 0 if not failed_steps else 1
 
 
 if __name__ == "__main__":

@@ -1,9 +1,8 @@
 name: Sports board — live refresh
 
-# Runs every 15 minutes, forever, on GitHub's own clock — not this repo
-# owner's laptop. This is the fix for "the board only updates when my PC is
-# on": moving execution off a personal machine and onto infrastructure that
-# does not sleep, does not miss runs, and is the same for every viewer.
+# Cloudflare is the primary independent clock. This cron is a best-effort
+# fallback: GitHub schedules can be delayed or dropped before a job starts.
+# Both clocks dispatch THIS workflow; they do not run competing pipelines.
 #
 # What it does NOT do: refetch historical archives or refit models. That is
 # full.yml's job, once a day. This step re-prices against the live market,
@@ -66,6 +65,8 @@ jobs:
     steps:
       - name: Check out sports-model
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       # NOTE: tara-app is deliberately NOT checked out. The board is published
       # into THIS repo at public/sports.json and the app fetches it at runtime
@@ -89,6 +90,13 @@ jobs:
 
       - name: Test settlement regressions
         run: python -m unittest discover -s tests -v
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test independent scheduler guards
+        run: node --test tests/scheduler.test.mjs
 
       - name: Restore raw historical data
         id: cache

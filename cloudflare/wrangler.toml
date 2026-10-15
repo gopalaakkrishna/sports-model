@@ -1,0 +1,15 @@
+name = "tara-sports-refresh"
+account_id = "5bd757dd1285beb06bf95ef9e2962c6b"
+main = "scheduler.mjs"
+compatibility_date = "2026-10-15"
+workers_dev = true
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[observability]
+enabled = true
+
+# GITHUB_TOKEN is an encrypted runtime secret, never a source-code variable.
+# Fine-grained token: sports-model repository only, Actions read/write;
+# Metadata read is GitHub's required minimum. No Contents or trading access.
