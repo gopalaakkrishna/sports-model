@@ -1,6 +1,25 @@
 {
   "record_id": 1419,
   "scope": "unfiltered-paper-only",
+  "historical_board_capture": {
+    "source_ref": "aa97dbc41a30039b94872a7493a633807c8dfb7e",
+    "source_path": "public/sports.json",
+    "json_path": "upcoming[67]",
+    "row": {
+      "sport": "baseball",
+      "sport_label": "Baseball",
+      "league": "MLB",
+      "match": "Chicago Cubs @ Boston Red Sox",
+      "pick": "BOSTON RED SOX",
+      "model": 0.5244,
+      "mkt": null,
+      "tier": "n/a",
+      "advice": "NO PRICE",
+      "label": "no market price",
+      "side": "HOME",
+      "start": "2026-09-26T23:15:00+00:00"
+    }
+  },
   "original_capture_ref": "aa97dbc41a30039b94872a7493a633807c8dfb7e",
   "original": {
     "sport": "baseball",

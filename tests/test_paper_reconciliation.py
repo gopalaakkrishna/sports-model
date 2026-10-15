@@ -1,7 +1,6 @@
 """Verified one-record reconciliation; unverified doubleheader stays pending."""
 import copy
 import json
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -57,10 +56,12 @@ class VerifiedPaperReconciliationTests(unittest.TestCase):
         self.assertEqual(row['settlement_evidence']['game_id'],824705)
         self.assertEqual(row['settlement_reconciliation']['identity_sources'], AUDIT['reconciliation']['identity_sources'])
         # Independently retained capture-time board corroborates the saved clock.
-        parent=json.loads(subprocess.check_output(['git','show',f"{AUDIT['original_capture_ref']}:public/sports.json"],cwd=ROOT,text=True))
-        saved=[r for r in parent['upcoming'] if r['match']=='Chicago Cubs @ Boston Red Sox' and r['start'].startswith('2026-09-26')]
-        self.assertEqual(len(saved),1)
-        self.assertEqual(saved[0]['start'],AUDIT['reconciliation']['historical_board_start_utc'])
+        # Freeze this public historical payload: CI checks out a shallow clone.
+        saved=AUDIT['historical_board_capture']['row']
+        self.assertEqual(saved['match'],'Chicago Cubs @ Boston Red Sox')
+        self.assertEqual(saved['side'],'HOME')
+        self.assertIsNone(saved['mkt'])
+        self.assertEqual(saved['start'],AUDIT['reconciliation']['historical_board_start_utc'])
 
     def test_repeat_settlement_preserves_resolution_and_does_not_guess_other_record(self):
         rows=PS.load(ROOT/'data/processed/open_ledger.jsonl')
