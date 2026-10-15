@@ -49,7 +49,7 @@ class RefreshTests(unittest.TestCase):
                 self.assertEqual(saved['settled'], original['settled'])
                 self.assertEqual(saved['refresh']['status'], 'degraded' if failed else 'ok')
                 self.assertEqual(saved['refresh']['failed_steps'], [failed] if failed else [])
-                self.assertEqual(saved['refresh']['pipeline_version'], '14.7.5')
+                self.assertEqual(saved['refresh']['pipeline_version'], '14.7.6')
                 self.assertEqual(result, 1 if failed else 0)
 
 

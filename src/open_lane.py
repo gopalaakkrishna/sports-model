@@ -338,35 +338,29 @@ def settle() -> int:
 
 
 def report() -> dict:
+    from paper_reporting import paper_performance
     rows = _load()
-    done = [r for r in rows if r.get("won") is not None and not r.get("voided")]
-    out = {"n_total": len(rows), "n_settled": len(done)}
+    done = [r for r in rows if isinstance(r.get("won"), bool) and not r.get("voided")]
+    out = paper_performance(rows)
     if not done:
         print(f"open lane: {len(rows)} recorded, none settled yet")
         return out
     df = pd.DataFrame(done)
     w = int(df["won"].sum())
     n = len(df)
-    px = pd.to_numeric(df.get("ask"), errors="coerce")
-    have = px.notna()
-    fee = (0.07 * px[have] * (1 - px[have])).mean() if have.any() else 0.0
-    be = (px[have].mean() + fee) if have.any() else float("nan")
-    units = ((df["won"].astype(float) - px) - 0.07 * px * (1 - px))[have].sum()
-    out.update({"wins": w, "losses": n - w, "win_rate": w / n,
-                "breakeven": be, "edge": w / n - be, "units": float(units)})
+    fmt = lambda value, spec: format(value, spec) if value is not None else "unavailable"
     print(f"\nOPEN LANE (unfiltered)  {w}-{n - w} of {n} settled")
-    print(f"  win rate {w / n:.1%}   breakeven {be:.1%}   "
-          f"edge {w / n - be:+.1%}   units {units:+.2f}")
+    print(f"  all-outcome win rate {w / n:.1%}; priced {out['priced_n']}/{n}, missing price {out['unpriced_n']}")
+    print(f"  priced win rate {fmt(out['priced_win_rate'], '.1%')}   breakeven {fmt(out['breakeven'], '.1%')}   "
+          f"priced edge {fmt(out['edge'], '+.1%')}   estimated units {fmt(out['units'], '+.2f')}")
     print(f"  {PS.health(rows)['pending']} still open; non-binary/cancelled excluded from W/L\n")
     print(f"  {'market':<10}{'n':>5}{'W-L':>10}{'win%':>8}{'breakeven':>11}{'edge':>8}{'units':>9}")
     for mk, g in df.groupby("market"):
         gw = int(g["won"].sum())
-        gp = pd.to_numeric(g.get("ask"), errors="coerce")
-        h = gp.notna()
-        gbe = (gp[h].mean() + (0.07 * gp[h] * (1 - gp[h])).mean()) if h.any() else float("nan")
-        gu = ((g["won"].astype(float) - gp) - 0.07 * gp * (1 - gp))[h].sum()
+        gr = paper_performance(g.to_dict("records"))
         print(f"  {mk:<10}{len(g):>5}{f'{gw}-{len(g) - gw}':>10}{gw / len(g):>8.1%}"
-              f"{gbe:>11.1%}{gw / len(g) - gbe:>+8.1%}{gu:>9.2f}")
+              f"  priced {gr['priced_n']}/{len(g)}  BE {fmt(gr['breakeven'], '.1%')}  "
+              f"priced edge {fmt(gr['edge'], '+.1%')}  units {fmt(gr['units'], '+.2f')}")
     for col, lab in (("sport", "sport"), ("pick", "side")):
         if col not in df:
             continue

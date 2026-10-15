@@ -179,29 +179,21 @@ def settle() -> int:
 
 
 def report() -> dict:
+    from paper_reporting import paper_performance
     """Score the lane the same way the winner board is scored."""
     rows = _load()
-    done = [r for r in rows if r.get("won") is not None and not r.get("voided")]
-    out = {"n_total": len(rows), "n_settled": len(done),
-           "wins": 0, "losses": 0}
+    done = [r for r in rows if isinstance(r.get("won"), bool) and not r.get("voided")]
+    out = paper_performance(rows, "market_prob")
     if not done:
         print(f"totals lane: {len(rows)} recorded, none settled yet")
         return out
     w = sum(1 for r in done if r["won"])
     n = len(done)
-    px = [float(r["market_prob"]) for r in done]
-    fee = sum(0.07 * p * (1 - p) for p in px) / n
-    be = sum(px) / n + fee
-    wr = w / n
-    # Units are what a flat 1-contract stake would have returned, net of fee.
-    units = sum((1.0 if r["won"] else 0.0) - float(r["market_prob"])
-                - 0.07 * float(r["market_prob"]) * (1 - float(r["market_prob"]))
-                for r in done)
-    out.update({"wins": w, "losses": n - w, "win_rate": wr,
-                "breakeven": be, "edge": wr - be, "units": units})
+    fmt = lambda value, spec: format(value, spec) if value is not None else "unavailable"
     print(f"totals lane (paper): {w}-{n - w} of {n} settled  "
-          f"win rate {wr:.0%}  breakeven {be:.0%}  edge {wr - be:+.0%}  "
-          f"units {units:+.2f}")
+          f"all-outcome win rate {w / n:.0%}; priced {out['priced_n']}/{n}, missing price {out['unpriced_n']}")
+    print(f"  priced win rate {fmt(out['priced_win_rate'], '.1%')}  breakeven {fmt(out['breakeven'], '.1%')}  "
+          f"priced edge {fmt(out['edge'], '+.1%')}  estimated units {fmt(out['units'], '+.2f')}")
     print(f"  {PS.health(rows)['pending']} still open; non-binary/cancelled excluded from W/L")
     return out
 

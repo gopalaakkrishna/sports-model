@@ -36,6 +36,7 @@ import dashboard as D
 import leagues as LG
 from start_times import StartTimes
 import paper_settlement as PS
+from paper_reporting import paper_performance
 
 
 def paper_settlement_state():
@@ -831,23 +832,11 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
             try:
                 import totals_ledger as TL
                 tl_rows = TL._load()
-                done = [x for x in tl_rows if x.get("won") is not None and not x.get("voided")]
+                done = [x for x in tl_rows if isinstance(x.get("won"), bool) and not x.get("voided")]
                 if done:
-                    w = sum(1 for x in done if x["won"])
                     n = len(done)
-                    px = [float(x["market_prob"]) for x in done]
-                    fee = sum(0.07 * q * (1 - q) for q in px) / n
-                    be = sum(px) / n * VIG + fee
-                    units = sum((1.0 if x["won"] else 0.0)
-                                - float(x["market_prob"])
-                                - 0.07 * float(x["market_prob"])
-                                * (1 - float(x["market_prob"])) for x in done)
-                    paper = clean_dict({
-                        "n": n, "wins": w, "losses": n - w,
-                        "win_rate": w / n, "breakeven": be,
-                        "edge": w / n - be, "units": units,
-                        "open": PS.health(tl_rows)["pending"],
-                    })
+                    paper = clean_dict({**paper_performance(tl_rows, "market_prob"),
+                        "n": n, "open": PS.health(tl_rows)["pending"]})
                 elif tl_rows:
                     paper = {"n": 0, "open": PS.health(tl_rows)["pending"]}
             except (ImportError, OSError, ValueError, KeyError):
@@ -881,7 +870,7 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
     try:
         import open_lane as OL
         rws = OL._load()
-        done = [x for x in rws if x.get("won") is not None and not x.get("voided")]
+        done = [x for x in rws if isinstance(x.get("won"), bool) and not x.get("voided")]
         blk = {"n_total": len(rws), "n_settled": len(done),
                "note": ("Every market the model can price, with no conviction "
                         "floor and no requirement that the model agree with "
@@ -889,22 +878,7 @@ def build(upcoming: list[dict], st: StartTimes) -> dict:
                         "possible here and are not in the main record. Paper "
                         "only, scored separately.")}
         if done:
-            import numpy as _np
-            w = sum(1 for x in done if x["won"])
-            n = len(done)
-            px = _np.array([float(x["ask"]) for x in done
-                            if x.get("ask") is not None], dtype=float)
-            if px.size:
-                fee = float(_np.mean(0.07 * px * (1 - px)))
-                be = float(px.mean()) + fee
-                units = float(sum(
-                    (1.0 if x["won"] else 0.0) - float(x["ask"])
-                    - 0.07 * float(x["ask"]) * (1 - float(x["ask"]))
-                    for x in done if x.get("ask") is not None))
-            else:
-                be, units = float("nan"), 0.0
-            blk.update({"wins": w, "losses": n - w, "win_rate": w / n,
-                        "breakeven": be, "edge": w / n - be, "units": units})
+            blk.update(paper_performance(rws))
             by = {}
             for x in done:
                 k = f"{x.get('market')}·{x.get('kind')}"
