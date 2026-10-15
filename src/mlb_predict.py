@@ -128,8 +128,13 @@ def _mlb_event_pairs() -> dict[str, tuple[str, str]]:
     evs = r.json().get("events", [])
     out = {}
     for e in evs:
+        # Postseason events prefix the pairing with "Game N:". Remove only
+        # that known prefix before dropping an optional trailing descriptor;
+        # splitting at the first colon used to discard the entire pairing.
+        title = re.sub(r"^\s*Game\s+\d+\s*:\s*", "",
+                       str(e.get("title", "")), flags=re.IGNORECASE)
         m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
-                     str(e.get("title", "")).split(":")[0])
+                     title.split(":", 1)[0])
         if m:
             out[str(e.get("event_ticker"))] = (m.group(1).strip(),
                                                m.group(2).strip())
