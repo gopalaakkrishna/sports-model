@@ -1,0 +1,519 @@
+{
+  "record_id": 1419,
+  "scope": "unfiltered-paper-only",
+  "original_capture_ref": "aa97dbc41a30039b94872a7493a633807c8dfb7e",
+  "original": {
+    "sport": "baseball",
+    "league": "MLB",
+    "event": "Chicago Cubs @ Boston Red Sox (2026-09-26)",
+    "market": "ML",
+    "kind": "TOP",
+    "pick": "HOME",
+    "model_prob": 0.524428752341714,
+    "market_prob": null,
+    "ask": null,
+    "start": "2026-09-26",
+    "ticker": null,
+    "id": 1419,
+    "locked_at": "2026-09-23T01:27:24+00:00",
+    "outcome": null,
+    "won": null,
+    "settled_at": null,
+    "voided": false,
+    "notes": "open lane: unfiltered, no floor, no aligned filter"
+  },
+  "reconciliation": {
+    "method": "verified-official-reschedule",
+    "verified_at": "2026-10-15T21:08:57+00:00",
+    "original_capture_ref": "aa97dbc41a30039b94872a7493a633807c8dfb7e",
+    "original_event": "Chicago Cubs @ Boston Red Sox (2026-09-26)",
+    "original_start": "2026-09-26",
+    "historical_board_start_utc": "2026-09-26T23:15:00+00:00",
+    "resolved_game_id": 824705,
+    "identity_sources": [
+      "https://www.mlb.com/redsox/press-release/red-sox-series-finale-against-chicago-cubs-relocated-to-tropicana-field",
+      "https://www.mlb.com/press-release/press-release-red-sox-cubs-saturday-game-rescheduled-to-sunday-in-st-petersburg"
+    ],
+    "result_source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&gamePks=824705&hydrate=team,linescore",
+    "original_price_unavailable": true
+  },
+  "verified_resolution": {
+    "outcome": "AWAY",
+    "won": false,
+    "home_score": 2,
+    "away_score": 6,
+    "game_id": 824705,
+    "official_game_date": "2026-09-27T19:05:00Z"
+  },
+  "official_schedule": {
+    "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+    "totalItems": 1,
+    "totalEvents": 0,
+    "totalGames": 1,
+    "totalGamesInProgress": 0,
+    "dates": [
+      {
+        "date": "2026-09-27",
+        "totalItems": 1,
+        "totalEvents": 0,
+        "totalGames": 1,
+        "totalGamesInProgress": 0,
+        "games": [
+          {
+            "gamePk": 824705,
+            "gameGuid": "8b9eddd2-865f-4078-ad92-08bf7e2d80f8",
+            "link": "/api/v1.1/game/824705/feed/live",
+            "gameType": "R",
+            "season": "2026",
+            "gameDate": "2026-09-27T19:05:00Z",
+            "officialDate": "2026-09-27",
+            "status": {
+              "abstractGameState": "Final",
+              "codedGameState": "F",
+              "detailedState": "Final",
+              "statusCode": "F",
+              "startTimeTBD": false,
+              "abstractGameCode": "F"
+            },
+            "teams": {
+              "away": {
+                "team": {
+                  "springLeague": {
+                    "id": 114,
+                    "name": "Cactus League",
+                    "link": "/api/v1/league/114",
+                    "abbreviation": "CL"
+                  },
+                  "allStarStatus": "N",
+                  "id": 112,
+                  "name": "Chicago Cubs",
+                  "link": "/api/v1/teams/112",
+                  "season": 2026,
+                  "venue": {
+                    "id": 17,
+                    "name": "Wrigley Field",
+                    "link": "/api/v1/venues/17"
+                  },
+                  "springVenue": {
+                    "id": 4629,
+                    "link": "/api/v1/venues/4629"
+                  },
+                  "teamCode": "chn",
+                  "fileCode": "chc",
+                  "abbreviation": "CHC",
+                  "teamName": "Cubs",
+                  "locationName": "Chicago",
+                  "firstYearOfPlay": "1874",
+                  "league": {
+                    "id": 104,
+                    "name": "National League",
+                    "link": "/api/v1/league/104"
+                  },
+                  "division": {
+                    "id": 205,
+                    "name": "National League Central",
+                    "link": "/api/v1/divisions/205"
+                  },
+                  "sport": {
+                    "id": 1,
+                    "link": "/api/v1/sports/1",
+                    "name": "Major League Baseball"
+                  },
+                  "shortName": "Chi Cubs",
+                  "franchiseName": "Chicago",
+                  "clubName": "Cubs",
+                  "active": true
+                },
+                "leagueRecord": {
+                  "wins": 89,
+                  "losses": 73,
+                  "ties": 0,
+                  "pct": ".549"
+                },
+                "score": 6,
+                "isWinner": true,
+                "splitSquad": false,
+                "seriesNumber": 53,
+                "springLeague": {
+                  "id": 114,
+                  "name": "Cactus League",
+                  "link": "/api/v1/league/114",
+                  "abbreviation": "CL"
+                }
+              },
+              "home": {
+                "team": {
+                  "springLeague": {
+                    "id": 115,
+                    "name": "Grapefruit League",
+                    "link": "/api/v1/league/115",
+                    "abbreviation": "GL"
+                  },
+                  "allStarStatus": "N",
+                  "id": 111,
+                  "name": "Boston Red Sox",
+                  "link": "/api/v1/teams/111",
+                  "season": 2026,
+                  "venue": {
+                    "id": 3,
+                    "name": "Fenway Park",
+                    "link": "/api/v1/venues/3"
+                  },
+                  "springVenue": {
+                    "id": 4309,
+                    "link": "/api/v1/venues/4309"
+                  },
+                  "teamCode": "bos",
+                  "fileCode": "bos",
+                  "abbreviation": "BOS",
+                  "teamName": "Red Sox",
+                  "locationName": "Boston",
+                  "firstYearOfPlay": "1901",
+                  "league": {
+                    "id": 103,
+                    "name": "American League",
+                    "link": "/api/v1/league/103"
+                  },
+                  "division": {
+                    "id": 201,
+                    "name": "American League East",
+                    "link": "/api/v1/divisions/201"
+                  },
+                  "sport": {
+                    "id": 1,
+                    "link": "/api/v1/sports/1",
+                    "name": "Major League Baseball"
+                  },
+                  "shortName": "Boston",
+                  "franchiseName": "Boston",
+                  "clubName": "Red Sox",
+                  "active": true
+                },
+                "leagueRecord": {
+                  "wins": 87,
+                  "losses": 75,
+                  "ties": 0,
+                  "pct": ".537"
+                },
+                "score": 2,
+                "isWinner": false,
+                "splitSquad": false,
+                "seriesNumber": 52,
+                "springLeague": {
+                  "id": 115,
+                  "name": "Grapefruit League",
+                  "link": "/api/v1/league/115",
+                  "abbreviation": "GL"
+                }
+              }
+            },
+            "linescore": {
+              "currentInning": 9,
+              "currentInningOrdinal": "9th",
+              "inningState": "Bottom",
+              "inningHalf": "Bottom",
+              "isTopInning": false,
+              "scheduledInnings": 9,
+              "innings": [
+                {
+                  "num": 1,
+                  "ordinalNum": "1st",
+                  "home": {
+                    "runs": 1,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 2,
+                    "hits": 3,
+                    "errors": 0,
+                    "leftOnBase": 1
+                  }
+                },
+                {
+                  "num": 2,
+                  "ordinalNum": "2nd",
+                  "home": {
+                    "runs": 1,
+                    "hits": 2,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  }
+                },
+                {
+                  "num": 3,
+                  "ordinalNum": "3rd",
+                  "home": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 1,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  }
+                },
+                {
+                  "num": 4,
+                  "ordinalNum": "4th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  }
+                },
+                {
+                  "num": 5,
+                  "ordinalNum": "5th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 2,
+                    "errors": 0,
+                    "leftOnBase": 1
+                  }
+                },
+                {
+                  "num": 6,
+                  "ordinalNum": "6th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 1
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  }
+                },
+                {
+                  "num": 7,
+                  "ordinalNum": "7th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  }
+                },
+                {
+                  "num": 8,
+                  "ordinalNum": "8th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 1,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 0,
+                    "hits": 1,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  }
+                },
+                {
+                  "num": 9,
+                  "ordinalNum": "9th",
+                  "home": {
+                    "runs": 0,
+                    "hits": 0,
+                    "errors": 0,
+                    "leftOnBase": 0
+                  },
+                  "away": {
+                    "runs": 3,
+                    "hits": 5,
+                    "errors": 0,
+                    "leftOnBase": 2
+                  }
+                }
+              ],
+              "teams": {
+                "home": {
+                  "runs": 2,
+                  "hits": 5,
+                  "errors": 1,
+                  "leftOnBase": 5,
+                  "isWinner": false
+                },
+                "away": {
+                  "runs": 6,
+                  "hits": 13,
+                  "errors": 0,
+                  "leftOnBase": 10,
+                  "isWinner": true
+                }
+              },
+              "defense": {
+                "pitcher": {
+                  "id": 607067,
+                  "fullName": "Colin Rea",
+                  "link": "/api/v1/people/607067"
+                },
+                "catcher": {
+                  "id": 665804,
+                  "fullName": "Miguel Amaya",
+                  "link": "/api/v1/people/665804"
+                },
+                "first": {
+                  "id": 672356,
+                  "fullName": "Gabriel Arias",
+                  "link": "/api/v1/people/672356"
+                },
+                "second": {
+                  "id": 699393,
+                  "fullName": "Pedro Ram�rez",
+                  "link": "/api/v1/people/699393"
+                },
+                "third": {
+                  "id": 807713,
+                  "fullName": "Matt Shaw",
+                  "link": "/api/v1/people/807713"
+                },
+                "shortstop": {
+                  "id": 621020,
+                  "fullName": "Dansby Swanson",
+                  "link": "/api/v1/people/621020"
+                },
+                "left": {
+                  "id": 664023,
+                  "fullName": "Ian Happ",
+                  "link": "/api/v1/people/664023"
+                },
+                "center": {
+                  "id": 621438,
+                  "fullName": "Tyrone Taylor",
+                  "link": "/api/v1/people/621438"
+                },
+                "right": {
+                  "id": 624424,
+                  "fullName": "Michael Conforto",
+                  "link": "/api/v1/people/624424"
+                },
+                "batter": {
+                  "id": 621020,
+                  "fullName": "Dansby Swanson",
+                  "link": "/api/v1/people/621020"
+                },
+                "onDeck": {
+                  "id": 665804,
+                  "fullName": "Miguel Amaya",
+                  "link": "/api/v1/people/665804"
+                },
+                "inHole": {
+                  "id": 621438,
+                  "fullName": "Tyrone Taylor",
+                  "link": "/api/v1/people/621438"
+                },
+                "battingOrder": 8,
+                "team": {
+                  "id": 112,
+                  "name": "Chicago Cubs",
+                  "link": "/api/v1/teams/112"
+                }
+              },
+              "offense": {
+                "batter": {
+                  "id": 702332,
+                  "fullName": "Caleb Durbin",
+                  "link": "/api/v1/people/702332"
+                },
+                "onDeck": {
+                  "id": 596115,
+                  "fullName": "Trevor Story",
+                  "link": "/api/v1/people/596115"
+                },
+                "inHole": {
+                  "id": 655316,
+                  "fullName": "Andruw Monasterio",
+                  "link": "/api/v1/people/655316"
+                },
+                "pitcher": {
+                  "id": 663558,
+                  "fullName": "Jovani Mor�n",
+                  "link": "/api/v1/people/663558"
+                },
+                "battingOrder": 7,
+                "team": {
+                  "id": 111,
+                  "name": "Boston Red Sox",
+                  "link": "/api/v1/teams/111"
+                }
+              },
+              "balls": 1,
+              "strikes": 2,
+              "outs": 3
+            },
+            "venue": {
+              "id": 12,
+              "name": "Tropicana Field",
+              "link": "/api/v1/venues/12"
+            },
+            "content": {
+              "link": "/api/v1/game/824705/content"
+            },
+            "isTie": false,
+            "gameNumber": 1,
+            "publicFacing": true,
+            "doubleHeader": "N",
+            "gamedayType": "P",
+            "tiebreaker": "N",
+            "calendarEventID": "14-824705-2026-09-27",
+            "seasonDisplay": "2026",
+            "dayNight": "day",
+            "description": "at Tropicana Field",
+            "scheduledInnings": 9,
+            "reverseHomeAwayStatus": false,
+            "inningBreakLength": 120,
+            "gamesInSeries": 3,
+            "seriesGameNumber": 3,
+            "seriesDescription": "Regular Season",
+            "recordSource": "S",
+            "ifNecessary": "N",
+            "ifNecessaryDescription": "Normal Game"
+          }
+        ],
+        "events": []
+      }
+    ]
+  },
+  "unresolved_record_id": 1418,
+  "unresolved_reason": "Official rescheduling notice assigns September 26 to the opener, while current StatsAPI labels the nightcap Makeup of 9/26 PPD. The two games have opposite winners; no exact original game ID was captured. Do not choose one.",
+  "conflicting_sources": [
+    "https://www.mlb.com/press-release/saturday-s-yankees-orioles-game-saturday-september-26-rescheduled-due-to-the-forecast-of-sustained-inclement-weather",
+    "https://statsapi.mlb.com/api/v1/schedule?sportId=1&gamePks=823489,823491&hydrate=team,linescore"
+  ],
+  "other_rows_hash": "5bfab00326b9e8da0332b2710ffc6174ed3e4572e53387edc8ac1e14e0b10afb"
+}
