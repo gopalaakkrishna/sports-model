@@ -11,6 +11,20 @@ import auto_update as A
 
 
 class RefreshTests(unittest.TestCase):
+    def test_regenerated_report_must_verify_before_any_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / 'sports.json'
+            target.write_text(json.dumps({'generated':'2026-10-15T18:00:00Z'}))
+            args = argparse.Namespace(mode='light', dry_run=False, no_publish=False)
+            with patch.object(A, 'PAYLOAD', target), patch.object(A, 'SELF_BOARD', target), \
+                 patch.object(A, 'run', side_effect=lambda script, *args, **kw: script != 'verify_paper_reports.py') as run, \
+                 patch.object(A, 'publish_self_state') as publish_state, patch.object(A, 'publish') as publish, \
+                 patch.object(A, 'log'):
+                self.assertEqual(A._run(args), 1)
+                publish_state.assert_not_called()
+                publish.assert_not_called()
+                self.assertIn('verify_paper_reports.py', [call.args[0] for call in run.call_args_list])
+
     def test_failed_publish_raises_instead_of_silently_succeeding(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -49,7 +63,7 @@ class RefreshTests(unittest.TestCase):
                 self.assertEqual(saved['settled'], original['settled'])
                 self.assertEqual(saved['refresh']['status'], 'degraded' if failed else 'ok')
                 self.assertEqual(saved['refresh']['failed_steps'], [failed] if failed else [])
-                self.assertEqual(saved['refresh']['pipeline_version'], '14.7.6')
+                self.assertEqual(saved['refresh']['pipeline_version'], '14.7.7')
                 self.assertEqual(result, 1 if failed else 0)
 
 

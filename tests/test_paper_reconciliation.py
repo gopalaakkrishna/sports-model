@@ -14,6 +14,7 @@ import paper_settlement as PS
 import settle as S
 import export_tara as E
 import totals_ledger as TL
+import verify_paper_reports as V
 
 AUDIT = json.loads((ROOT / 'data/reconciliations/open-1419-2026-10-15.json').read_text(encoding='utf8'))
 
@@ -88,14 +89,15 @@ class VerifiedPaperReconciliationTests(unittest.TestCase):
         published=board['paper_settlement']['open']
         for field in ('recorded','binary_settled','non_binary_resolved','cancelled_resolved','pending'):
             self.assertEqual(published[field],actual[field],field)
-        binary=[r for r in rows if r.get('won') is not None and not r.get('voided')]
+        binary=[r for r in rows if isinstance(r.get('won'),bool) and not r.get('voided')]
         self.assertEqual(board['open_lane']['n_settled'],len(binary))
         self.assertEqual(board['open_lane']['wins'],sum(r['won'] for r in binary))
         self.assertEqual(board['open_lane']['losses'],sum(not r['won'] for r in binary))
-        exact_be=sum(r['ask']+.07*r['ask']*(1-r['ask']) for r in binary if r.get('ask') is not None)/sum(r.get('ask') is not None for r in binary)
         exact_rate=sum(r['won'] for r in binary)/len(binary)
         self.assertEqual(board['open_lane']['win_rate'],round(exact_rate,4))
-        self.assertEqual(board['open_lane']['edge'],round(exact_rate-exact_be,4))
+        # Overall W/L retains every binary record. Edge/returns must use only
+        # rows with valid original prices, checked independently of the exporter.
+        V.verify_summary(board['open_lane'],rows,'open_lane')
         for summary in board['open_lane']['by_kind']:
             group=[r for r in binary if f"{r.get('market')}·{r.get('kind')}"==summary['kind']]
             self.assertTrue(group)

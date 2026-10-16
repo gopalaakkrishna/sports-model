@@ -73,6 +73,9 @@ jobs:
           SYNC_SOURCE: gha-full
         run: python src/auto_update.py --mode full
 
+      - name: Verify regenerated paper reports
+        run: python src/verify_paper_reports.py --board public/sports.json
+
       - name: Save today's raw data for the light-mode runs to reuse
         uses: actions/cache/save@v4
         with:

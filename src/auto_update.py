@@ -367,7 +367,7 @@ def _run(args) -> int:
     try:
         payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
         payload["refresh"] = {
-            "pipeline_version": "14.7.6", "started_at": started,
+            "pipeline_version": "14.7.7", "started_at": started,
             "completed_at": datetime.now(timezone.utc).isoformat(),
             "status": "degraded" if failed_steps else "ok",
             "failed_steps": failed_steps,
@@ -376,6 +376,13 @@ def _run(args) -> int:
         PAYLOAD.write_text(json.dumps(payload, allow_nan=False, separators=(",", ":")), encoding="utf-8")
     except (OSError, ValueError) as e:
         log(f"refresh evidence could not be saved — {e}")
+        return 1
+
+    # Check the actual regenerated payload before any durable publication.
+    # Pre-refresh tests alone can pass against an older, internally consistent
+    # snapshot and miss a reporting regression exposed by the next export.
+    if not run("verify_paper_reports.py", ["--board", str(PAYLOAD)], timeout=180):
+        log("paper report verification failed — nothing published")
         return 1
 
     # Mirror the freshly exported board into this repo's public/ so it is

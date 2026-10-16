@@ -9,7 +9,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = "14.7.6"
+VERSION = "14.7.7"
 
 
 def pending(row):
