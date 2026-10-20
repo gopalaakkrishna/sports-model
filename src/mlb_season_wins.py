@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import sys
 from collections import defaultdict
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -66,10 +67,40 @@ def standings(season: int) -> dict:
     return out
 
 
+def regular_season_window(season: int, today: date) -> tuple[str, str] | None:
+    """Use MLB's season calendar, not a fixed October cutoff or postseason.
+
+    Unknown/malformed calendars still fail the refresh; they are not evidence
+    that no games remain. A known preseason/offseason is a legitimate no-op.
+    """
+    r = requests.get(f"{STATS}/seasons/{season}",
+                     params={"sportId": 1}, timeout=60)
+    r.raise_for_status()
+    matches = [s for s in r.json().get("seasons", [])
+               if str(s.get("seasonId")) == str(season)]
+    if len(matches) != 1:
+        raise ValueError(f"MLB calendar missing or ambiguous for season {season}")
+    calendar = matches[0]
+    try:
+        start = date.fromisoformat(calendar["regularSeasonStartDate"])
+        end = date.fromisoformat(calendar["regularSeasonEndDate"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(f"MLB regular-season calendar invalid for {season}") from exc
+    if start.year != season or end.year != season or start > end:
+        raise ValueError(f"MLB regular-season calendar invalid for {season}")
+    if not start <= today <= end:
+        return None
+    return today.isoformat(), end.isoformat()
+
+
 def remaining(start: str, end: str) -> list[dict]:
+    # Defence in depth: an empty date interval must never become an invalid
+    # StatsAPI request (the October 20 -> October 5 production failure).
+    if date.fromisoformat(start) > date.fromisoformat(end):
+        return []
     r = requests.get(f"{STATS}/schedule",
                      params={"sportId": 1, "startDate": start, "endDate": end,
-                             "hydrate": "team,venue"}, timeout=90)
+                             "gameTypes": "R", "hydrate": "team,venue"}, timeout=90)
     r.raise_for_status()
     games = []
     for d in r.json().get("dates", []):
@@ -135,8 +166,18 @@ def main() -> int:
                          "October instead of remaining an anecdote")
     args = ap.parse_args()
 
-    today = pd.Timestamp.now().normalize()
+    today = pd.Timestamp.now("UTC").normalize()
     season = args.season or today.year
+
+    window = regular_season_window(season, today.date())
+    if window is None:
+        print(f"no active regular-season window for {season}; "
+              "season-win simulation not applicable (not a forecast or result)")
+        return 0
+    rem = remaining(*window)
+    if not rem:
+        print("no remaining regular-season games")
+        return 0
 
     games = pd.read_parquet(ROOT / "data" / "raw" / "mlb_games.parquet")
     cal = None
@@ -149,11 +190,7 @@ def main() -> int:
     print(f"fitted {fit.n_games:,} games, {len(fit.teams)} teams")
 
     st = standings(season)
-    rem = remaining(today.strftime("%Y-%m-%d"), f"{season}-10-05")
     print(f"standings for {len(st)} teams, {len(rem)} games left to play")
-    if not rem:
-        print("no remaining games")
-        return 0
 
     # Win probability for each remaining game, once.
     probs = []
