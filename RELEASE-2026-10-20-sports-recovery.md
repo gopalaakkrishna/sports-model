@@ -25,12 +25,23 @@ Live/light successes did not repair the historical full-refresh failure.
   attempts, retry-after and blocked state. No failure-email filtering/muting.
 - Existing five-minute Cloudflare tick, GitHub schedules, concurrency group,
   fixed workflow/repository allowlist and encrypted secret are preserved.
+- Follow-up verification found `refresh_all.py` printed failed source steps
+  without returning nonzero. It now propagates failure; the parent logs the
+  seven public-source receipts even on success. Unknown/empty source selection
+  is not a successful refresh. No errors are suppressed to get a green run.
+- Full runs restore the existing historical-download cache before running ALL
+  source fetchers. Current-season downloads and incremental updates still run;
+  this avoids downloading decades of unchanged CSVs on each cold runner. The
+  existing30minute full-job limit is NOT raised.
 - Python regression coverage: preseason/offseason, exact boundaries, extended
   season calendar, bad/ambiguous/upstream-failed calendars, reversed interval,
   regular-only schedule, and no offseason model/log/price/archive effects.
 - Scheduler regression coverage: backoff from completion, cancelled attempts,
   budget exhaustion, legacy retry storm, history truncation, old success lookup,
   continued light refreshes, and existing authentication/no-public-dispatch guards.
+- Additional regressions cover each failed source's nonzero result, all-seven
+  success, parent receipt visibility, honest degraded full-pipeline publication,
+  read-only inventory, and cache restore without skipping the full chain.
 
 ## Verification and rollback
 

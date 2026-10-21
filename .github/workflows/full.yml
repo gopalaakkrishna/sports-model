@@ -58,6 +58,17 @@ jobs:
       - name: Test independent scheduler guards
         run: node --test tests/scheduler.test.mjs
 
+      - name: Restore historical download cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/raw
+          key: raw-data-unused
+          restore-keys: |
+            raw-data-
+      # Still run EVERY full source fetch below. Only immutable historical
+      # CSV downloads are reused; fetch_data always refetches the current
+      # season and incremental sources still request their missing updates.
+
       - name: Configure git identity
         run: |
           git config --global user.name "sports-model-bot"

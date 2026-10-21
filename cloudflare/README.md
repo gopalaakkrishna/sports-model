@@ -49,5 +49,9 @@ MLB season-win measurement now reads the exact season's official regular-season
 start/end calendar and skips simulation outside it. Missing/invalid/API-failed
 calendar evidence still fails visibly; no forecasts/results/log rows are
 fabricated to make an offseason refresh pass.
+The full source wrapper also returns nonzero if any configured source fails;
+its seven source receipts are retained in CI logs. Full workflows restore the
+historical-download cache but still execute all source refreshes, with the
+same30minute job timeout and the current season explicitly re-fetched.
 Rollback: remove/disable this Worker's cron, revert the reviewed Sports commit,
 and leave GitHub's original schedules available. Do not alter trading settings.

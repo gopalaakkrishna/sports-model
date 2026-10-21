@@ -108,7 +108,7 @@ def run_one(name: str) -> tuple[str, bool, str]:
     return name, ok, f"{dt:.0f}s  {msg[:150]}"
 
 
-def main():
+def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default=None,
                     help="comma-separated subset of: " + ",".join(SOURCES))
@@ -119,13 +119,13 @@ def main():
 
     if args.inventory:
         inventory()
-        return
+        return 0
 
     names = args.only.split(",") if args.only else list(SOURCES)
     names = [n.strip() for n in names if n.strip() in SOURCES]
     if not names:
         print("nothing to do")
-        return
+        return 1
 
     print(f"refreshing {len(names)} source(s) in parallel: {', '.join(names)}\n")
     t0 = time.time()
@@ -147,7 +147,10 @@ def main():
         print("  silently truncated its data.")
     print()
     inventory()
+    # The caller uses this exit status to publish honest degraded health.
+    # Printing FAIL while implicitly returning zero hid source failures.
+    return 1 if bad else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

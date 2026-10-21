@@ -186,6 +186,14 @@ def run(script: str, args: list[str] | None = None, timeout: int = 1800) -> bool
         return False
     ok = r.returncode == 0
     log(f"  {script:<22} {'ok ' if ok else 'FAILED'} {time.time() - t0:5.1f}s")
+    if script == "refresh_all.py":
+        # Preserve the seven public-source receipts in CI even on success;
+        # a green wrapper alone cannot prove each source completed. Do not
+        # mirror unrelated child output, account data or environment values.
+        for line in (r.stdout or "").splitlines():
+            line = line.strip()
+            if line.startswith(("[OK ", "[FAIL", "total ", "FAILED:")):
+                log(f"      {line}")
     if not ok:
         tail = (r.stderr or r.stdout or "").strip().splitlines()[-3:]
         for t in tail:
