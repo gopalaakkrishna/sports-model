@@ -35,8 +35,13 @@ then. Expired/missing access returns a visible503 health failure and cron error.
 It separately reports `fullRefreshHealthy` and the full recovery status, last
 success/attempt, recent attempts, retry limit and retry-after time. A fresh live
 board does NOT mean the historical data/full pipeline is healthy. Exhausted or
-incomplete recovery history stays visibly blocked; failure emails are not
-muted and failed jobs are not reclassified as successes. A repair verification
+incomplete recovery history stays visibly blocked. A failed full source refresh
+still fails its job (that is what this Worker's retry budget keys on). Since
+2026-10-22 a failed light-chain step is disclosed on the board every run
+(`refresh.status` "degraded", `refresh.incidents`) but only fails the job, and so
+emails, once it has kept failing for an hour, then at most every six hours; see
+`src/auto_update.py`. Because this Worker re-runs a degraded board every five
+minutes, a single exchange outage used to send an email every five minutes. A repair verification
 may explicitly dispatch one full workflow; it remains serialized with live
 refreshes and is recorded in the same history.
 There is no public endpoint that starts jobs. Production writes happen only

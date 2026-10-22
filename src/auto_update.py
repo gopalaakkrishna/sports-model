@@ -28,6 +28,21 @@ GitHub cron is a best-effort fallback. The independent Cloudflare scheduler
 dispatches this same workflow when the published board is due; the shared
 workflow concurrency group remains the sole pipeline writer. No local task
 or duplicate prediction engine is started.
+
+WHEN A RUN FAILS (and so sends a GitHub failure email)
+
+Every failed step is still disclosed on the board each run (refresh.status
+"degraded", refresh.failed_steps). But a single exchange blip no longer fails
+the job. Before 2026-10-22 it did, and the Cloudflare scheduler re-runs a
+degraded board every 5 minutes, so one 45-minute Kalshi 503 on a single NFL
+market sent 10 failure emails while the board kept publishing fine.
+
+Now a step only fails the job once it has been failing continuously for
+ALERT_AFTER_S, and then at most once per REALERT_S while it stays broken. The
+open incidents ride in refresh.incidents, so the clock survives between runs.
+Two exceptions still fail immediately: anything that stops the board being
+exported, verified or published, and refresh_all.py, whose failure is what
+the scheduler's bounded full-refresh retry keys on.
 """
 
 from __future__ import annotations
@@ -220,6 +235,58 @@ def signature(path: Path) -> str | None:
         json.dumps(d, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+# See "WHEN A RUN FAILS" in the module docstring.
+ALERT_AFTER_S = 60 * 60
+REALERT_S = 6 * 60 * 60
+# Failing these must fail the run at once: the Cloudflare scheduler only
+# retries a full refresh whose job concluded unsuccessfully.
+ALWAYS_FAIL = frozenset({"refresh_all.py"})
+
+
+def _parse_time(value) -> datetime | None:
+    try:
+        t = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+
+
+def prior_incidents(path: Path) -> dict:
+    """Open step incidents from the board published by the previous run."""
+    try:
+        refresh = json.loads(path.read_text(encoding="utf-8")).get("refresh") or {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+    incidents = refresh.get("incidents") if isinstance(refresh, dict) else None
+    return {k: v for k, v in incidents.items() if isinstance(v, dict)} \
+        if isinstance(incidents, dict) else {}
+
+
+def track_incidents(prior: dict, ran: set, failed: set,
+                    now: datetime) -> tuple[dict, list[str]]:
+    """Carry step incidents across runs and pick the steps worth an alert.
+
+    A step that ran and succeeded closes its incident. A step this mode did
+    not run (full-only steps during a light run) keeps its incident untouched
+    and is never alerted on by a run that did not exercise it.
+    """
+    incidents = {k: dict(v) for k, v in prior.items() if k not in ran}
+    alert = []
+    for step in sorted(failed):
+        old = prior.get(step, {})
+        since = _parse_time(old.get("since")) or now
+        alerted = _parse_time(old.get("alerted"))
+        entry = {"since": since.isoformat(), "last": now.isoformat(),
+                 "alerted": alerted.isoformat() if alerted else None}
+        sustained = (now - since).total_seconds() >= ALERT_AFTER_S
+        quiet = alerted is not None and (now - alerted).total_seconds() < REALERT_S
+        if step in ALWAYS_FAIL or (sustained and not quiet):
+            entry["alerted"] = now.isoformat()
+            alert.append(step)
+        incidents[step] = entry
+    return incidents, alert
+
+
 def git(cwd: Path, *args: str) -> tuple[int, str]:
     r = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
     return r.returncode, (r.stdout + r.stderr).strip()
@@ -301,13 +368,17 @@ def _run(args) -> int:
     t0 = time.time()
     started = datetime.now(timezone.utc).isoformat()
     failed_steps = []
+    ran_steps = set()
     def step(script, args=None, timeout=1800):
         ok = run(script, args, timeout)
+        ran_steps.add(script)
         if not ok:
             failed_steps.append(script)
         return ok
     log(f"=== auto_update --mode {args.mode}")
     before = signature(PAYLOAD)
+    # Read before export_tara.py regenerates the payload and drops it.
+    incidents_before = prior_incidents(PAYLOAD)
 
     if args.mode == "full":
         log("refreshing sources")
@@ -372,13 +443,23 @@ def _run(args) -> int:
     # Preserve the real forecast clock, original picks and results. A freshly
     # generated document must disclose failed refresh steps rather than pass as
     # fresh quotes simply because export itself completed.
+    finished = datetime.now(timezone.utc)
+    incidents, alert_steps = track_incidents(incidents_before, ran_steps,
+                                             set(failed_steps), finished)
+    for name, incident in sorted(incidents.items()):
+        if name in alert_steps:
+            log(f"  ALERT {name} failing since {incident['since']} — failing this run")
+        elif name in failed_steps:
+            log(f"  {name} failing since {incident['since']} — no alert yet")
     try:
         payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
         payload["refresh"] = {
             "pipeline_version": "14.7.7", "started_at": started,
-            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "completed_at": finished.isoformat(),
             "status": "degraded" if failed_steps else "ok",
             "failed_steps": failed_steps,
+            "incidents": incidents,
+            "alerted_steps": alert_steps,
             "source": os.environ.get("SYNC_SOURCE", "local"),
         }
         PAYLOAD.write_text(json.dumps(payload, allow_nan=False, separators=(",", ":")), encoding="utf-8")
@@ -417,17 +498,17 @@ def _run(args) -> int:
     after = signature(PAYLOAD)
     if before is not None and before == after:
         log(f"no material board change — not publishing  ({time.time() - t0:.0f}s)")
-        return 0 if not failed_steps else 1
+        return 1 if alert_steps else 0
 
     if args.no_publish:
         log("board changed; --no-publish set")
-        return 0 if not failed_steps else 1
+        return 1 if alert_steps else 0
     log("board changed — publishing")
     publish(args.dry_run)
     log(f"=== done in {time.time() - t0:.0f}s")
     if not settlement_ok:
         log("settlement failed — partial results published, run requires attention")
-    return 0 if not failed_steps else 1
+    return 1 if alert_steps else 0
 
 
 if __name__ == "__main__":
