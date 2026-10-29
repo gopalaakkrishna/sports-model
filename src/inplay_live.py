@@ -31,6 +31,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
 from inplay_mlb import InPlayState, win_probability
+import kalshi_pairs as KP
 
 ROOT = Path(__file__).resolve().parents[1]
 STATS = "https://statsapi.mlb.com/api/v1"
@@ -112,15 +113,17 @@ def kalshi_live() -> dict[tuple[str, str], dict]:
                                                  "status": "open", "limit": 200},
                          timeout=45)
         ms = r.json().get("markets", [])
+        # Market titles are now "Tampa Bay wins"; the events carry the pairing.
+        pairs = KP.event_pairs("KXMLBGAME", "open", timeout=45) if ms else {}
     except requests.RequestException:
         return {}
     from collections import defaultdict
     by = defaultdict(dict)
     for m in ms:
-        title = str(m.get("title", "")).replace(" Winner?", "").strip()
-        if " vs " not in title:
+        pair = KP.pair_for(m.get("event_ticker"), pairs, m.get("title"))
+        if not pair:
             continue
-        a_raw, b_raw = [x.strip() for x in title.split(" vs ", 1)]
+        a_raw, b_raw = pair
         away, home = KALSHI_TO_MLB.get(a_raw), KALSHI_TO_MLB.get(b_raw)
         team = KALSHI_TO_MLB.get(str(m.get("yes_sub_title", "")).strip())
         if not (away and home and team):

@@ -26,6 +26,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).parent))
 import mlb_model as MM
 import guards as G
+import kalshi_pairs as KP
 
 ROOT = Path(__file__).resolve().parents[1]
 STATS = "https://statsapi.mlb.com/api/v1"
@@ -121,28 +122,9 @@ def _mlb_event_pairs() -> dict[str, tuple[str, str]]:
     the pairing ("Milwaukee vs Cincinnati"), same as the soccer fix in
     settle.py and kalshi_edge.py.
     """
-    r = requests.get(f"{KALSHI}/events",
-                     params={"series_ticker": "KXMLBGAME", "status": "open",
-                             "limit": 200}, timeout=60)
-    if r.status_code != 200:
-        return {}
-    evs = r.json().get("events", [])
-    out = {}
-    for e in evs:
-        # Postseason events prefix the pairing with "Game N:". Remove only
-        # that known prefix before dropping an optional trailing descriptor;
-        # splitting at the first colon used to discard the entire pairing.
-        title = re.sub(r"^\s*Game\s+\d+\s*:\s*", "",
-                       str(e.get("title", "")), flags=re.IGNORECASE)
-        m = re.match(r"^\s*(.+?)\s+vs\.?\s+(.+?)\s*$",
-                     title.split(":", 1)[0])
-        if m:
-            out[str(e.get("event_ticker"))] = (m.group(1).strip(),
-                                               m.group(2).strip())
-    # The pairing this file lost for ~4 weeks. See src/guards.py.
-    return G.parsed_or_die(evs, out, what="MLB event pairs",
-                           series="KXMLBGAME",
-                           samples=[e.get("title") for e in evs])
+    # The pairing this file lost for ~4 weeks. The parse and the loud failure
+    # now live in src/kalshi_pairs.py, shared by every Kalshi caller.
+    return KP.event_pairs("KXMLBGAME", "open")
 
 
 def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
@@ -165,10 +147,10 @@ def kalshi_mlb_markets() -> dict[tuple[str, str, str], dict]:
         if pair:
             a_raw, b_raw = pair
         else:
-            title = str(mk[0].get("title", "")).replace(" Winner?", "").strip()
-            if " vs " not in title:
+            pair = KP.split_pair(mk[0].get("title"))
+            if not pair:
                 continue
-            a_raw, b_raw = [s.strip() for s in title.split(" vs ", 1)]
+            a_raw, b_raw = pair
         date = _ticker_date(ev)
         if not date:
             continue

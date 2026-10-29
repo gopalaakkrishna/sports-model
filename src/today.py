@@ -29,6 +29,9 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import requests
 
+sys.path.insert(0, str(Path(__file__).parent))
+import kalshi_pairs as KP
+
 ROOT = Path(__file__).resolve().parents[1]
 K = "https://api.elections.kalshi.com/trade-api/v2"
 STATS = "https://statsapi.mlb.com/api/v1"
@@ -57,13 +60,16 @@ def kalshi_events(series: str) -> dict[str, dict]:
         if r.status_code != 200:
             return {}
         ms = r.json().get("markets", [])
+        # Market titles are now per-outcome ("Arsenal wins"); events pair.
+        pairs = KP.event_pairs(series, "open", timeout=45) if ms else {}
     except requests.RequestException:
         return {}
-    by = defaultdict(lambda: {"legs": {}, "start": None, "title": ""})
+    by = defaultdict(lambda: {"legs": {}, "start": None, "title": "", "pair": None})
     for m in ms:
         ev = m.get("event_ticker")
         e = by[ev]
         e["title"] = str(m.get("title", ""))
+        e["pair"] = e["pair"] or KP.pair_for(ev, pairs, e["title"])
         t = m.get("occurrence_datetime") or m.get("expected_expiration_time")
         if t and not e["start"]:
             try:
@@ -155,9 +161,8 @@ def main():
         for ev, e in kalshi_events(series).items():
             if not e["start"]:
                 continue
-            t = e["title"].replace(" Winner?", "").strip()
-            if " vs " in t:
-                a, b = [x.strip() for x in t.split(" vs ", 1)]
+            if e["pair"]:
+                a, b = e["pair"]
                 for key in (f"{a} v {b}", f"{b} v {a}",
                             f"{a} @ {b}", f"{b} @ {a}"):
                     starts.setdefault(key, e["start"])

@@ -66,6 +66,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).parent))
 from team_names import TeamResolver
+import kalshi_pairs as KP
 
 EPS = 1e-15
 
@@ -130,10 +131,13 @@ def main() -> int:
         for ev, e in g.groupby("event_ticker"):
             if e["result"].eq("yes").sum() != 1:
                 continue
-            title = str(e["title"].iloc[0]).replace(" Winner?", "").strip()
-            if " vs " not in title:
+            # event_title holds the pairing since per-market titles went
+            # per-outcome; older rows still carry it in the market title.
+            et = e["event_title"].iloc[0] if "event_title" in e else None
+            pair = KP.split_pair(et) or KP.split_pair(e["title"].iloc[0])
+            if not pair:
                 continue
-            ha, aa = [x.strip() for x in title.split(" vs ", 1)]
+            ha, aa = pair
             h, a = res.resolve(ha), res.resolve(aa)
             if not h or not a:
                 continue

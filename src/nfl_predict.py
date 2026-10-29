@@ -38,6 +38,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).parent))
 import margin_model as MM
 import guards as G
+import kalshi_pairs as KP
 
 ROOT = Path(__file__).resolve().parents[1]
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
@@ -144,10 +145,10 @@ def kalshi_nfl_markets() -> dict[tuple[str, str, str], dict]:
             # 49ers"), so this branch is weaker than the primary path and may
             # itself miss on the second format. KALSHI_TO_NFL only covers the
             # first (city-name) form.
-            title = str(mk[0].get("title", "")).replace(" Winner?", "").strip()
-            if " vs " not in title:
+            pair = KP.split_pair(mk[0].get("title"))
+            if not pair:
                 continue
-            a_raw, b_raw = [s.strip() for s in title.split(" vs ", 1)]
+            a_raw, b_raw = pair
             away, home = KALSHI_TO_NFL.get(a_raw), KALSHI_TO_NFL.get(b_raw)
         date = _ticker_date(ev)
         if not date:

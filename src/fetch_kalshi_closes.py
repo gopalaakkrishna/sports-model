@@ -67,6 +67,9 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+sys.path.insert(0, str(Path(__file__).parent))
+import kalshi_pairs as KP
+
 ROOT = Path(__file__).resolve().parents[1]
 K = "https://api.elections.kalshi.com/trade-api/v2"
 OUT = ROOT / "data" / "raw" / "kalshi_closes.parquet"
@@ -210,6 +213,7 @@ def main() -> int:
         by_ev = defaultdict(list)
         for m in ms:
             by_ev[m.get("event_ticker")].append(m)
+        pairs = KP.event_pairs(series, "settled", session=session)
 
         new_events = [ev for ev, mk in by_ev.items()
                       if any(m.get("ticker") not in seen for m in mk)]
@@ -233,6 +237,7 @@ def main() -> int:
                 continue
             start = closed - timedelta(hours=LEAD_HOURS)
             title = str(mk[0].get("title", "")).strip()
+            pair = KP.pair_for(ev, pairs, title)
             for m in mk:
                 tick = m.get("ticker")
                 if not tick or tick in seen:
@@ -250,6 +255,7 @@ def main() -> int:
                     "close_time_utc": closed.isoformat(),
                     "lead_hours": LEAD_HOURS,
                     "title": title,
+                    "event_title": f"{pair[0]} vs {pair[1]}" if pair else "",
                     "leg": str(m.get("yes_sub_title", "")).strip(),
                     "close": pc[0],
                     "volume": pc[1],

@@ -25,6 +25,8 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+import kalshi_pairs as KP
+
 ROOT = Path(__file__).resolve().parents[1]
 K = "https://api.elections.kalshi.com/trade-api/v2"
 SERIES = "KXMLBGAME"
@@ -163,11 +165,13 @@ def main():
 
     rows, done, unmapped = [], 0, {}
     session = requests.Session()
+    # Pair from the EVENTS endpoint: market titles are now "Tampa Bay wins".
+    pairs = KP.event_pairs(SERIES, "settled", session=session) if by_ev else {}
     for ev, mk in by_ev.items():
-        title = str(mk[0].get("title", "")).replace(" Winner?", "").strip()
-        if " vs " not in title:
+        pair = KP.pair_for(ev, pairs, mk[0].get("title"))
+        if not pair:
             continue
-        a_raw, b_raw = [s.strip() for s in title.split(" vs ", 1)]
+        a_raw, b_raw = pair
         away, home = KALSHI_TO_MLB.get(a_raw), KALSHI_TO_MLB.get(b_raw)
         fp = first_pitch_utc(mk[0].get("ticker", ""))
         if not away or not home or fp is None:
