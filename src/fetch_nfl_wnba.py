@@ -67,19 +67,34 @@ def fetch_nfl() -> pd.DataFrame:
     return df
 
 
-def fetch_wnba(start: int = 2015, end: int = 2026) -> pd.DataFrame:
-    frames = []
+def fetch_wnba(start: int = 2015, end: int | None = None) -> pd.DataFrame | None:
+    """Every season from `start` to this year, or None if any season failed.
+
+    A failed season leaves the existing file untouched and returns None, so
+    the caller exits non-zero. From 2026-08-10 to 2026-11-16 every season
+    failed with ImportError (pd.read_html needs lxml, which the cloud runner
+    never installed) and this still exited 0, so refresh_all reported OK
+    while WNBA results stayed frozen at 2026-08-09.
+    """
+    end = end or pd.Timestamp.now(tz="UTC").year
+    frames, failed = [], []
     for yr in range(start, end + 1):
         try:
             r = requests.get(BREF.format(year=yr), headers=HDRS, timeout=60)
+            if r.status_code == 404 and yr == end:
+                print(f"  {yr}: no season page yet")
+                continue
             if r.status_code != 200:
                 print(f"  {yr}: HTTP {r.status_code}")
+                failed.append(yr)
                 continue
             tables = pd.read_html(io.StringIO(r.text))
         except Exception as e:
-            print(f"  {yr}: {type(e).__name__}")
+            print(f"  {yr}: {type(e).__name__}: {str(e)[:120]}")
+            failed.append(yr)
             continue
         if not tables:
+            failed.append(yr)
             continue
         t = tables[0]
         cols = {c: str(c) for c in t.columns}
@@ -87,6 +102,7 @@ def fetch_wnba(start: int = 2015, end: int = 2026) -> pd.DataFrame:
         need = ["Date", "Visitor/Neutral", "PTS", "Home/Neutral", "PTS.1"]
         if not all(c in t.columns for c in need):
             print(f"  {yr}: unexpected columns {list(t.columns)[:6]}")
+            failed.append(yr)
             continue
         t = t[need].copy()
         t.columns = ["date", "away_team", "away_score", "home_team", "home_score"]
@@ -99,9 +115,10 @@ def fetch_wnba(start: int = 2015, end: int = 2026) -> pd.DataFrame:
         print(f"  {yr}: {len(t)} games ({t['home_score'].notna().sum()} played)")
         time.sleep(3.0)   # Basketball Reference rate-limits aggressively
 
-    if not frames:
-        print("WNBA: nothing downloaded", file=sys.stderr)
-        return pd.DataFrame()
+    if failed or not frames:
+        print(f"WNBA: seasons failed {failed or 'all'}; existing file kept",
+              file=sys.stderr)
+        return None
     df = pd.concat(frames, ignore_index=True).sort_values("date")
     df["played"] = df["home_score"].notna() & df["away_score"].notna()
     df["margin"] = df["home_score"] - df["away_score"]
@@ -127,4 +144,5 @@ if __name__ == "__main__":
         fetch_nfl()
     if which in ("both", "wnba"):
         print()
-        fetch_wnba()
+        if fetch_wnba() is None:
+            sys.exit(1)
