@@ -30,12 +30,32 @@ class RefreshTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / 'sports.json').write_text('{}')
-            for failing in range(4):
+            for failing in range(3):
                 responses = [(0, 'changed'), (0, ''), (0, ''), (0, '')]
                 responses[failing] = (1, 'simulated failure')
                 with patch.object(A, 'git', side_effect=responses):
                     with self.assertRaises(A.PublishError):
                         A._commit_and_push(root, ['sports.json'], 'test', False, 'sports')
+            # A push that keeps failing still raises, after rebase-and-retry.
+            fail = (1, 'remote: Internal Server Error')
+            with patch.object(A, 'git', side_effect=[(0, 'changed'), (0, ''), (0, ''), fail, (0, ''), fail, (0, ''), fail]), \
+                 patch.object(A.time, 'sleep'):
+                with self.assertRaises(A.PublishError):
+                    A._commit_and_push(root, ['sports.json'], 'test', False, 'sports')
+
+    def test_one_github_push_blip_is_retried_not_failed(self):
+        # 2026-11-04: a single "remote: Internal Server Error" failed the run and emailed.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'sports.json').write_text('{}')
+            calls = []
+            replies = iter([(0, 'changed'), (0, ''), (0, ''), (1, 'remote: Internal Server Error'), (0, ''), (0, '')])
+            def git(cwd, *args):
+                calls.append(args[0])
+                return next(replies)
+            with patch.object(A, 'git', side_effect=git), patch.object(A.time, 'sleep'):
+                self.assertTrue(A._commit_and_push(root, ['sports.json'], 'test', False, 'sports'))
+            self.assertEqual(calls, ['status', 'add', 'commit', 'push', 'pull', 'push'])
 
     def test_no_change_and_dry_run_do_not_make_a_commit(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -90,13 +110,17 @@ class RefreshTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / 'sports.json'
             target.write_text(json.dumps({'generated': '2026-10-22T07:00:00Z'}))
-            results = {}
+            results, alerted = {}, {}
             for m in [0, 5, 45, 59, 60, 65, 120, 359, 420, 425]:
                 code, refresh = self._chain(target, {'open_lane.py'}, minutes(m))
                 results[m] = code
+                if refresh['alerted_steps']:
+                    alerted[m] = refresh['alerted_steps']
                 self.assertEqual(refresh['status'], 'degraded')
                 self.assertEqual(refresh['incidents']['open_lane.py']['since'], start.isoformat())
-            self.assertEqual(results, {0: 0, 5: 0, 45: 0, 59: 0, 60: 1, 65: 0, 120: 0, 359: 0, 420: 1, 425: 0})
+            # Since 2026-11-16 the alert is recorded on the board, never as a failed job.
+            self.assertEqual(results, {0: 0, 5: 0, 45: 0, 59: 0, 60: 0, 65: 0, 120: 0, 359: 0, 420: 0, 425: 0})
+            self.assertEqual(alerted, {60: ['open_lane.py'], 420: ['open_lane.py']})
             # Recovery closes the incident; a new failure starts a new clock.
             code, refresh = self._chain(target, set(), minutes(430))
             self.assertEqual((code, refresh['incidents'], refresh['status']), (0, {}, 'ok'))

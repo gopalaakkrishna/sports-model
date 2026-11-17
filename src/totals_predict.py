@@ -53,6 +53,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
 import data as D
+import kalshi_pairs as KP
 import model as M
 from team_names import TeamResolver
 import guards as G
@@ -118,24 +119,12 @@ def fetch_events(series: str) -> dict:
     The markets endpoint titles a total as "Will over 2.5 goals be scored?"
     with no teams in it; only the events endpoint carries them.
     """
-    r = requests.get(f"{KALSHI}/events",
-                     params={"series_ticker": series, "status": "open",
-                             "limit": 200}, timeout=60)
-    if r.status_code != 200:
-        return {}
-    evs = r.json().get("events", [])
-    out = {}
-    for e in evs:
-        m = re.match(r"^(.*?)\s+vs\.?\s+(.*?)\s*:\s*Total Goals\s*$",
-                     str(e.get("title", "")), re.I)
-        if m:
-            out[str(e.get("event_ticker"))] = {"home": m.group(1).strip(),
-                                               "away": m.group(2).strip()}
-    # Narrower regex than the winner board's (it also pins ": Total Goals"),
-    # so it has more ways to break. See src/guards.py.
-    return G.parsed_or_die(evs, out, what="totals event titles",
-                           series=series,
-                           samples=[e.get("title") for e in evs])
+    # The series is a totals series, so the title's suffix need not be
+    # matched. Pinning ": Total Goals" broke on 2026-11-13 when Kalshi renamed
+    # it ": Regulation Time Total Goals". Pairing, paging and the loud
+    # failure live in src/kalshi_pairs.py.
+    pairs = KP.event_pairs(series, "open")
+    return {ev: {"home": a, "away": b} for ev, (a, b) in pairs.items()}
 
 
 def fetch_lines(series: str) -> dict:

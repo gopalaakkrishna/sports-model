@@ -23,6 +23,9 @@ class SplitPairTests(unittest.TestCase):
         self.assertEqual(KP.split_pair('Tampa Bay vs. Cleveland: Winner'), ('Tampa Bay', 'Cleveland'))
         self.assertEqual(KP.split_pair('Milwaukee vs Cincinnati Winner?'), ('Milwaukee', 'Cincinnati'))
         self.assertEqual(KP.split_pair('Boston vs New York Y (Game 2)'), ('Boston', 'New York Y'))
+        # Totals events, renamed by Kalshi on 2026-11-13; both wordings pair.
+        self.assertEqual(KP.split_pair('Orlando vs Cincinnati: Regulation Time Total Goals'), ('Orlando', 'Cincinnati'))
+        self.assertEqual(KP.split_pair('Orlando vs Cincinnati: Total Goals'), ('Orlando', 'Cincinnati'))
 
     def test_per_outcome_market_titles_are_not_pairs(self):
         for t in ('Tampa Bay wins', 'Tie is the result', '', None):

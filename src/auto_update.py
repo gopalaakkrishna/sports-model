@@ -37,12 +37,16 @@ the job. Before 2026-10-22 it did, and the Cloudflare scheduler re-runs a
 degraded board every 5 minutes, so one 45-minute Kalshi 503 on a single NFL
 market sent 10 failure emails while the board kept publishing fine.
 
-Now a step only fails the job once it has been failing continuously for
-ALERT_AFTER_S, and then at most once per REALERT_S while it stays broken. The
-open incidents ride in refresh.incidents, so the clock survives between runs.
-Two exceptions still fail immediately: anything that stops the board being
-exported, verified or published, and refresh_all.py, whose failure is what
-the scheduler's bounded full-refresh retry keys on.
+Since 2026-11-16 a failing step no longer fails the job at all: the owner
+asked for no more failure emails. A step failing continuously for
+ALERT_AFTER_S is still marked in refresh.alerted_steps (then at most once per
+REALERT_S), and every failure stays visible on the board as status
+"degraded". The open incidents ride in refresh.incidents, so the clock
+survives between runs. Only two things still fail the job: anything that
+stops the board being exported, verified or published (the board is then
+genuinely down), and refresh_all.py in a full run, whose failure is what the
+scheduler's bounded full-refresh retry keys on. A git push that GitHub
+rejects (a 5xx, or a race with another run) is retried before it counts.
 """
 
 from __future__ import annotations
@@ -318,7 +322,16 @@ def _commit_and_push(cwd: Path, paths: list[str], message: str, dry: bool,
     code, out = git(cwd, "commit", "-q", "-m", message)
     if code != 0:
         raise PublishError(f"[{label}] git commit failed: {out}")
-    code, out = git(cwd, "push", "-q", "origin", "main")
+    # GitHub answers the odd push with a 500, and two runs can race. Wait,
+    # rebase onto whatever landed, and retry before calling it a failure.
+    for attempt in range(3):
+        code, out = git(cwd, "push", "-q", "origin", "main")
+        if code == 0:
+            break
+        if attempt < 2:
+            log(f"  [{label}] push failed, retrying: {out[-160:]}")
+            time.sleep(5 * (attempt + 1) ** 2)
+            git(cwd, "pull", "-q", "--rebase", "origin", "main")
     if code != 0:
         raise PublishError(f"[{label}] git push failed: {out}")
     log(f"  [{label}] published")
@@ -446,9 +459,14 @@ def _run(args) -> int:
     finished = datetime.now(timezone.utc)
     incidents, alert_steps = track_incidents(incidents_before, ran_steps,
                                              set(failed_steps), finished)
+    # Only a failed full-refresh source fetch fails the job (the scheduler's
+    # retry keys on it). Every other incident is reported on the board.
+    fail_job = [s for s in alert_steps if s == "refresh_all.py"]
     for name, incident in sorted(incidents.items()):
-        if name in alert_steps:
+        if name in fail_job:
             log(f"  ALERT {name} failing since {incident['since']} — failing this run")
+        elif name in alert_steps:
+            log(f"  ALERT {name} failing since {incident['since']} — shown on the board, run not failed")
         elif name in failed_steps:
             log(f"  {name} failing since {incident['since']} — no alert yet")
     try:
@@ -498,17 +516,17 @@ def _run(args) -> int:
     after = signature(PAYLOAD)
     if before is not None and before == after:
         log(f"no material board change — not publishing  ({time.time() - t0:.0f}s)")
-        return 1 if alert_steps else 0
+        return 1 if fail_job else 0
 
     if args.no_publish:
         log("board changed; --no-publish set")
-        return 1 if alert_steps else 0
+        return 1 if fail_job else 0
     log("board changed — publishing")
     publish(args.dry_run)
     log(f"=== done in {time.time() - t0:.0f}s")
     if not settlement_ok:
         log("settlement failed — partial results published, run requires attention")
-    return 1 if alert_steps else 0
+    return 1 if fail_job else 0
 
 
 if __name__ == "__main__":
